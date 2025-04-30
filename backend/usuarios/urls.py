@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import saludo
+from . import views
 
 urlpatterns = [
-    path('api/saludo/', saludo)
+    path('login/', views.vista_login, name='login')
 ]

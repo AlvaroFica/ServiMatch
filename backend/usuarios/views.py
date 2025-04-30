@@ -6,3 +6,6 @@ from django.http import JsonResponse
 #Creacion de vista saludo
 def saludo(request):
     return JsonResponse({'mensaje' : 'Hola estoy saludando desde la api backend' })
+
+def vista_login(request):
+    return render(request, 'login.html')
