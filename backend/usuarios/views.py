@@ -1,0 +1,8 @@
+from django.shortcuts import render
+from django.http import JsonResponse
+
+#Creación de views de usuarios
+
+#Creacion de vista saludo
+def saludo(request):
+    return JsonResponse({'mensaje' : 'Hola estoy saludando desde la api backend' })
