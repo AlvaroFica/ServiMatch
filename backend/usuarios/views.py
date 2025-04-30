@@ -9,3 +9,6 @@ def saludo(request):
 
 def vista_login(request):
     return render(request, 'login.html')
+
+def vista_registrar(request):
+    return render(request, 'registrar-trabajador.html')
