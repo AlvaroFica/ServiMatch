@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario por pasos</title>
+    <link rel="stylesheet" href="{% static 'css/registrar-trabajador.css' %}">
+    
+</head>
+<body>
+    <form id="multi-step-form">
+        <!-- Step 1: RUT -->
+        <div class="step" id="step-1">
+            <h2>¡Empecemos!</h2>
+            <label for="rut">RUT:</label>
+            <input type="text" id="rut" name="rut" required><br>
+
+            <button type="button" class="next-btn" onclick="nextStep(1)">Siguiente</button>
+        </div>
+
+        <!-- Step 2: Correo, Contraseña -->
+        <div class="step" id="step-2">
+            <h2>Registro</h2>
+            <label for="correo">Correo electrónico:</label>
+            <input type="email" id="correo" name="correo" required><br>
+
+            <label for="contraseña">Contraseña:</label>
+            <input type="password" id="contraseña" name="contraseña" required><br>
+
+            <label for="repetir-contraseña">Repetir Contraseña:</label>
+            <input type="password" id="repetir-contraseña" name="repetir-contraseña" required><br>
+
+            <button type="button" class="prev-btn" onclick="prevStep(2)">Anterior</button>
+            <button type="button" class="next-btn" onclick="nextStep(2)">Registrarse</button>
+        </div>
+
+        <!-- Step 3: Datos Personales -->
+        <div class="step" id="step-3">
+            <h2>Datos Personales</h2>
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required><br>
+
+            <label for="apellido">Apellido:</label>
+            <input type="text" id="apellido" name="apellido" required><br>
+
+            <label for="fecha_nacimiento">Fecha de nacimiento:</label>
+            <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required><br>
+
+            <label for="celular">Celular:</label>
+            <input type="tel" id="celular" name="celular" required><br>
+
+            <button type="button" class="prev-btn" onclick="prevStep(3)">Anterior</button>
+            <button type="button" class="next-btn" onclick="nextStep(3)">Siguiente</button>
+        </div>
+
+        <!-- Step 4: Dirección -->
+        <div class="step" id="step-4">
+            <h2>Dirección</h2>
+            <label for="comuna">Comuna:</label>
+            <input type="text" id="comuna" name="comuna" required><br>
+
+            <label for="direccion">Dirección:</label>
+            <input type="text" id="direccion" name="direccion" required><br>
+
+            <button type="button" class="prev-btn" onclick="prevStep(4)">Anterior</button>
+            <button type="button" class="next-btn" onclick="nextStep(4)">Siguiente</button>
+        </div>
+
+        <!-- Step 5: Foto de Perfil -->
+        <div class="step" id="step-5">
+            <h2>Foto de perfil (opcional)</h2>
+            <label for="foto">Sube tu foto</label><br>
+            <input type="file" id="foto" name="foto"><br>
+
+            <button type="button" class="prev-btn" onclick="prevStep(5)">Anterior</button>
+            <button type="submit">Finalizar</button>
+        </div>
+        <script src="{% static 'js/registrar-trabajador.js' %}"></script>
+    </form>
+</body>
+</html>
