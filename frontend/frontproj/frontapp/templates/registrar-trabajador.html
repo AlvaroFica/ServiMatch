@@ -3,19 +3,18 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario por pasos</title>
     <link rel="stylesheet" href="{% static 'css/registrar-trabajador.css' %}">
-    
 </head>
 <body>
-    <form id="multi-step-form">
+    <form id="multi-step-form" method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+
         <!-- Step 1: RUT -->
         <div class="step" id="step-1">
             <h2>¡Empecemos!</h2>
             <label for="rut">RUT:</label>
             <input type="text" id="rut" name="rut" required><br>
-
             <button type="button" class="next-btn" onclick="nextStep(1)">Siguiente</button>
         </div>
 
@@ -32,7 +31,7 @@
             <input type="password" id="repetir-contraseña" name="repetir-contraseña" required><br>
 
             <button type="button" class="prev-btn" onclick="prevStep(2)">Anterior</button>
-            <button type="button" class="next-btn" onclick="nextStep(2)">Registrarse</button>
+            <button type="button" class="next-btn" onclick="nextStep(2)">Siguiente</button>
         </div>
 
         <!-- Step 3: Datos Personales -->
@@ -58,7 +57,11 @@
         <div class="step" id="step-4">
             <h2>Dirección</h2>
             <label for="comuna">Comuna:</label>
-            <input type="text" id="comuna" name="comuna" required><br>
+            <select id="comuna" name="comuna" required>
+                {% for comuna in comunas %}
+                    <option value="{{ comuna.id }}">{{ comuna.nombre_comuna }}</option>
+                {% endfor %}
+            </select><br>
 
             <label for="direccion">Dirección:</label>
             <input type="text" id="direccion" name="direccion" required><br>
@@ -70,13 +73,14 @@
         <!-- Step 5: Foto de Perfil -->
         <div class="step" id="step-5">
             <h2>Foto de perfil (opcional)</h2>
-            <label for="foto">Sube tu foto</label><br>
+            <label for="foto">Sube tu foto:</label><br>
             <input type="file" id="foto" name="foto"><br>
 
             <button type="button" class="prev-btn" onclick="prevStep(5)">Anterior</button>
             <button type="submit">Finalizar</button>
         </div>
-        <script src="{% static 'js/registrar-trabajador.js' %}"></script>
     </form>
+
+    <script src="{% static 'js/registrar-trabajador.js' %}"></script>
 </body>
 </html>
