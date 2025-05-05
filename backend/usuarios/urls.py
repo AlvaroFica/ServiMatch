@@ -1,6 +1,27 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import *
+from . import views
+
+# Importar las vistas necesarias
+from .views import (
+    PaisViewSet,
+    RegionViewSet,
+    CiudadViewSet,
+    ComunaViewSet,
+    UsuarioViewSet,
+    MembresiaViewSet,
+    EspecialidadViewSet,
+    TipoEspecialidadViewSet,
+    TrabajadorViewSet,
+    TipoServicioViewSet,
+    ServicioViewSet,
+    TipoPagoViewSet,
+    BoletaViewSet,
+    PagoViewSet,
+    CitaViewSet,
+    ChatViewSet,
+    MensajeViewSet
+)
 
 router = DefaultRouter()
 router.register(r'paises', PaisViewSet)
@@ -22,5 +43,7 @@ router.register(r'chats', ChatViewSet)
 router.register(r'mensajes', MensajeViewSet)
 
 urlpatterns = [
+    path('login/', views.vista_login, name='login'),
     path('', include(router.urls)),
+    path('registrar-trabajador/', views.vista_registrar_trabajador, name='Registrar-trabajador')
 ]
