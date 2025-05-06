@@ -1,8 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .forms import CrearPlanServicioTrabajadorForm
 from django.http import JsonResponse
 from .models import *
 from .serializers import *
 from rest_framework import viewsets
+from django.contrib import messages
 
 #Creación de views de usuarios
 
@@ -15,6 +18,42 @@ def vista_login(request):
 
 def vista_registrar_trabajador(request):
     return render(request, 'registrar-trabajador.html')
+
+@login_required
+def crear_plan_servicio_trabajador(request):
+    try:
+        trabajador = Trabajador.objects.get(usuario=request.user)
+    except Trabajador.DoesNotExist:
+        messages.error(request, 'Tu perfil de trabajador no está completo.')
+        return redirect('login') # Redirige a donde corresponda
+
+    if request.method == 'POST':
+        form = CrearPlanServicioTrabajadorForm(request.POST)
+        if form.is_valid():
+            plan = form.save(commit=False)
+            plan.trabajador = trabajador
+            try:
+                plan.save()
+                messages.success(request, 'El plan de servicio se ha creado exitosamente.')
+                return redirect('nombre_de_tu_vista_de_listado_planes_trabajador') # Redirige a la lista de planes del trabajador
+            except Exception as e:
+                messages.error(request, f'Hubo un error al guardar el plan: {e}')
+        else:
+            messages.error(request, 'Por favor, corrige los errores en el formulario.')
+    else:
+        form = CrearPlanServicioTrabajadorForm()
+
+    return render(request, 'servicios/crear_plan_servicio_trabajador.html', {'form': form})
+
+@login_required
+def listar_planes_servicio_trabajador(request):
+    try:
+        trabajador = Trabajador.objects.get(usuario=request.user)
+        planes = PlanServicioTrabajador.objects.filter(trabajador=trabajador).select_related('servicio')
+        return render(request, 'servicios/listar_planes_trabajador.html', {'planes': planes})
+    except Trabajador.DoesNotExist:
+        messages.error(request, 'Tu perfil de trabajador no está completo.')
+        return redirect('nombre_de_alguna_vista_de_perfil')
 
 class PaisViewSet(viewsets.ModelViewSet):
     queryset = Pais.objects.all()

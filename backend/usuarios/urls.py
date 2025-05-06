@@ -45,5 +45,7 @@ router.register(r'mensajes', MensajeViewSet)
 urlpatterns = [
     path('login/', views.vista_login, name='login'),
     path('', include(router.urls)),
-    path('registrar-trabajador/', views.vista_registrar_trabajador, name='Registrar-trabajador')
+    path('registrar-trabajador/', views.vista_registrar_trabajador, name='Registrar-trabajador'),
+    path('crear-plan/', views.crear_plan_servicio_trabajador, name='crear_plan_servicio'),
+    path('mis-planes/', views.listar_planes_servicio_trabajador, name='listar_planes_trabajador'),
 ]
