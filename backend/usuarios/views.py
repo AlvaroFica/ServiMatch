@@ -4,14 +4,40 @@ from .models import *
 from .serializers import *
 from rest_framework import viewsets
 
-#Creación de views de usuarios
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.hashers import check_password
+import json
 
-#Creacion de vista saludo
-def saludo(request):
-    return JsonResponse({'mensaje' : 'Hola estoy saludando desde la api backend' })
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 
+@csrf_exempt
+@api_view(['POST'])
 def vista_login(request):
-    return render(request, 'login.html')
+    correo = request.data.get('correo')
+    contraseña = request.data.get('contraseña')
+
+    if not correo or not contraseña:
+        return Response({'error': 'Correo y contraseña son obligatorios'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        usuario = Usuario.objects.get(correo=correo)
+        if check_password(contraseña, usuario.contraseña):
+            return Response({
+                'mensaje': 'Login exitoso',
+                'usuario_id': usuario.id,
+                'nombre': usuario.nombre,
+                'apellido': usuario.apellido,
+                'correo': usuario.correo
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Contraseña incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
+    except Usuario.DoesNotExist:
+        return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+
 
 def vista_registrar_trabajador(request):
     return render(request, 'registrar-trabajador.html')

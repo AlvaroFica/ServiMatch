@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from django.contrib.auth.hashers import make_password
 
 class PaisSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,6 +26,10 @@ class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
         fields = '__all__'
+
+    def create(self, validated_data):
+        validated_data['contraseña'] = make_password(validated_data['contraseña'])
+        return super().create(validated_data)
 
 class MembresiaSerializer(serializers.ModelSerializer):
     class Meta:

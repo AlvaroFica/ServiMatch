@@ -43,6 +43,26 @@ def get_comunas():
     except:
         return []
 
-
 def login(request):
+    if request.method == 'POST':
+        data = {
+            'correo': request.POST.get('username'),
+            'contraseña': request.POST.get('password'),
+        }
+
+        try:
+            response = requests.post('http://localhost:8000/api/login/', json=data)
+            if response.status_code == 200:
+                usuario = response.json()
+                # Aquí podrías guardar en sesión si quieres
+                return redirect('prueba')  # o la ruta que desees después del login
+            else:
+                return render(request, 'login.html', {'error': 'Credenciales incorrectas'})
+        except requests.exceptions.RequestException:
+            return render(request, 'login.html', {'error': 'No se pudo conectar con el servidor'})
+
     return render(request, 'login.html')
+
+
+def prueba(request):
+    return render(request, 'prueba.html')

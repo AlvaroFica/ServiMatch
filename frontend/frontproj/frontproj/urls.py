@@ -5,4 +5,5 @@ from frontapp import views
 urlpatterns = [
     path('', views.login, name='login'),
     path('registrar/', views.register, name='registrar-trabajador'),
+    path('prueba/', views.prueba, name='prueba'),
 ]
