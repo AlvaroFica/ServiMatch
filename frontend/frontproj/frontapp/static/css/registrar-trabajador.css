@@ -1,35 +1,40 @@
-/* General styles */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #4b6cb7, #182848);
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    margin: 0;
+    padding: 20px;
 }
 
 form {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background: #fff;
     padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.25);
     width: 100%;
-    max-width: 600px;
-}
-
-h2 {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 20px;
+    max-width: 400px;
     text-align: center;
 }
 
+h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
 label {
-    font-size: 14px;
-    color: #555;
     display: block;
-    margin-bottom: 8px;
+    text-align: left;
+    margin-top: 10px;
+    font-weight: 500;
+    color: #555;
 }
 
 input[type="text"],
@@ -37,38 +42,46 @@ input[type="email"],
 input[type="tel"],
 input[type="date"],
 input[type="file"],
+input[type="password"],
 select {
     width: 100%;
     padding: 12px;
-    margin-bottom: 20px;
+    margin: 10px 0;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 8px;
     font-size: 16px;
 }
 
 button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 12px 24px;
+    width: 100%;
+    padding: 12px;
+    background-color: #4b6cb7;
     border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    color: white;
     font-size: 16px;
-    transition: background-color 0.3s;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
     margin-top: 10px;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #3a539b;
 }
 
-button[type="submit"] {
-    background-color: #007bff;
-    width: 100%;
+.prev-btn,
+.next-btn {
+    width: 48%;
+    display: inline-block;
+    margin: 10px 1%;
 }
 
-button[type="submit"]:hover {
-    background-color: #0056b3;
+.prev-btn {
+    background-color: #f44336;
+}
+
+.prev-btn:hover {
+    background-color: #d32f2f;
 }
 
 .step {
@@ -79,14 +92,14 @@ button[type="submit"]:hover {
     display: block;
 }
 
-.prev-btn {
-    background-color: #f44336;
-    width: 48%;
-    float: left;
-}
+@media (max-width: 576px) {
+    form {
+        padding: 30px 20px;
+    }
 
-.next-btn {
-    background-color: #4CAF50;
-    width: 48%;
-    float: right;
+    .prev-btn,
+    .next-btn {
+        width: 100%;
+        margin: 5px 0;
+    }
 }

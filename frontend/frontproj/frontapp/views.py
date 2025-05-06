@@ -66,3 +66,12 @@ def login(request):
 
 def prueba(request):
     return render(request, 'prueba.html')
+
+def vista_pagina_inicio(request):
+    return render(request, 'pagina_inicio.html')
+
+def vista_cliente_inicio(request):
+    return render(request, 'cliente_inicio.html')
+
+def vista_trabajador_inicio(request):
+    return render(request, 'trabajador_inicio.html')

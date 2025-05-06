@@ -39,6 +39,9 @@
                 const resultado = document.getElementById("resultado");
                 if (data.mensaje) {
                     resultado.innerHTML = `<div class="alert alert-success">${data.mensaje}</div>`;
+                    setTimeout(() => {
+                        window.location.href = "pagina_inicio"; // Cambia esta URL por la que desees
+                    }, 1500);
                 } else if (data.error) {
                     resultado.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
                 } else {
