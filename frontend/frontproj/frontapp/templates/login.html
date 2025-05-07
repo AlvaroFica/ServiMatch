@@ -19,7 +19,7 @@
         <div id="resultado" class="mt-3 text-center"></div>
         <div class="text-center mt-3">
             <a href="#">¿Olvidaste tu contraseña?</a><br>
-            <a href="registrar.html">¿No tienes cuenta?</a>
+            <a href="{% url 'registrar-trabajador' %}">¿No tienes cuenta?</a>
         </div>
     </div>
 
@@ -34,14 +34,16 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ correo, contraseña })
             })
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
                 const resultado = document.getElementById("resultado");
-                if (data.mensaje) {
+
+                if (data.usuario_id) {
+                    localStorage.setItem("usuario_id", data.usuario_id); // Guardar para usar en perfil
                     resultado.innerHTML = `<div class="alert alert-success">${data.mensaje}</div>`;
                     setTimeout(() => {
-                        window.location.href = "pagina_inicio"; // Cambia esta URL por la que desees
-                    }, 1500);
+                        window.location.href = "/pagina_inicio/"; // Redirige al perfil
+                    }, 1000);
                 } else if (data.error) {
                     resultado.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
                 } else {

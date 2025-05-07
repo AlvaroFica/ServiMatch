@@ -75,3 +75,6 @@ def vista_cliente_inicio(request):
 
 def vista_trabajador_inicio(request):
     return render(request, 'trabajador_inicio.html')
+
+def vista_perfil(request):
+    return render(request, 'perfil.html')

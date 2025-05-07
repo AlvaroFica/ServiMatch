@@ -1,1 +1,55 @@
-a
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil</title>
+</head>
+<body>
+    <div class="perfil-container">
+        <div id="infoUsuario" class="text-center">
+            <h3 id="nombreCompleto">Cargando...</h3>
+            <p id="emailUsuario"></p>
+        </div>
+
+        <div class="text-center">
+            <p>¿Tienes un talento? ¡Gana dinero ofreciendo tus servicios!</p>
+            <button>Ofrecer tus servicios</button>
+        </div>
+
+        <div class="datos-personales">
+            <h4>DATOS PERSONALES</h4>
+            <input type="text" id="nombre" placeholder="Nombre">
+            <input type="text" id="apellido" placeholder="Apellido">
+            <input type="date" id="fechaNacimiento" placeholder="Fecha nacimiento">
+            <input type="tel" id="telefono" placeholder="+569 número celular">
+        </div>
+    </div>
+
+    <script>
+        const token = sessionStorage.getItem("token");
+        if (!token) {
+            window.location.href = "/login.html";
+        }
+
+        fetch("http://localhost:8000/api/usuario/", {
+            headers: { "Authorization": "Token " + token }
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("nombreCompleto").innerText = data.nombre + " " + data.apellido;
+            document.getElementById("emailUsuario").innerText = data.correo;
+
+            // Llenar inputs
+            document.getElementById("nombre").value = data.nombre || "";
+            document.getElementById("apellido").value = data.apellido || "";
+            document.getElementById("fechaNacimiento").value = data.fecha_nacimiento || "";
+            document.getElementById("telefono").value = data.telefono || "";
+        })
+        .catch(() => {
+            alert("No se pudieron obtener los datos");
+            window.location.href = "/login.html";
+        });
+    </script>
+</body>
+</html>

@@ -37,6 +37,23 @@ def vista_login(request):
         return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
+@api_view(['GET', 'PUT'])
+def vista_usuario_detalle(request, usuario_id):
+    try:
+        usuario = Usuario.objects.get(id=usuario_id)
+    except Usuario.DoesNotExist:
+        return Response({'error': 'Usuario no encontrado'}, status=404)
+
+    if request.method == 'GET':
+        serializer = UsuarioSerializer(usuario)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = UsuarioSerializer(usuario, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'mensaje': 'Usuario actualizado correctamente'})
+        return Response(serializer.errors, status=400)
 
 
 def vista_registrar_trabajador(request):
