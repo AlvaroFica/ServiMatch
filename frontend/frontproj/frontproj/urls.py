@@ -10,5 +10,5 @@ urlpatterns = [
     path('cliente_inicio/', views.vista_cliente_inicio, name='cliente_inicio'),
     path('trabajador_inicio/', views.vista_trabajador_inicio, name='trabajador_inicio'),
     path('perfil/', views.vista_perfil, name='perfil'),
-
+    path('principal_pagina/', views.vista_principal_pagina, name='principal_pagina'),
 ]

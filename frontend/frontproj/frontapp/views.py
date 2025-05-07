@@ -78,3 +78,6 @@ def vista_trabajador_inicio(request):
 
 def vista_perfil(request):
     return render(request, 'perfil.html')
+
+def vista_principal_pagina(request):
+    return render(request, 'principal_pagina.html')
