@@ -4,17 +4,22 @@ from django.shortcuts import render, redirect
 def register(request):
     if request.method == 'POST':
         data = {
+            'rut': request.POST.get('rut'),
             'nombre': request.POST.get('nombre'),
             'apellido': request.POST.get('apellido'),
             'correo': request.POST.get('correo'),
             'telefono': request.POST.get('celular'),
             'fecha_nac': request.POST.get('fecha_nacimiento'),
-            'comuna': request.POST.get('comuna'),  # Debe ser el ID
+            'comuna': request.POST.get('comuna'),
             'contraseña': request.POST.get('contraseña'),
         }
 
+        files = {}
+        if 'foto_perfil' in request.FILES:
+            files['foto_perfil'] = request.FILES['foto_perfil']
+
         try:
-            response = requests.post('http://127.0.0.1:8000/api/usuarios/', data=data)
+            response = requests.post('http://127.0.0.1:8000/api/usuarios/', data=data, files=files)
             if response.status_code == 201:
                 return redirect('login')
             else:
@@ -24,7 +29,7 @@ def register(request):
                     'response': response.json(),
                     'comunas': comunas
                 })
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.RequestException:
             return render(request, 'registrar-trabajador.html', {
                 'error': 'Error de conexión con la API',
                 'comunas': get_comunas()
@@ -32,6 +37,7 @@ def register(request):
 
     comunas = get_comunas()
     return render(request, 'registrar-trabajador.html', {'comunas': comunas})
+
 
 
 def get_comunas():
@@ -81,3 +87,9 @@ def vista_perfil(request):
 
 def vista_principal_pagina(request):
     return render(request, 'principal_pagina.html')
+
+def C_trabajador(request):
+    return render(request, 'c_trabajador.html')
+
+def introduccion_trab(request):
+    return render(request, 'introduccion_trab.html')

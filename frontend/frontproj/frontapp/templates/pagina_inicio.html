@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,78 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Perfil</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/pagina_inicio.css' %}">
   <style>
-    body {
-      background-color: #f8f9fa;
-    }
-
-    .perfil-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-      background-color: #ffffff;
-      border-bottom: 1px solid #dee2e6;
-    }
-
-    .perfil-info {
-      font-size: 0.95rem;
-    }
-
     .avatar {
-      width: 45px;
-      height: 45px;
-      background-color: #ddd;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
-      flex-shrink: 0;
+      overflow: hidden;
+      background-color: #ddd;
     }
 
-    .btn-outline-primary-custom {
-      border: 1.5px solid #0d6efd;
-      color: #0d6efd;
-      font-weight: 500;
-      border-radius: 0.5rem;
-      padding: 0.5rem 1rem;
-      background-color: white;
-    }
-
-    .btn-outline-primary-custom:hover {
-      background-color: #e9f1ff;
-    }
-
-    .form-section {
-      background-color: #fff;
-      padding: 1.5rem;
-      border-radius: 0.75rem;
-      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);
-      margin-bottom: 2rem;
-    }
-
-    input.form-control {
-      border-radius: 0.5rem;
-      padding: 0.75rem;
-    }
-
-    @media (min-width: 768px) {
-      .perfil-header {
-        padding: 2rem;
-      }
-
-      .form-section {
-        max-width: 600px;
-        margin: 2rem auto;
-      }
-
-      .btn-outline-primary-custom {
-        font-size: 1rem;
-      }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   </style>
 </head>
 <body>
 
   <!-- Cabecera -->
-  <div class="perfil-header">
+  <div class="perfil-header d-flex justify-content-between align-items-center px-3 py-2">
     <div class="perfil-info">
       <strong id="nombre-usuario">Pepito Pérez</strong><br>
       <small id="correo-usuario">pepito@example.com</small>
@@ -87,7 +37,7 @@
   <!-- Mensaje y botón -->
   <div class="text-center mt-3 px-3">
     <p class="mb-2">¿Tienes un talento? ¡Gana dinero ofreciendo tus servicios!</p>
-    <button class="btn btn-outline-primary-custom">Ofrecer tus servicios</button>
+    <a class="btn btn-outline-primary-custom" href="{% url 'introduccion_trab' %}">Siguiente</a>
   </div>
 
   <!-- Formulario -->
@@ -128,6 +78,14 @@
 
       document.getElementById("nombre-usuario").innerText = `${data.nombre} ${data.apellido}`;
       document.getElementById("correo-usuario").innerText = data.correo;
+
+      if (data.foto_perfil) {
+        const avatarDiv = document.querySelector('.avatar');
+        const img = document.createElement('img');
+        img.src = `http://127.0.0.1:8000/${data.foto_perfil}`;
+        img.alt = "Foto de perfil";
+        avatarDiv.appendChild(img);
+      }
     }
 
     document.getElementById("perfil-form").addEventListener("submit", async function (e) {

@@ -42,7 +42,7 @@
                     localStorage.setItem("usuario_id", data.usuario_id); // Guardar para usar en perfil
                     resultado.innerHTML = `<div class="alert alert-success">${data.mensaje}</div>`;
                     setTimeout(() => {
-                        window.location.href = "/pagina_inicio/"; // Redirige al perfil
+                        window.location.href = "/principal_pagina/"; // Redirige al perfil
                     }, 1000);
                 } else if (data.error) {
                     resultado.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;

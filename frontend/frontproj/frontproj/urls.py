@@ -11,4 +11,6 @@ urlpatterns = [
     path('trabajador_inicio/', views.vista_trabajador_inicio, name='trabajador_inicio'),
     path('perfil/', views.vista_perfil, name='perfil'),
     path('principal_pagina/', views.vista_principal_pagina, name='principal_pagina'),
+    path('c_trabajador/', views.C_trabajador, name='c_trabajador'),
+    path('introduccion_trab/', views.introduccion_trab, name='introduccion_trab'),
 ]

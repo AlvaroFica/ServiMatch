@@ -1,0 +1,222 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro de Trabajador</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/registro-trabajador.css' %}">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .form-box {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .preview-img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      margin-top: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+    }
+
+    .btn-step {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-box">
+  <form id="multiStepForm" enctype="multipart/form-data">
+    
+    <!-- Paso 1: Cédula frontal -->
+    <div class="step active" id="step-1">
+      <h4>Foto Cédula (Frontal)</h4>
+      <input type="file" id="foto_cedula" name="foto_cedula" accept="image/*" class="form-control" required>
+      <img id="preview1" class="preview-img" style="display:none;">
+      <button type="button" class="btn btn-primary w-100 btn-step" onclick="nextStep(1)">Siguiente</button>
+    </div>
+
+    <!-- Paso 2: Cédula trasera -->
+    <div class="step" id="step-2">
+      <h4>Foto Cédula (Trasera)</h4>
+      <input type="file" id="foto_cedula_atras" name="foto_cedula_atras" accept="image/*" class="form-control" required>
+      <img id="preview2" class="preview-img" style="display:none;">
+      <div class="d-flex justify-content-between btn-step">
+        <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Anterior</button>
+        <button type="button" class="btn btn-primary" onclick="nextStep(2)">Siguiente</button>
+      </div>
+    </div>
+
+    <!-- Paso 3: Selfie -->
+    <div class="step" id="step-3">
+      <h4>Foto Selfie</h4>
+      <input type="file" id="foto_autoretrato" name="foto_autoretrato" accept="image/*" class="form-control" required>
+      <img id="preview3" class="preview-img" style="display:none;">
+      <div class="d-flex justify-content-between btn-step">
+        <button type="button" class="btn btn-secondary" onclick="prevStep(3)">Anterior</button>
+        <button type="button" class="btn btn-primary" onclick="nextStep(3)">Siguiente</button>
+      </div>
+    </div>
+
+    <!-- Paso 4: Servicio y experiencia -->
+    <div class="step" id="step-4">
+      <h4>Detalles del servicio</h4>
+      <div class="form-group">
+        <label for="servicio">Servicio</label>
+        <select id="servicio" name="servicio" class="form-select" required>
+          <option value="">Cargando servicios...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Experiencia (años)</label>
+        <input type="number" name="experiencia" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea name="descripcion" class="form-control" rows="3" required></textarea>
+      </div>
+      <div class="d-flex justify-content-between btn-step">
+        <button type="button" class="btn btn-secondary" onclick="prevStep(4)">Anterior</button>
+        <button type="submit" class="btn btn-success">Finalizar</button>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  const usuario_id = localStorage.getItem("usuario_id");
+  const trabajador_id = localStorage.getItem("trabajador_id");
+
+  function nextStep(step) {
+    document.getElementById(`step-${step}`).classList.remove('active');
+    document.getElementById(`step-${step + 1}`).classList.add('active');
+  }
+
+  function prevStep(step) {
+    document.getElementById(`step-${step}`).classList.remove('active');
+    document.getElementById(`step-${step - 1}`).classList.add('active');
+  }
+
+  document.getElementById("foto_cedula").addEventListener('change', function() {
+    const img = document.getElementById("preview1");
+    img.src = URL.createObjectURL(this.files[0]);
+    img.style.display = 'block';
+  });
+
+  document.getElementById("foto_cedula_atras").addEventListener('change', function() {
+    const img = document.getElementById("preview2");
+    img.src = URL.createObjectURL(this.files[0]);
+    img.style.display = 'block';
+  });
+
+  document.getElementById("foto_autoretrato").addEventListener('change', function() {
+    const img = document.getElementById("preview3");
+    img.src = URL.createObjectURL(this.files[0]);
+    img.style.display = 'block';
+  });
+
+  document.getElementById("multiStepForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    formData.append("usuario", usuario_id);
+    formData.append("estado_verificado", false);
+
+    let url = trabajador_id
+      ? `http://localhost:8000/api/trabajadores/${trabajador_id}/`
+      : "http://localhost:8000/api/trabajadores/";
+
+    let method = trabajador_id ? "PUT" : "POST";
+
+    try {
+      const response = await fetch(url, {
+        method: method,
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (!trabajador_id) {
+          localStorage.setItem("trabajador_id", data.id);
+        }
+        alert("Perfil guardado exitosamente.");
+        window.location.href = "/trabajador_inicio/";
+      } else {
+        const error = await response.json();
+        console.error(error);
+        alert("Error al guardar el perfil.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error de conexión.");
+    }
+  });
+
+  async function cargarServicios() {
+    const select = document.getElementById("servicio");
+    try {
+      const response = await fetch("http://localhost:8000/api/servicios/");
+      const servicios = await response.json();
+
+      select.innerHTML = '<option value="">Selecciona un servicio</option>';
+
+      const grupos = {};
+      servicios.forEach(servicio => {
+        const tipo = servicio.tipo || "Otros";
+        if (!grupos[tipo]) grupos[tipo] = [];
+        grupos[tipo].push(servicio);
+      });
+
+      for (const tipo in grupos) {
+        const optgroup = document.createElement("optgroup");
+        optgroup.label = tipo;
+        grupos[tipo].forEach(servicio => {
+          const option = document.createElement("option");
+          option.value = servicio.id;
+          option.textContent = servicio.nombre_serv;
+          optgroup.appendChild(option);
+        });
+        select.appendChild(optgroup);
+      }
+    } catch (error) {
+      console.error("Error cargando servicios:", error);
+      select.innerHTML = '<option value="">No se pudieron cargar los servicios</option>';
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", cargarServicios);
+</script>
+
+</body>
+</html>

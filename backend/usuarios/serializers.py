@@ -57,9 +57,12 @@ class TipoServicioSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ServicioSerializer(serializers.ModelSerializer):
+    tipo = serializers.StringRelatedField()  # muestra el nombre del tipo
+
     class Meta:
         model = Servicio
         fields = '__all__'
+
 
 class TipoPagoSerializer(serializers.ModelSerializer):
     class Meta:
