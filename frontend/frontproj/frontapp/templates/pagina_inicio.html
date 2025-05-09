@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/pagina_inicio.css' %}">
+  <style>
+    .avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      overflow: hidden;
+      background-color: #ddd;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cabecera -->
+  <div class="perfil-header d-flex justify-content-between align-items-center px-3 py-2">
+    <div class="perfil-info">
+      <strong id="nombre-usuario">Pepito Pérez</strong><br>
+      <small id="correo-usuario">pepito@example.com</small>
+    </div>
+    <div class="avatar"></div>
+  </div>
+
+  <!-- Mensaje y botón -->
+  <div class="text-center mt-3 px-3">
+    <p class="mb-2">¿Tienes un talento? ¡Gana dinero ofreciendo tus servicios!</p>
+    <a class="btn btn-outline-primary-custom" href="{% url 'introduccion_trab' %}">Siguiente</a>
+  </div>
+
+  <!-- Formulario -->
+  <div class="form-section mx-3 mt-4">
+    <h5 class="mb-3 text-center">DATOS PERSONALES</h5>
+    <form id="perfil-form">
+      <div class="mb-3">
+        <input type="text" class="form-control" id="nombre" placeholder="Nombre" required>
+      </div>
+      <div class="mb-3">
+        <input type="text" class="form-control" id="apellido" placeholder="Apellido" required>
+      </div>
+      <div class="mb-3">
+        <input type="date" class="form-control" id="fecha_nacimiento" placeholder="Fecha de nacimiento">
+      </div>
+      <div class="mb-3">
+        <input type="text" class="form-control" id="telefono" placeholder="+569 número celular">
+      </div>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary w-100">Guardar Cambios</button>
+      </div>
+    </form>
+    <div id="mensaje" class="mt-3"></div>
+  </div>
+
+  <script>
+    const usuarioId = localStorage.getItem("usuario_id");
+    const apiUrl = `http://127.0.0.1:8000/api/usuario/${usuarioId}/`;
+
+    async function cargarPerfil() {
+      const res = await fetch(apiUrl);
+      const data = await res.json();
+
+      document.getElementById("nombre").value = data.nombre;
+      document.getElementById("apellido").value = data.apellido;
+      document.getElementById("telefono").value = data.telefono || '';
+      document.getElementById("fecha_nacimiento").value = data.fecha_nacimiento || '';
+
+      document.getElementById("nombre-usuario").innerText = `${data.nombre} ${data.apellido}`;
+      document.getElementById("correo-usuario").innerText = data.correo;
+
+      if (data.foto_perfil) {
+        const avatarDiv = document.querySelector('.avatar');
+        const img = document.createElement('img');
+        img.src = `http://127.0.0.1:8000/${data.foto_perfil}`;
+        img.alt = "Foto de perfil";
+        avatarDiv.appendChild(img);
+      }
+    }
+
+    document.getElementById("perfil-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const payload = {
+        nombre: document.getElementById("nombre").value,
+        apellido: document.getElementById("apellido").value,
+        telefono: document.getElementById("telefono").value,
+        fecha_nacimiento: document.getElementById("fecha_nacimiento").value
+      };
+
+      const res = await fetch(apiUrl, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const mensaje = document.getElementById("mensaje");
+      if (res.ok) {
+        mensaje.innerHTML = '<div class="alert alert-success">Perfil actualizado correctamente</div>';
+      } else {
+        mensaje.innerHTML = '<div class="alert alert-danger">Error al actualizar perfil</div>';
+      }
+    });
+
+    cargarPerfil();
+  </script>
+
+</body>
+</html>

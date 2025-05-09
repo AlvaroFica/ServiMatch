@@ -1,0 +1,231 @@
+/* ========== RESET GENERAL ========== */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #fff;
+  }
+  
+  body {
+    padding-bottom: 100px; /* deja espacio para la barra inferior fija */
+  }
+  
+  .contenedor-app {
+    max-width: 480px;
+    margin: auto;
+    padding: 15px;
+    box-sizing: border-box;
+  }
+  
+  /* ========== BARRA SUPERIOR ========== */
+  .barra-superior {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .btn-activo,
+  .btn-inactivo {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    color: #4B0082;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+  }
+  
+  .btn-activo:hover,
+  .btn-inactivo:hover {
+    background-color: #e5e5e5;
+  }
+  
+  /* ========== BLOQUE DIRECCIÓN (AUTENTICADO) ========== */
+  .bloque-direccion {
+    margin: 10px 0;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .bloque-direccion input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .bloque-direccion-vacia {
+    height: 30px; /* espacio reservado cuando aún no hay dirección */
+    margin: 0;
+  }
+  
+  /* ========== BUSCADOR DE SERVICIO ========== */
+  .buscador {
+    margin: 10px 0 12px 0;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .buscador input[readonly] {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    color: #333;
+    cursor: pointer;
+  }
+  
+  .buscador-contenedor {
+    position: relative;
+  }
+  
+  .buscador-contenedor input {
+    width: 100%;
+    padding: 10px 40px 10px 10px;
+    font-size: 14px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 8px;  /* 🔵 Redondea el borde del input */
+    outline: none;
+}
+
+  
+  .icono-lupa {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    border-radius: 50%; /* 🔵 Opcional si quieres la lupa más estilizada */
+}
+
+  
+  /* ========== SUGERENCIAS ========== */
+  .sugerencias {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: white;
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  
+  .sugerencias li {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .sugerencias li:hover {
+    background-color: #f0f0f0;
+  }
+  
+  /* ========== MAPA (LEAFLET U OTRO) ========== */
+  #mapa {
+    width: 100%;
+    height: 80vh; /* Ocupa la mitad de la pantalla */
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  
+  
+  
+  /* ========== MENÚ INFERIOR FIJO ========== */
+  .menu-inferior {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #ccc;
+    padding: 10px 0;
+    z-index: 999;
+  }
+  
+  .menu-inferior div {
+    text-align: center;
+    font-size: 12px;
+  }
+  
+  .menu-inferior i {
+    font-size: 18px;
+    display: block;
+    margin-bottom: 4px;
+  }
+  
+  /* ========== RESPONSIVO ========== */
+  @media (max-width: 480px) {
+    .barra-superior {
+      flex-direction: row;
+    }
+  
+    .menu-inferior {
+      gap: 10px;
+    }
+  
+    .menu-inferior div {
+      flex: 1 1 45%;
+    }
+  }
+  
+
+
+
+  
+
+  .overlay-buscador {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(255,255,255,0.95);
+    display: none;
+    flex-direction: column;
+    padding: 20px;
+    z-index: 2000;
+  }
+  
+  .overlay-contenido {
+    max-width: 480px;
+    margin: auto;
+    width: 100%;
+  }
+  
+  .overlay-contenido input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  
+  .overlay-contenido button {
+    margin-top: 20px;
+    width: 100%;
+    padding: 10px;
+    background-color: #4B0082;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  

@@ -5,30 +5,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
 </head>
 <body>
     <div class="login-container">
-        <div class="login-header">
-            <h2>Iniciar Sesión</h2>
-        </div>
-        <form method="POST" action="{% url 'login' %}">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="username">Nombre de Usuario</label>
-                <input type="text" class="form-control" id="username" name="username" placeholder="Introduce tu nombre de usuario" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Contraseña</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Introduce tu contraseña" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
+        <h2>Iniciar Sesión</h2>
+        <form id="loginForm">
+            <input type="email" id="correo" name="correo" placeholder="Correo" required>
+            <input type="password" id="contraseña" name="contraseña" placeholder="Contraseña" required>
+            <button type="submit">Iniciar Sesión</button>
         </form>
+        <div id="resultado" class="mt-3 text-center"></div>
         <div class="text-center mt-3">
-            <a href="https://youtube.com">¿Olvidaste tu contraseña?</a>
+            <a href="#">¿Olvidaste tu contraseña?</a><br>
             <a href="{% url 'registrar-trabajador' %}">¿No tienes cuenta?</a>
         </div>
     </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const correo = document.getElementById("correo").value;
+            const contraseña = document.getElementById("contraseña").value;
+
+            fetch("http://localhost:8000/api/login/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ correo, contraseña })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const resultado = document.getElementById("resultado");
+
+                if (data.usuario_id) {
+                    localStorage.setItem("usuario_id", data.usuario_id); // Guardar para usar en perfil
+                    resultado.innerHTML = `<div class="alert alert-success">${data.mensaje}</div>`;
+                    setTimeout(() => {
+                        window.location.href = "/principal_pagina/"; // Redirige al perfil
+                    }, 1000);
+                } else if (data.error) {
+                    resultado.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                } else {
+                    resultado.innerHTML = `<div class="alert alert-warning">Respuesta inesperada</div>`;
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("resultado").innerHTML = `<div class="alert alert-danger">Error de conexión</div>`;
+            });
+        });
+    </script>
 </body>
 </html>

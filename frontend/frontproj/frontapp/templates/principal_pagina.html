@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Inicio</title>
+    <link rel="stylesheet" href="{% static 'css/principal_pagina.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+</head>
+<body>
+    <div class="contenedor-app">
+
+        <!--BARRA SUPERIOR DONDE SE ENCUENTRAN LOS BOTONES DE CLIENTE Y TRABAJADOR CON DIRECCIONES A INICIO DE SESION -->
+        <div class="barra-superior">
+            <a href="{% url 'principal_pagina' %}" class="btn-activo">CLIENTE</a>
+            <a href="{% url 'pagina_inicio' %}" class="btn-inactivo">TRABAJADOR</a>
+        </div>
+
+        <!-- SECTOR DONDE SE ENCUENTRAN LAS DIRECCIONES -->
+          <!-- SE AGREGA LA DIRECCION DESPUES DE QUE SE INICIE SESSION -->
+        {% if user.is_authenticated %}
+        <div id="bloque-direccion" class="bloque-direccion" style="display: none;"> #el none mantiene oculta la direccion hasta que se ingrese una con la autenticacion#
+            <input type="text" id="direccion" name="direccion" value="{{ direccion }}" readonly onclick="activarEdicionDireccion(this)">#aca es controlado por el JS el cual verifica si existe una direccion para habilitar#
+        #en el campo de {{direcion}} es donde interviene el backend si existe direccion guardada#
+        </div>
+        {% else %}
+        <div class="bloque-direccion-vacia"></div>
+        {% endif %}
+          
+
+        <!-- BUSCADOR QUE DARA SUGERENCIAS -->
+        <div class="buscador">
+          <div class="buscador-contenedor">
+            <input type="text" placeholder="Buscar servicio cerca de ti" id="busqueda-servicio">
+            <button id="btn-buscar" class="icono-lupa">
+              <i class="fa fa-search"></i>
+            </button>
+            <ul id="sugerencias" class="sugerencias"></ul>
+          </div>
+        </div>
+        
+          
+
+
+        <!-- Simulación de mapa -->
+        <div id="mapa" style="height: 560px; margin-top: 120px;"></div>
+
+
+        <!-- Menú inferior -->
+        <div class="menu-inferior">
+            <div><i class="fa fa-bars"></i><p>OPCIONES</p></div>
+            <div><i class="fa fa-map-marked-alt"></i><p>CATEGORÍAS</p></div>
+            <div><i class="fa fa-star"></i><p>RANKING</p></div>
+            <div><i class="fa fa-user"></i><p>PERFIL</p></div>
+        </div>
+
+    </div>
+    <!-- Vista desplegable de búsqueda -->
+<div id="overlay-buscador" class="overlay-buscador">
+  <div class="overlay-contenido">
+    <input type="text" id="busqueda-overlay" placeholder="Buscar servicio..." oninput="mostrarSugerenciasOverlay()">
+    <ul id="sugerencias-overlay" class="sugerencias"></ul>
+    <button onclick="cerrarOverlay()">Cerrar</button>
+  </div>
+</div>
+    <script src="{% static 'js/principal_pagina.js' %}"></script>
+</body>
+</html>
