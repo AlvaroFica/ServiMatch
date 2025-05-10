@@ -38,11 +38,15 @@ class Usuario(models.Model):
     comuna = models.ForeignKey(Comuna, on_delete=models.SET_NULL, null=True)
     contraseña = models.CharField(max_length=255)
     foto_perfil = models.ImageField(upload_to='usuarios/fotos_perfil/', null=True, blank=True)
+    
 
     def __str__(self):
         return f"{self.nombre} {self.apellido} ({self.correo})"
+    @property
+    def es_trabajador(self):
+        return hasattr(self, 'trabajador')
 
-
+    
 
 class Membresia(models.Model):
     nombre_membresia = models.CharField(max_length=100)
@@ -86,6 +90,24 @@ class Servicio(models.Model):
 
     def __str__(self):
         return self.nombre_serv
+
+
+class ImagenServicio(models.Model):
+    servicio = models.ForeignKey(Servicio, related_name='imagenes', on_delete=models.CASCADE)
+    imagen = models.ImageField(upload_to='servicios/imagenes/')
+
+
+class PlanServicio(models.Model):
+    servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE, related_name='planes')
+    nombre_plan = models.CharField(max_length=100)
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    duracion = models.CharField(max_length=50)
+    incluye = models.TextField()  # Puedes separar por salto de línea
+    descripcion_breve = models.TextField()
+
+    def __str__(self):
+        return f"{self.nombre_plan} - ${self.precio}"
+
 
 class TipoPago(models.Model):
     descripcion = models.CharField(max_length=100)

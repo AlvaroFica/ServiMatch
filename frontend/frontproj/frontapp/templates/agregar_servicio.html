@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Agregar Servicio</title>
+  <link rel="stylesheet" href="{% static 'css/agregar_servicio.css' %}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="formulario-servicio">
+  <h2>Información</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <label for="nombre_serv">Nombre del servicio</label>
+      <input type="text" name="nombre_serv" id="nombre_serv" placeholder="Ej: Electricista, Gasfiter, Carpintería..." required>
+
+      <label for="tipo">Ingresa el servicio que vas a ofrecer</label>
+      <select name="tipo" id="tipo" required>
+        {% for tipo in tipos_servicio %}
+          <option value="{{ tipo.id }}">{{ tipo.nombre_tipo }}</option>
+        {% endfor %}
+      </select>
+    <label for="experiencia">Años de experiencia</label>
+    <input type="number" name="experiencia" id="experiencia" placeholder="Ej: 3" required min="0">
+
+    <label for="descripcion">Descripción</label>
+    <textarea name="descripcion" id="descripcion" rows="4" placeholder="Añade una pequeña descripción..." required></textarea>
+
+    <label for="imagenes">Portafolio (opcional)</label>
+    <input type="file" name="imagenes" id="imagenes" multiple accept="image/*">
+
+    <button type="submit" class="btn-subir">Agregar servicio</button>
+  </form>
+</div>
+</body>
+</html>

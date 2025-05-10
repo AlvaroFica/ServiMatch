@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mis Servicios</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/mis_servicios.css' %}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="contenedor-servicios">
+  <h2 class="titulo-seccion">Servicios</h2>
+
+  {% for servicio in servicios %}
+  <div class="tarjeta-servicio">
+    
+    <!-- Encabezado con nombre y botón -->
+    <div class="encabezado-servicio d-flex justify-content-between align-items-center">
+      <strong>{{ servicio.nombre_serv }}</strong>
+      <a href="#" class="btn-editar">Editar</a>
+    </div>
+
+    <!-- Descripción -->
+    <p class="descripcion">
+      {{ servicio.descripcion|default:"Sin descripción disponible." }}
+    </p>
+
+    {% for imagen in servicio.imagenes %}
+      <img src="{{ imagen.imagen }}" alt="Imagen servicio">
+    {% endfor %}
+
+  </div>
+  {% empty %}
+  <p>No tienes servicios registrados aún.</p>
+  {% endfor %}
+
+  <!-- Botón agregar -->
+  <div class="btn-agregar">
+    <a href="{% url 'agregar_servicio' %}"><i class="fa fa-plus"></i> Agregar servicio</a>
+  </div>
+
+  <!-- Menú inferior -->
+  <div class="menu-inferior">
+    <div><i class="fa fa-bars"></i><p>OPCIONES</p></div>
+    <div><i class="fa fa-map-marked-alt"></i><p>MAPA</p></div>
+    <div><i class="fa fa-star"></i><p>RANKING</p></div>
+    <div><i class="fa fa-user"></i><p>PERFIL</p></div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,142 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f5f5f5;
+}
+
+.contenedor-app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Barra superior */
+.barra-superior {
+    display: flex;
+    justify-content: space-between;
+    background-color: #ffffff;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.barra-superior a {
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.btn-activo {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-inactivo {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+/* Dirección */
+.direccion {
+    padding: 10px 20px;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Perfil info */
+.perfil-info {
+    background-color: #fff;
+    text-align: center;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.foto-perfil img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.nombre h3 {
+    margin: 10px 0 5px 0;
+    font-size: 18px;
+}
+
+.nombre p {
+    margin: 0;
+    font-size: 14px;
+    color: #888;
+}
+
+.estrellas {
+    margin-top: 5px;
+    color: #f4c542;
+    font-size: 14px;
+}
+
+/* Métricas */
+.metricas {
+    display: flex;
+    justify-content: space-around;
+    background-color: #fff;
+    padding: 15px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.metricas .item {
+    text-align: center;
+    font-size: 14px;
+}
+
+.metricas .item i {
+    font-size: 20px;
+    margin-bottom: 5px;
+    color: #007bff;
+}
+
+/* Menú */
+.menu {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    background-color: #fff;
+}
+
+.menu a {
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #333;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #eee;
+}
+
+.menu a i {
+    margin-right: 10px;
+}
+
+/* Menú inferior */
+.menu-inferior {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+    border-top: 1px solid #ddd;
+}
+
+.menu-inferior div {
+    text-align: center;
+    font-size: 12px;
+    color: #333;
+}
+
+.menu-inferior i {
+    font-size: 18px;
+    margin-bottom: 3px;
+}

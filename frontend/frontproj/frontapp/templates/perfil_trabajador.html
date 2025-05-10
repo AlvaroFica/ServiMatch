@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil Trabajador</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/perfil_trabajador.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="contenedor-app">
+
+    <!-- Barra superior -->
+    <div class="barra-superior">
+        <a href="#" class="btn-activo">CLIENTE Y TRABAJADOR</a>
+        <a href="{% url 'logout' %}" class="btn-inactivo">Cerrar sesión</a>
+    </div>
+
+    <!-- Dirección -->
+    <div class="direccion">
+        Dirección 123 ...
+    </div>
+
+    <!-- Perfil -->
+    <div class="perfil-info">
+        <div class="foto-perfil">
+            <div class="avatar"></div>
+        </div>
+        <div class="nombre">
+            <h3>{{ trabajador.usuario.nombre }} {{ trabajador.usuario.apellido }}</h3>
+            <p>{{ trabajador.especialidad.nombre_esp }}</p>
+            <div class="estrellas">
+                <i class="fa fa-star"></i><i class="fa fa-star"></i>
+                <i class="fa fa-star"></i><i class="fa fa-star"></i>
+                <i class="fa-regular fa-star"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Métricas -->
+    <div class="metricas">
+        <div class="item">
+            <i class="fa fa-calendar-alt"></i>
+            <p><strong>ANTIGÜEDAD</strong><br>{{ trabajador.usuario.fecha_creacion|date:"F Y" }}</p>
+        </div>
+        <div class="item">
+            <i class="fa fa-briefcase"></i>
+            <p><strong>{{ trabajador.servicios|length }}</strong><br>SERVICIOS</p>
+        </div>
+    </div>
+
+    <!-- Menú -->
+    <div class="menu">
+        <a href="#"><i class="fa fa-home"></i> Inicio</a>
+        <a href="#"><i class="fa fa-book"></i> Historial de servicios</a>
+        <a href="{% url 'mis_servicios' %}"><i class="fa fa-tasks"></i> Mis servicios y planes</a>
+        <a href="#"><i class="fa fa-user-edit"></i> Editar información personal</a>
+        <a href="{% url 'logout' %}"><i class="fa fa-sign-out-alt"></i> Cerrar sesión</a>
+    </div>
+
+    <!-- Menú inferior fijo -->
+    <div class="menu-inferior">
+        <div><i class="fa fa-bars"></i><p>OPCIONES</p></div>
+        <div><i class="fa fa-map-marked-alt"></i><p>RANKING</p></div>
+        <div><i class="fa fa-user"></i><p>PERFIL</p></div>
+    </div>
+
+</div>
+<script>
+
+    async function cargarPerfil() {
+      const res = await fetch(apiUrl);
+      const data = await res.json();
+    if (data.foto_perfil) {
+        const avatarDiv = document.querySelector('.avatar');
+        const img = document.createElement('img');
+        img.src = `http://127.0.0.1:8000/${data.foto_perfil}`;
+        img.alt = "Foto de perfil";
+        avatarDiv.appendChild(img);
+      }
+    }
+</script>
+</body>
+</html>

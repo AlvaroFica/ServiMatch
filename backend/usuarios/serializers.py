@@ -47,8 +47,16 @@ class TipoEspecialidadSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TrabajadorSerializer(serializers.ModelSerializer):
+    usuario = UsuarioSerializer()
+    especialidad = EspecialidadSerializer()
+
     class Meta:
         model = Trabajador
+        fields = '__all__'
+
+class PlanServicioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlanServicio
         fields = '__all__'
 
 class TipoServicioSerializer(serializers.ModelSerializer):
@@ -56,12 +64,20 @@ class TipoServicioSerializer(serializers.ModelSerializer):
         model = TipoServicio
         fields = '__all__'
 
+class ImagenServicioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImagenServicio
+        fields = ['id', 'imagen']
+
 class ServicioSerializer(serializers.ModelSerializer):
-    tipo = serializers.StringRelatedField()  # muestra el nombre del tipo
+    tipo = serializers.StringRelatedField()
+    planes = PlanServicioSerializer(many=True, read_only=True)
+    imagenes = ImagenServicioSerializer(many=True, read_only=True)
 
     class Meta:
         model = Servicio
         fields = '__all__'
+
 
 
 class TipoPagoSerializer(serializers.ModelSerializer):

@@ -13,12 +13,24 @@
 </head>
 <body>
     <div class="contenedor-app">
+      <div class="barra-superior">
+        {% if logueado %}
+            <a href="{% url 'logout' %}" class="opcion-menu">
+                <i class="fa fa-sign-out-alt"></i> Cerrar sesión
+            </a>
+          {% if es_trabajador %}
+            <a href="#" class="btn-activo">CLIENTE Y TRABAJADOR</a>
+            <a href="{% url 'perfil_trabajador' %}" class="btn-inactivo">PANEL TRABAJADOR</a>
+          {% else %}
+            <a href="#" class="btn-activo">SOLO CLIENTE</a>
+            <a href="{% url 'pagina_inicio' %}" class="btn-inactivo">REGISTRARSE COMO TRABAJADOR</a>
+          {% endif %}
+        {% else %}
+          <a href="{% url 'login' %}" class="btn-inactivo">INICIAR SESIÓN</a>
+        {% endif %}
+      </div>
 
-        <!--BARRA SUPERIOR DONDE SE ENCUENTRAN LOS BOTONES DE CLIENTE Y TRABAJADOR CON DIRECCIONES A INICIO DE SESION -->
-        <div class="barra-superior">
-            <a href="{% url 'principal_pagina' %}" class="btn-activo">CLIENTE</a>
-            <a href="{% url 'pagina_inicio' %}" class="btn-inactivo">TRABAJADOR</a>
-        </div>
+
 
         <!-- SECTOR DONDE SE ENCUENTRAN LAS DIRECCIONES -->
           <!-- SE AGREGA LA DIRECCION DESPUES DE QUE SE INICIE SESSION -->

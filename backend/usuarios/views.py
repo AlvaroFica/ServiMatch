@@ -8,9 +8,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import check_password
 import json
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework import status
+
 
 @csrf_exempt
 @api_view(['POST'])
@@ -59,70 +60,105 @@ def vista_usuario_detalle(request, usuario_id):
 def vista_registrar_trabajador(request):
     return render(request, 'registrar-trabajador.html')
 
+
 class PaisViewSet(viewsets.ModelViewSet):
     queryset = Pais.objects.all()
     serializer_class = PaisSerializer
+
 
 class RegionViewSet(viewsets.ModelViewSet):
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
 
+
 class CiudadViewSet(viewsets.ModelViewSet):
     queryset = Ciudad.objects.all()
     serializer_class = CiudadSerializer
+
 
 class ComunaViewSet(viewsets.ModelViewSet):
     queryset = Comuna.objects.all()
     serializer_class = ComunaSerializer
 
+
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
+
 
 class MembresiaViewSet(viewsets.ModelViewSet):
     queryset = Membresia.objects.all()
     serializer_class = MembresiaSerializer
 
+
 class EspecialidadViewSet(viewsets.ModelViewSet):
     queryset = Especialidad.objects.all()
     serializer_class = EspecialidadSerializer
+
 
 class TipoEspecialidadViewSet(viewsets.ModelViewSet):
     queryset = TipoEspecialidad.objects.all()
     serializer_class = TipoEspecialidadSerializer
 
+
 class TrabajadorViewSet(viewsets.ModelViewSet):
     queryset = Trabajador.objects.all()
     serializer_class = TrabajadorSerializer
+
+    def get_queryset(self):
+        usuario_id = self.request.query_params.get('usuario')
+        if usuario_id:
+            return self.queryset.filter(usuario_id=usuario_id)
+        return self.queryset.all()
 
 
 class TipoServicioViewSet(viewsets.ModelViewSet):
     queryset = TipoServicio.objects.all()
     serializer_class = TipoServicioSerializer
 
+
 class ServicioViewSet(viewsets.ModelViewSet):
     queryset = Servicio.objects.all()
     serializer_class = ServicioSerializer
+
+    @action(detail=True, methods=['post'])
+    def subir_imagenes(self, request, pk=None):
+        servicio = self.get_object()
+        imagenes = request.FILES.getlist('imagenes')
+        for img in imagenes:
+            ImagenServicio.objects.create(servicio=servicio, imagen=img)
+        return Response({'mensaje': 'Imágenes subidas con éxito'}, status=status.HTTP_201_CREATED)
+
+
+class PlanServicioViewSet(viewsets.ModelViewSet):
+    queryset = PlanServicio.objects.all()
+    serializer_class = PlanServicioSerializer
+
 
 class TipoPagoViewSet(viewsets.ModelViewSet):
     queryset = TipoPago.objects.all()
     serializer_class = TipoPagoSerializer
 
+
 class BoletaViewSet(viewsets.ModelViewSet):
     queryset = Boleta.objects.all()
     serializer_class = BoletaSerializer
+
 
 class PagoViewSet(viewsets.ModelViewSet):
     queryset = Pago.objects.all()
     serializer_class = PagoSerializer
 
+
 class CitaViewSet(viewsets.ModelViewSet):
     queryset = Cita.objects.all()
     serializer_class = CitaSerializer
 
+
 class ChatViewSet(viewsets.ModelViewSet):
     queryset = Chat.objects.all()
     serializer_class = ChatSerializer
+
 
 class MensajeViewSet(viewsets.ModelViewSet):
     queryset = Mensaje.objects.all()
