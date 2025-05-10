@@ -12,6 +12,7 @@ from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework import status
 
+from rest_framework.decorators import action
 
 @csrf_exempt
 @api_view(['POST'])
@@ -103,7 +104,11 @@ class TipoEspecialidadViewSet(viewsets.ModelViewSet):
 
 class TrabajadorViewSet(viewsets.ModelViewSet):
     queryset = Trabajador.objects.all()
-    serializer_class = TrabajadorSerializer
+
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return TrabajadorReadSerializer
+        return TrabajadorWriteSerializer
 
     def get_queryset(self):
         usuario_id = self.request.query_params.get('usuario')

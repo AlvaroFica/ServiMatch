@@ -46,14 +46,6 @@ class TipoEspecialidadSerializer(serializers.ModelSerializer):
         model = TipoEspecialidad
         fields = '__all__'
 
-class TrabajadorSerializer(serializers.ModelSerializer):
-    usuario = UsuarioSerializer()
-    especialidad = EspecialidadSerializer()
-
-    class Meta:
-        model = Trabajador
-        fields = '__all__'
-
 class PlanServicioSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlanServicio
@@ -77,8 +69,6 @@ class ServicioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Servicio
         fields = '__all__'
-
-
 
 class TipoPagoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -108,4 +98,22 @@ class ChatSerializer(serializers.ModelSerializer):
 class MensajeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mensaje
+        fields = '__all__'
+
+# SERIALIZADORES DE TRABAJADOR
+
+# → para escribir (POST/PUT)
+class TrabajadorWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Trabajador
+        fields = '__all__'
+
+# → para leer (GET, con usuario y especialidad detallados)
+class TrabajadorReadSerializer(serializers.ModelSerializer):
+    usuario = UsuarioSerializer()
+    especialidad = EspecialidadSerializer()
+    servicios = ServicioSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Trabajador
         fields = '__all__'

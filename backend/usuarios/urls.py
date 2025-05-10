@@ -51,7 +51,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('registrar-trabajador/', views.vista_registrar_trabajador, name='Registrar-trabajador'),
     path('usuario/<int:usuario_id>/', views.vista_usuario_detalle, name='detalle-usuario'),
-    path('servicios/<int:pk>/imagenes/', views.ServicioViewSet.as_view({'post': 'subir_imagenes'}), name='servicio-subir-imagenes'),
+    path('servicios/<int:pk>/imagenes/', ServicioViewSet.as_view({'post': 'subir_imagenes'}), name='servicio-subir-imagenes'),
 
 
 ]

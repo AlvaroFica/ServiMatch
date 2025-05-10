@@ -87,6 +87,7 @@ class Servicio(models.Model):
     nombre_serv = models.CharField(max_length=100)
     tipo = models.ForeignKey(TipoServicio, on_delete=models.SET_NULL, null=True)
     trabajadores = models.ManyToManyField('Trabajador', related_name='servicios', blank=True)
+    descripcion_breve = models.TextField(null=True, blank=True)  # ← esto debe estar
 
     def __str__(self):
         return self.nombre_serv
