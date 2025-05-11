@@ -1,5 +1,6 @@
 import requests
 from django.shortcuts import render, redirect
+
 def register(request):
     if request.method == 'POST':
         data = {
@@ -20,6 +21,18 @@ def register(request):
         try:
             response = requests.post('http://127.0.0.1:8000/api/usuarios/', data=data, files=files)
             if response.status_code == 201:
+                usuario = response.json()
+
+                # Crear trabajador asociado inmediatamente
+                trabajador_data = {
+                    "usuario": usuario['id'],
+                    "especialidad": None,  # o un ID válido si tienes una por defecto
+                    "estado_verificado": False
+                }
+
+                # Puedes enviar campos vacíos de imagen si aún no los tienes
+                requests.post("http://127.0.0.1:8000/api/trabajadores/", data=trabajador_data)
+
                 return redirect('login')
             else:
                 comunas = get_comunas()
@@ -36,6 +49,7 @@ def register(request):
 
     comunas = get_comunas()
     return render(request, 'registrar-trabajador.html', {'comunas': comunas})
+
 
 
 
@@ -227,3 +241,12 @@ def introduccion_trab(request):
 
 def vista_registro_trabajador(request):
     return render(request, 'registro_trabajador.html')  # crea esta plantilla si quieres
+
+def vista_planes_servicio(request, servicio_id):
+    return render(request, 'planes_servicios.html', {'servicio_id': servicio_id})
+
+def vista_mensaje_exito(request):
+    return render(request, 'mensaje_exito.html')
+
+def vista_ver_planes(request, servicio_id):
+    return render(request, 'ver_planes.html', {'servicio_id': servicio_id})

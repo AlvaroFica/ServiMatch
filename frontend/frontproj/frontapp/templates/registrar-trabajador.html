@@ -8,8 +8,7 @@
     <link rel="stylesheet" href="{% static 'css/registrar-trabajador.css' %}">
 </head>
 <body>
-    <form id="multi-step-form" method="POST" action="" enctype="multipart/form-data">
-        {% csrf_token %}
+    <form id="multi-step-form" enctype="multipart/form-data">
 
         <!-- Paso 1 -->
         <div class="step active" id="step-1">
@@ -58,11 +57,7 @@
         <div class="step" id="step-4">
             <h2>Dirección</h2>
             <label for="comuna">Comuna:</label>
-            <select id="comuna" name="comuna" required>
-                {% for comuna in comunas %}
-                    <option value="{{ comuna.id }}">{{ comuna.nombre_comuna }}</option>
-                {% endfor %}
-            </select>
+            <select id="comuna" name="comuna" required></select>
 
             <label for="direccion">Dirección:</label>
             <input type="text" id="direccion" name="direccion" required>
@@ -93,12 +88,92 @@
             document.getElementById(`step-${currentStep - 1}`).classList.add('active');
         }
 
-        // Mostrar primer paso al cargar (por si no tiene la clase activa)
-        document.addEventListener("DOMContentLoaded", function () {
-            const firstStep = document.querySelector('.step');
-            if (firstStep && !firstStep.classList.contains('active')) {
-                firstStep.classList.add('active');
+        async function cargarComunas() {
+            try {
+                const response = await fetch("http://localhost:8000/api/comunas/");
+                const comunas = await response.json();
+                const select = document.getElementById("comuna");
+                comunas.forEach(comuna => {
+                    const option = document.createElement("option");
+                    option.value = comuna.id;
+                    option.textContent = comuna.nombre_comuna;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error cargando comunas:", error);
             }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            cargarComunas();
+
+            const form = document.getElementById("multi-step-form");
+
+            form.addEventListener("submit", async function (e) {
+                e.preventDefault();
+
+                const pass1 = document.getElementById("contraseña").value;
+                const pass2 = document.getElementById("repetir-contraseña").value;
+                if (pass1 !== pass2) {
+                    alert("Las contraseñas no coinciden");
+                    return;
+                }
+
+                const formData = new FormData(form);
+                const dataUsuario = {
+                    rut: formData.get("rut"),
+                    nombre: formData.get("nombre"),
+                    apellido: formData.get("apellido"),
+                    correo: formData.get("correo"),
+                    telefono: formData.get("celular"),
+                    fecha_nac: formData.get("fecha_nacimiento"),
+                    comuna: formData.get("comuna"),
+                    contraseña: formData.get("contraseña"),
+                };
+
+                const fotoPerfil = formData.get("foto_perfil");
+
+                const dataToSend = new FormData();
+                for (let key in dataUsuario) {
+                    dataToSend.append(key, dataUsuario[key]);
+                }
+
+                if (fotoPerfil && fotoPerfil.size > 0) {
+                    dataToSend.append("foto_perfil", fotoPerfil);
+                }
+
+                try {
+                    const responseUsuario = await fetch("http://localhost:8000/api/usuarios/", {
+                        method: "POST",
+                        body: dataToSend,
+                    });
+
+                    if (!responseUsuario.ok) {
+                        const error = await responseUsuario.json();
+                        alert("Error al registrar usuario: " + JSON.stringify(error));
+                        return;
+                    }
+
+                    const usuario = await responseUsuario.json();
+                    const trabajadorData = {
+                        usuario: usuario.id,
+                        especialidad: null,
+                        estado_verificado: false
+                    };
+
+                    await fetch("http://localhost:8000/api/trabajadores/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(trabajadorData)
+                    });
+                    window.location.href = "/";
+                } catch (error) {
+                    console.error("Error de conexión:", error);
+                    alert("No se pudo conectar al servidor.");
+                }
+            });
         });
     </script>
 </body>

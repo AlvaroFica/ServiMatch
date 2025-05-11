@@ -51,14 +51,18 @@
     .btn-step {
       margin-top: 1rem;
     }
+
+    .error-msg {
+      font-size: 0.9rem;
+      color: #dc3545;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
 
 <div class="form-box">
   <form id="multiStepForm" enctype="multipart/form-data">
-    
-    <!-- Paso 1: Cédula frontal -->
     <div class="step active" id="step-1">
       <h4>Foto Cédula (Frontal)</h4>
       <input type="file" id="foto_cedula" name="foto_cedula" accept="image/*" class="form-control" required>
@@ -66,7 +70,6 @@
       <button type="button" class="btn btn-primary w-100 btn-step" onclick="nextStep(1)">Siguiente</button>
     </div>
 
-    <!-- Paso 2: Cédula trasera -->
     <div class="step" id="step-2">
       <h4>Foto Cédula (Trasera)</h4>
       <input type="file" id="foto_cedula_atras" name="foto_cedula_atras" accept="image/*" class="form-control" required>
@@ -77,7 +80,6 @@
       </div>
     </div>
 
-    <!-- Paso 3: Selfie -->
     <div class="step" id="step-3">
       <h4>Foto Selfie</h4>
       <input type="file" id="foto_autoretrato" name="foto_autoretrato" accept="image/*" class="form-control" required>
@@ -88,29 +90,19 @@
       </div>
     </div>
 
-    <!-- Paso 4: Servicio y experiencia -->
     <div class="step" id="step-4">
-      <h4>Detalles del servicio</h4>
+      <h4>Especialidad</h4>
       <div class="form-group">
-        <label for="servicio">Servicio</label>
-        <select id="servicio" name="servicio" class="form-select" required>
-          <option value="">Cargando servicios...</option>
+        <label for="especialidad">Especialidad</label>
+        <select id="especialidad" name="especialidad" class="form-select" required>
+          <option value="">Cargando...</option>
         </select>
-      </div>
-      <div class="form-group">
-        <label>Experiencia (años)</label>
-        <input type="number" name="experiencia" class="form-control" required>
-      </div>
-      <div class="form-group">
-        <label>Descripción</label>
-        <textarea name="descripcion" class="form-control" rows="3" required></textarea>
       </div>
       <div class="d-flex justify-content-between btn-step">
         <button type="button" class="btn btn-secondary" onclick="prevStep(4)">Anterior</button>
         <button type="submit" class="btn btn-success">Finalizar</button>
       </div>
     </div>
-
   </form>
 </div>
 
@@ -128,95 +120,68 @@
     document.getElementById(`step-${step - 1}`).classList.add('active');
   }
 
-  document.getElementById("foto_cedula").addEventListener('change', function() {
-    const img = document.getElementById("preview1");
-    img.src = URL.createObjectURL(this.files[0]);
-    img.style.display = 'block';
+  ["foto_cedula", "foto_cedula_atras", "foto_autoretrato"].forEach((id, i) => {
+    document.getElementById(id).addEventListener('change', function() {
+      const img = document.getElementById(`preview${i+1}`);
+      img.src = URL.createObjectURL(this.files[0]);
+      img.style.display = 'block';
+    });
   });
 
-  document.getElementById("foto_cedula_atras").addEventListener('change', function() {
-    const img = document.getElementById("preview2");
-    img.src = URL.createObjectURL(this.files[0]);
-    img.style.display = 'block';
-  });
+ document.getElementById("multiStepForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  const formData = new FormData(this);
 
-  document.getElementById("foto_autoretrato").addEventListener('change', function() {
-    const img = document.getElementById("preview3");
-    img.src = URL.createObjectURL(this.files[0]);
-    img.style.display = 'block';
-  });
+  formData.append("usuario", usuario_id);
+  formData.append("estado_verificado", false);
 
-  document.getElementById("multiStepForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
+  const url = "http://localhost:8000/api/trabajadores/";
 
-    formData.append("usuario", usuario_id);
-    formData.append("estado_verificado", false);
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
 
-    let url = trabajador_id
-      ? `http://localhost:8000/api/trabajadores/${trabajador_id}/`
-      : "http://localhost:8000/api/trabajadores/";
+    const data = await response.json();
 
-    let method = trabajador_id ? "PUT" : "POST";
-
-    try {
-      const response = await fetch(url, {
-        method: method,
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (!trabajador_id) {
-          localStorage.setItem("trabajador_id", data.id);
-        }
-        alert("Perfil guardado exitosamente.");
-        window.location.href = "/trabajador_inicio/";
-      } else {
-        const error = await response.json();
-        console.error(error);
-        alert("Error al guardar el perfil.");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error de conexión.");
+    if (!response.ok) {
+      console.error(">>> ERROR:", data);
+      alert("Error al crear el perfil. Detalles en consola.");
+      return;
     }
-  });
 
-  async function cargarServicios() {
-    const select = document.getElementById("servicio");
+    // Solo si se creó bien
+    localStorage.setItem("trabajador_id", data.id);
+    alert("Perfil creado exitosamente.");
+    window.location.href = "/perfil_trabajador/";
+
+  } catch (err) {
+    console.error(">>> ERROR DE CONEXIÓN:", err);
+    alert("No se pudo conectar con el servidor.");
+  }
+});
+
+
+  async function cargarEspecialidades() {
+    const select = document.getElementById("especialidad");
     try {
-      const response = await fetch("http://localhost:8000/api/servicios/");
-      const servicios = await response.json();
-
-      select.innerHTML = '<option value="">Selecciona un servicio</option>';
-
-      const grupos = {};
-      servicios.forEach(servicio => {
-        const tipo = servicio.tipo || "Otros";
-        if (!grupos[tipo]) grupos[tipo] = [];
-        grupos[tipo].push(servicio);
+      const response = await fetch("http://localhost:8000/api/especialidades/");
+      const especialidades = await response.json();
+      select.innerHTML = '<option value="">Selecciona una especialidad</option>';
+      especialidades.forEach(esp => {
+        const option = document.createElement("option");
+        option.value = esp.id;
+        option.textContent = esp.nombre_esp;
+        select.appendChild(option);
       });
-
-      for (const tipo in grupos) {
-        const optgroup = document.createElement("optgroup");
-        optgroup.label = tipo;
-        grupos[tipo].forEach(servicio => {
-          const option = document.createElement("option");
-          option.value = servicio.id;
-          option.textContent = servicio.nombre_serv;
-          optgroup.appendChild(option);
-        });
-        select.appendChild(optgroup);
-      }
     } catch (error) {
-      console.error("Error cargando servicios:", error);
-      select.innerHTML = '<option value="">No se pudieron cargar los servicios</option>';
+      console.error("Error cargando especialidades:", error);
+      select.innerHTML = '<option value="">Error al cargar</option>';
     }
   }
 
-  document.addEventListener("DOMContentLoaded", cargarServicios);
+  document.addEventListener("DOMContentLoaded", cargarEspecialidades);
 </script>
-
 </body>
 </html>

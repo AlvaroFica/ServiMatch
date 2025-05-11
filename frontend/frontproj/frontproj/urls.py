@@ -17,5 +17,8 @@ urlpatterns = [
     path('perfil_trabajador/', views.vista_perfil_trabajador, name='perfil_trabajador'),
     path('mis_servicios/', views.vista_mis_servicios, name='mis_servicios'),
     path('agregar_servicio/', views.vista_agregar_servicio, name='agregar_servicio'),
+    path('planes_servicio/<int:servicio_id>/', views.vista_planes_servicio, name='planes_servicio'),
+    path('exito/', views.vista_mensaje_exito, name='mensaje_exito'),
+    path('ver_planes/<int:servicio_id>/', views.vista_ver_planes, name='ver_planes'),
 
 ]

@@ -11,14 +11,15 @@
 <body>
     <div class="login-container">
         <h2>Iniciar Sesión</h2>
-        <form method="POST">
-            {% csrf_token %}
-            <input type="email" name="username" placeholder="Correo" required>
-            <input type="password" name="password" placeholder="Contraseña" required>
+
+        <form id="loginForm">
+            <input type="email" name="correo" placeholder="Correo" required>
+            <input type="password" name="contraseña" placeholder="Contraseña" required>
             <button type="submit">Iniciar Sesión</button>
         </form>
 
-        <div id="resultado" class="mt-3 text-center"></div>
+        <div id="mensaje" class="text-center mt-3"></div>
+
         <div class="text-center mt-3">
             <a href="#">¿Olvidaste tu contraseña?</a><br>
             <a href="{% url 'registrar-trabajador' %}">¿No tienes cuenta?</a>
@@ -26,37 +27,34 @@
     </div>
 
     <script>
-        document.getElementById("loginForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            const correo = document.getElementById("correo").value;
-            const contraseña = document.getElementById("contraseña").value;
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
 
-            fetch("http://localhost:8000/api/login/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ correo, contraseña })
-            })
-            .then(res => res.json())
-            .then(data => {
-                const resultado = document.getElementById("resultado");
+        const form = e.target;
+        const data = {
+            correo: form.correo.value,
+            contraseña: form.contraseña.value
+        };
 
-                if (data.usuario_id) {
-                    localStorage.setItem("usuario_id", data.usuario_id); // Guardar para usar en perfil
-                    resultado.innerHTML = `<div class="alert alert-success">${data.mensaje}</div>`;
-                    setTimeout(() => {
-                        window.location.href = "/principal_pagina/"; // Redirige al perfil
-                    }, 1000);
-                } else if (data.error) {
-                    resultado.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
-                } else {
-                    resultado.innerHTML = `<div class="alert alert-warning">Respuesta inesperada</div>`;
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                document.getElementById("resultado").innerHTML = `<div class="alert alert-danger">Error de conexión</div>`;
-            });
+        const response = await fetch('http://localhost:8000/api/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
         });
+
+        const resultado = await response.json();
+        const mensajeDiv = document.getElementById('mensaje');
+
+        if (response.ok) {
+            localStorage.setItem('usuario_id', resultado.usuario_id);
+            window.location.href = "/principal_pagina/";
+        } else {
+            mensajeDiv.textContent = resultado.error || "Error al iniciar sesión";
+            mensajeDiv.classList.add('alert', 'alert-danger');
+        }
+    });
     </script>
 </body>
 </html>

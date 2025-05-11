@@ -7,11 +7,14 @@ body {
 .contenedor-servicios {
   padding: 20px;
   padding-bottom: 90px; /* espacio para menú inferior */
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .titulo-seccion {
   font-size: 20px;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .tarjeta-servicio {
@@ -20,12 +23,14 @@ body {
   padding: 15px;
   margin-bottom: 20px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
 }
 
 .encabezado-servicio {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .encabezado-servicio h3 {
@@ -40,6 +45,7 @@ body {
   color: #fff;
   border-radius: 4px;
   text-decoration: none;
+  margin-top: 8px;
 }
 
 .descripcion {
@@ -48,20 +54,26 @@ body {
   color: #444;
 }
 
+/* Galería de imágenes */
 .galeria {
   display: flex;
-  gap: 10px;
-  overflow-x: auto;
+  flex-wrap: wrap;
+  gap: 100px;
+  margin-top: 100px;
 }
 
-.galeria img {
-  height: 70px;
-  width: 70px;
+.galeria img,
+.tarjeta-servicio > img {
+  max-width: 300%;
+  height: auto;
+  max-height: 180px;
   object-fit: cover;
-  border-radius: 4px;
-  border: 1px solid #ddd;
+  border-radius: 60px;
+  border: 1px solid #ccc;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 
+/* Botón agregar */
 .btn-agregar {
   text-align: center;
   margin-top: 20px;
@@ -76,6 +88,7 @@ body {
   font-size: 14px;
 }
 
+/* Menú inferior */
 .menu-inferior {
   position: fixed;
   bottom: 0;
@@ -86,6 +99,7 @@ body {
   justify-content: space-around;
   border-top: 1px solid #ccc;
   padding: 10px 0;
+  box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
 }
 
 .menu-inferior div {

@@ -4,36 +4,205 @@
 <head>
   <meta charset="UTF-8">
   <title>Agregar Servicio</title>
-  <link rel="stylesheet" href="{% static 'css/agregar_servicio.css' %}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/agregar_servicio.css' %}">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+    }
+
+    .formulario-servicio {
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    input[type="file"] {
+      padding: 5px;
+    }
+
+    .preview-img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border: 1px solid #ccc;
+      margin: 10px 5px 0 0;
+      border-radius: 6px;
+    }
+
+    .btn-subir {
+      width: 100%;
+      margin-top: 1.5rem;
+      padding: 12px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .portafolio-preview {
+      display: flex;
+      flex-wrap: wrap;
+    }
+  </style>
 </head>
 <body>
 <div class="formulario-servicio">
   <h2>Información</h2>
 
-    <form method="POST" enctype="multipart/form-data">
-      {% csrf_token %}
+  <form id="form-servicio" enctype="multipart/form-data">
+    <label for="tipo">Servicio</label>
+    <select name="tipo" id="tipo" required>
+      <option value="">Cargando...</option>
+    </select>
 
-      <label for="nombre_serv">Nombre del servicio</label>
-      <input type="text" name="nombre_serv" id="nombre_serv" placeholder="Ej: Electricista, Gasfiter, Carpintería..." required>
-
-      <label for="tipo">Ingresa el servicio que vas a ofrecer</label>
-      <select name="tipo" id="tipo" required>
-        {% for tipo in tipos_servicio %}
-          <option value="{{ tipo.id }}">{{ tipo.nombre_tipo }}</option>
-        {% endfor %}
-      </select>
     <label for="experiencia">Años de experiencia</label>
-    <input type="number" name="experiencia" id="experiencia" placeholder="Ej: 3" required min="0">
+    <input type="number" name="experiencia" id="experiencia" placeholder="Ej: 3" min="0" required>
 
-    <label for="descripcion">Descripción</label>
-    <textarea name="descripcion" id="descripcion" rows="4" placeholder="Añade una pequeña descripción..." required></textarea>
+    <label for="descripcion_breve">Descripción</label>
+    <textarea name="descripcion_breve" id="descripcion_breve" rows="3" placeholder="Describe brevemente lo que ofreces" required></textarea>
 
     <label for="imagenes">Portafolio (opcional)</label>
     <input type="file" name="imagenes" id="imagenes" multiple accept="image/*">
+    <div class="portafolio-preview" id="preview-container"></div>
 
     <button type="submit" class="btn-subir">Agregar servicio</button>
   </form>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+  const usuarioId = localStorage.getItem("usuario_id");
+  if (!usuarioId) {
+    alert("No has iniciado sesión.");
+    window.location.href = "/login/";
+    return;
+  }
+
+  let trabajadorId = null;
+  try {
+    const r = await fetch(`http://localhost:8000/api/trabajadores/?usuario=${usuarioId}`);
+    const data = await r.json();
+    if (data.length) {
+      trabajadorId = data[0].id;
+    } else {
+      alert("No se encontró trabajador.");
+      return;
+    }
+  } catch (err) {
+    alert("Error al obtener trabajador.");
+    return;
+  }
+
+  // Cargar tipos de servicio
+  try {
+    const res = await fetch("http://localhost:8000/api/tiposervicios/");
+    const tipos = await res.json();
+    const select = document.getElementById("tipo");
+    select.innerHTML = `<option value="">Selecciona un tipo</option>`;
+    tipos.forEach(t => {
+      const option = document.createElement("option");
+      option.value = t.id;
+      option.textContent = t.nombre_tipo;
+      select.appendChild(option);
+    });
+  } catch (e) {
+    console.error("Error cargando tipos de servicio:", e);
+  }
+
+  // Vista previa de imágenes
+  document.getElementById("imagenes").addEventListener("change", function () {
+    const preview = document.getElementById("preview-container");
+    preview.innerHTML = "";
+    Array.from(this.files).forEach(file => {
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(file);
+      img.classList.add("preview-img");
+      preview.appendChild(img);
+    });
+  });
+
+  // Envío del formulario
+  document.getElementById("form-servicio").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const payload = {
+      nombre_serv: document.getElementById("tipo").selectedOptions[0].textContent,
+      tipo: document.getElementById("tipo").value,
+      trabajadores: [trabajadorId],
+      descripcion_breve: document.getElementById("descripcion_breve").value
+    };
+
+    try {
+      const res = await fetch("http://localhost:8000/api/servicios/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const nuevo = await res.json();
+      if (!res.ok) {
+        console.error("Error creando servicio:", nuevo);
+        alert("Error al guardar servicio.");
+        return;
+      }
+
+      const servicioId = nuevo.id;
+
+      // Subir imágenes
+      const imagenes = document.getElementById("imagenes").files;
+      if (imagenes.length) {
+        const formData = new FormData();
+        for (let i = 0; i < imagenes.length; i++) {
+          formData.append("imagenes", imagenes[i]);
+        }
+
+        const rImg = await fetch(`http://localhost:8000/api/servicios/${servicioId}/imagenes/`, {
+          method: "POST",
+          body: formData
+        });
+
+        if (!rImg.ok) {
+          alert("El servicio se creó, pero las imágenes fallaron.");
+        }
+      }
+
+      alert("Servicio agregado con éxito. Ahora agrega un plan.");
+      window.location.href = `/planes_servicio/${servicioId}/`;
+
+    } catch (err) {
+      console.error(err);
+      alert("Error al procesar la solicitud.");
+    }
+  });
+});
+</script>
 </body>
 </html>

@@ -139,6 +139,13 @@ class PlanServicioViewSet(viewsets.ModelViewSet):
     queryset = PlanServicio.objects.all()
     serializer_class = PlanServicioSerializer
 
+    def get_queryset(self):
+        servicio_id = self.request.query_params.get('servicio')
+        if servicio_id:
+            return self.queryset.filter(servicio_id=servicio_id)
+        return self.queryset.all()
+
+
 
 class TipoPagoViewSet(viewsets.ModelViewSet):
     queryset = TipoPago.objects.all()

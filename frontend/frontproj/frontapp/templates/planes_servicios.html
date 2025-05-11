@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Planes del Servicio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/planes_servicio.css' %}">
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+
+    .contenedor {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 1rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .btn-agregar-plan {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+    }
+
+    .mensaje-exito {
+      margin-top: 15px;
+      text-align: center;
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div class="contenedor">
+  <h2>Planes del servicio</h2>
+
+  <form id="form-plan">
+    <label for="nombre_plan">Nombre plan</label>
+    <input type="text" id="nombre_plan" name="nombre_plan" placeholder="Ej: Visita y reparación" required>
+
+    <label for="precio">Precio $</label>
+    <input type="number" id="precio" name="precio" required min="0">
+
+    <label for="duracion">Duración estimada</label>
+    <input type="text" id="duracion" name="duracion" placeholder="Ej: 1 hora" required>
+
+    <label for="incluye">Incluye</label>
+    <textarea id="incluye" name="incluye" rows="4" placeholder="Separar por salto de línea" required></textarea>
+
+    <label for="descripcion_breve">Descripción breve</label>
+    <textarea id="descripcion_breve" name="descripcion_breve" rows="3" required></textarea>
+
+    <button type="submit" class="btn-agregar-plan">+ Agregar Plan</button>
+  </form>
+
+  <div id="mensaje" class="mensaje-exito" style="display:none;">¡Cambios guardados con éxito!</div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const servicioId = window.location.pathname.split("/").filter(Boolean).pop();
+
+  const form = document.getElementById("form-plan");
+  const mensaje = document.getElementById("mensaje");
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const data = {
+      servicio: servicioId,
+      nombre_plan: form.nombre_plan.value,
+      precio: form.precio.value,
+      duracion: form.duracion.value,
+      incluye: form.incluye.value,
+      descripcion_breve: form.descripcion_breve.value
+    };
+
+    try {
+      const res = await fetch("http://localhost:8000/api/planeservicio/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        mensaje.style.display = "block";
+        form.reset();
+      } else {
+        alert("Error al guardar el plan.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error de conexión.");
+    }
+  });
+});
+</script>
+</body>
+</html>
