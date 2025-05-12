@@ -73,6 +73,8 @@ class Trabajador(models.Model):
     foto_cedula = models.ImageField(upload_to='cedulas/')
     foto_cedula_atras = models.ImageField(upload_to='cedulas/')
     foto_autoretrato = models.ImageField(upload_to='selfies/')
+    latitud = models.FloatField(null=True, blank=True)
+    longitud = models.FloatField(null=True, blank=True)
 
     def __str__(self):
         return f"Trabajador: {self.usuario.nombre} {self.usuario.apellido}"
