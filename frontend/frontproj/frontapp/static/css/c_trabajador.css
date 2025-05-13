@@ -1,0 +1,33 @@
+body {
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.form-box {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+}
+
+.step {
+  display: none;
+}
+
+.step.active {
+  display: block;
+}
+
+#mapa-ubicacion {
+  height: 400px;
+  border-radius: 8px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

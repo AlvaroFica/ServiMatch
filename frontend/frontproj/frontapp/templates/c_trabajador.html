@@ -6,182 +6,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Registro de Trabajador</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/registro-trabajador.css' %}">
-  <style>
-    body {
-      background-color: #f8f9fa;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 2rem;
-    }
-
-    .form-box {
-      background: #fff;
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 500px;
-    }
-
-    .step {
-      display: none;
-    }
-
-    .step.active {
-      display: block;
-    }
-
-    .form-group {
-      margin-bottom: 1.2rem;
-    }
-
-    .preview-img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      margin-top: 1rem;
-      border-radius: 0.5rem;
-      border: 1px solid #ccc;
-    }
-
-    .btn-step {
-      margin-top: 1rem;
-    }
-
-    .error-msg {
-      font-size: 0.9rem;
-      color: #dc3545;
-      margin-bottom: 1rem;
-    }
-  </style>
+  <link rel="stylesheet" href="{% static 'css/c_trabajador.css' %}">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
 
 <div class="form-box">
   <form id="multiStepForm" enctype="multipart/form-data">
+    <!-- Paso 1 -->
     <div class="step active" id="step-1">
       <h4>Foto Cédula (Frontal)</h4>
-      <input type="file" id="foto_cedula" name="foto_cedula" accept="image/*" class="form-control" required>
-      <img id="preview1" class="preview-img" style="display:none;">
-      <button type="button" class="btn btn-primary w-100 btn-step" onclick="nextStep(1)">Siguiente</button>
+      <input type="file" id="foto_cedula" name="foto_cedula" accept="image/*" class="form-control mb-2" required>
+      <button type="button" class="btn btn-primary w-100" onclick="nextStep(1)">Siguiente</button>
     </div>
 
+    <!-- Paso 2 -->
     <div class="step" id="step-2">
       <h4>Foto Cédula (Trasera)</h4>
-      <input type="file" id="foto_cedula_atras" name="foto_cedula_atras" accept="image/*" class="form-control" required>
-      <img id="preview2" class="preview-img" style="display:none;">
-      <div class="d-flex justify-content-between btn-step">
+      <input type="file" id="foto_cedula_atras" name="foto_cedula_atras" accept="image/*" class="form-control mb-2" required>
+      <div class="d-flex justify-content-between">
         <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Anterior</button>
         <button type="button" class="btn btn-primary" onclick="nextStep(2)">Siguiente</button>
       </div>
     </div>
 
+    <!-- Paso 3 -->
     <div class="step" id="step-3">
       <h4>Foto Selfie</h4>
-      <input type="file" id="foto_autoretrato" name="foto_autoretrato" accept="image/*" class="form-control" required>
-      <img id="preview3" class="preview-img" style="display:none;">
-      <div class="d-flex justify-content-between btn-step">
+      <input type="file" id="foto_autoretrato" name="foto_autoretrato" accept="image/*" class="form-control mb-2" required>
+      <div class="d-flex justify-content-between">
         <button type="button" class="btn btn-secondary" onclick="prevStep(3)">Anterior</button>
         <button type="button" class="btn btn-primary" onclick="nextStep(3)">Siguiente</button>
       </div>
     </div>
 
+    <!-- Paso 4 -->
     <div class="step" id="step-4">
-      <h4>Especialidad</h4>
-      <div class="form-group">
-        <label for="especialidad">Especialidad</label>
-        <select id="especialidad" name="especialidad" class="form-select" required>
-          <option value="">Cargando...</option>
-        </select>
-      </div>
-      <div class="d-flex justify-content-between btn-step">
+      <h4>Ubicación en el Mapa</h4>
+      <input type="text" id="direccion" placeholder="Escribe tu dirección" class="form-control mb-2" required>
+      <button type="button" class="btn btn-info mb-2" onclick="buscarDireccionEnMapa()">Buscar dirección</button>
+      <div id="mapa-ubicacion"></div>
+      <input type="hidden" id="latitud" name="latitud">
+      <input type="hidden" id="longitud" name="longitud">
+      <div class="d-flex justify-content-between">
         <button type="button" class="btn btn-secondary" onclick="prevStep(4)">Anterior</button>
-        <button type="submit" class="btn btn-success">Finalizar</button>
+        <button type="button" class="btn btn-primary" onclick="nextStep(4)">Siguiente</button>
+      </div>
+    </div>
+
+    <!-- Paso 5 -->
+    <div class="step" id="step-5">
+      <h4>Especialidad</h4>
+      <select id="especialidad" name="especialidad" class="form-select mb-2" required></select>
+      <div class="d-flex justify-content-between">
+        <button type="button" class="btn btn-secondary" onclick="prevStep(5)">Anterior</button>
+        <button type="submit" class="btn btn-success">Finalizar Registro</button>
       </div>
     </div>
   </form>
 </div>
 
-<script>
-  const usuario_id = localStorage.getItem("usuario_id");
-  const trabajador_id = localStorage.getItem("trabajador_id");
-
-  function nextStep(step) {
-    document.getElementById(`step-${step}`).classList.remove('active');
-    document.getElementById(`step-${step + 1}`).classList.add('active');
-  }
-
-  function prevStep(step) {
-    document.getElementById(`step-${step}`).classList.remove('active');
-    document.getElementById(`step-${step - 1}`).classList.add('active');
-  }
-
-  ["foto_cedula", "foto_cedula_atras", "foto_autoretrato"].forEach((id, i) => {
-    document.getElementById(id).addEventListener('change', function() {
-      const img = document.getElementById(`preview${i+1}`);
-      img.src = URL.createObjectURL(this.files[0]);
-      img.style.display = 'block';
-    });
-  });
-
- document.getElementById("multiStepForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
-  const formData = new FormData(this);
-
-  formData.append("usuario", usuario_id);
-  formData.append("estado_verificado", false);
-
-  const url = "http://localhost:8000/api/trabajadores/";
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error(">>> ERROR:", data);
-      alert("Error al crear el perfil. Detalles en consola.");
-      return;
-    }
-
-    // Solo si se creó bien
-    localStorage.setItem("trabajador_id", data.id);
-    alert("Perfil creado exitosamente.");
-    window.location.href = "/perfil_trabajador/";
-
-  } catch (err) {
-    console.error(">>> ERROR DE CONEXIÓN:", err);
-    alert("No se pudo conectar con el servidor.");
-  }
-});
-
-
-  async function cargarEspecialidades() {
-    const select = document.getElementById("especialidad");
-    try {
-      const response = await fetch("http://localhost:8000/api/especialidades/");
-      const especialidades = await response.json();
-      select.innerHTML = '<option value="">Selecciona una especialidad</option>';
-      especialidades.forEach(esp => {
-        const option = document.createElement("option");
-        option.value = esp.id;
-        option.textContent = esp.nombre_esp;
-        select.appendChild(option);
-      });
-    } catch (error) {
-      console.error("Error cargando especialidades:", error);
-      select.innerHTML = '<option value="">Error al cargar</option>';
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", cargarEspecialidades);
-</script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="{% static 'js/c_trabajador.js' %}"></script>
 </body>
 </html>
