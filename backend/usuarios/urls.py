@@ -53,5 +53,10 @@ urlpatterns = [
     path('usuario/<int:usuario_id>/', views.vista_usuario_detalle, name='detalle-usuario'),
     path('servicios/<int:pk>/imagenes/', ServicioViewSet.as_view({'post': 'subir_imagenes'}), name='servicio-subir-imagenes'),
 
-
+    # rutas para los gráficos:
+    path('graficos/usuarios-por-comuna/', views.api_usuarios_por_comuna),
+    path('graficos/trabajadores-por-especialidad/', views.api_trabajadores_por_especialidad),
+    path('graficos/servicios-mas-ofrecidos/', views.api_servicios_mas_ofrecidos),
+    path('graficos/boletas-por-tipo-pago/', views.api_boletas_por_tipo_pago),
+    path('graficos/monto-total-por-usuario/', views.api_monto_total_por_usuario),
 ]

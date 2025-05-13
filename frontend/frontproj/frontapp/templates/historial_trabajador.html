@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Historial de Servicios</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; margin: 1rem; }
+    .servicio-card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background: #f9f9f9;
+    }
+    .servicio-card h3 { margin: 0; }
+    .servicio-card p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+
+<h2>Historial de Servicios</h2>
+
+{% if historial %}
+  {% for s in historial %}
+  <div class="servicio-card">
+    <h3>{{ s.nombre_servicio }}</h3>
+    <p>Precio: ${{ s.monto }}</p>
+    <p>Fecha: {{ s.fecha }}</p>
+  </div>
+  {% endfor %}
+{% else %}
+  <p>No hay servicios registrados.</p>
+{% endif %}
+
+<a href="/perfil_trabajador/">← Volver</a>
+</body>
+</html>
