@@ -12,7 +12,7 @@ from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework import status
 
-from rest_framework.decorators import action
+from django.db.models import Count, Sum
 
 @csrf_exempt
 @api_view(['POST'])
@@ -175,3 +175,28 @@ class ChatViewSet(viewsets.ModelViewSet):
 class MensajeViewSet(viewsets.ModelViewSet):
     queryset = Mensaje.objects.all()
     serializer_class = MensajeSerializer
+
+@api_view(['GET'])
+def api_usuarios_por_comuna(request):
+    data = Comuna.objects.annotate(total=Count('usuario')).values('nombre_comuna', 'total')
+    return Response(list(data))
+
+@api_view(['GET'])
+def api_trabajadores_por_especialidad(request):
+    data = Especialidad.objects.annotate(total=Count('trabajador')).values('nombre_esp', 'total')
+    return Response(list(data))
+
+@api_view(['GET'])
+def api_servicios_mas_ofrecidos(request):
+    data = Servicio.objects.annotate(total=Count('trabajadores')).values('nombre_serv', 'total')
+    return Response(list(data))
+
+@api_view(['GET'])
+def api_boletas_por_tipo_pago(request):
+    data = TipoPago.objects.annotate(total=Count('boleta')).values('descripcion', 'total')
+    return Response(list(data))
+
+@api_view(['GET'])
+def api_monto_total_por_usuario(request):
+    data = Boleta.objects.values('usuario__nombre').annotate(total=Sum('monto'))
+    return Response(list(data))

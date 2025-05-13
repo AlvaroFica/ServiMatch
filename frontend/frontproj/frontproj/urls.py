@@ -20,5 +20,11 @@ urlpatterns = [
     path('planes_servicio/<int:servicio_id>/', views.vista_planes_servicio, name='planes_servicio'),
     path('exito/', views.vista_mensaje_exito, name='mensaje_exito'),
     path('ver_planes/<int:servicio_id>/', views.vista_ver_planes, name='ver_planes'),
+    path('dashboard-admin/', views.vista_dashboard_admin, name='dashboard_admin'),
+    path('dashboard-admin/', views.vista_dashboard_admin, name='dashboard_admin'),
+    path('admin/usuarios/', views.vista_admin_usuarios, name='admin_usuarios'),
+    path('admin/trabajadores/', views.vista_admin_trabajadores, name='admin_trabajadores'),
+    path('admin/servicios/', views.vista_admin_servicios, name='admin_servicios'),
+    path('admin/boletas/', views.vista_admin_boletas, name='admin_boletas'),
 
 ]

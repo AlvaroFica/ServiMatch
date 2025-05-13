@@ -1,0 +1,12 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Usuarios{% endblock %}
+
+{% block content %}
+  <h1>Usuarios registrados</h1>
+  <ul>
+    {% for u in usuarios %}
+      <li>{{ u.nombre }} {{ u.apellido }} - {{ u.correo }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'base_admin.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+  <h1 style="margin-bottom: 1.5rem;">Dashboard Administrativo</h1>
+
+  <div class="dashboard-grid">
+    <div class="chart-card">
+      <h3>Usuarios por Comuna</h3>
+      <canvas id="usuariosPorComuna"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Trabajadores por Especialidad</h3>
+      <canvas id="trabajadoresPorEspecialidad"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Servicios Más Ofrecidos</h3>
+      <canvas id="serviciosMasOfrecidos"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Boletas por Tipo de Pago</h3>
+      <canvas id="boletasPorTipoPago"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Monto Total por Usuario</h3>
+      <canvas id="montoPorUsuario"></canvas>
+    </div>
+  </div>
+
+    <style>
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    .chart-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .chart-card canvas {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 16 / 9;
+    }
+
+    @media (max-width: 500px) {
+        .dashboard-grid {
+        grid-template-columns: 1fr;
+        }
+    }
+    </style>
+
+
+  <script>
+    async function renderChart(url, canvasId, labelField, valueField, type = 'bar') {
+      const res = await fetch(url);
+      const data = await res.json();
+      const labels = data.map(item => item[labelField]);
+      const values = data.map(item => item[valueField]);
+
+      new Chart(document.getElementById(canvasId), {
+        type: type,
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '',
+            data: values,
+            backgroundColor: 'rgba(52, 152, 219, 0.5)',
+            borderColor: 'rgba(41, 128, 185, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false }},
+            scales: {
+                y: {
+                beginAtZero: true,
+                ticks: {
+                    precision: 0
+                }
+                }
+            }
+        }
+
+      });
+    }
+
+    renderChart('http://127.0.0.1:8000/api/graficos/usuarios-por-comuna/', 'usuariosPorComuna', 'nombre_comuna', 'total');
+    renderChart('http://127.0.0.1:8000/api/graficos/trabajadores-por-especialidad/', 'trabajadoresPorEspecialidad', 'nombre_esp', 'total', 'pie');
+    renderChart('http://127.0.0.1:8000/api/graficos/servicios-mas-ofrecidos/', 'serviciosMasOfrecidos', 'nombre_serv', 'total');
+    renderChart('http://127.0.0.1:8000/api/graficos/boletas-por-tipo-pago/', 'boletasPorTipoPago', 'descripcion', 'total', 'doughnut');
+    renderChart('http://127.0.0.1:8000/api/graficos/monto-total-por-usuario/', 'montoPorUsuario', 'usuario__nombre', 'total');
+  </script>
+{% endblock %}

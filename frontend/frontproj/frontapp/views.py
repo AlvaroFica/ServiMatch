@@ -1,6 +1,90 @@
 import requests
 from django.shortcuts import render, redirect
 
+def vista_dashboard_admin(request):
+    return render(request, 'dashboard_admin.html')
+
+from datetime import datetime
+
+def vista_admin_boletas(request):
+    desde = request.GET.get('desde')
+    hasta = request.GET.get('hasta')
+
+    boletas = requests.get('http://127.0.0.1:8000/api/boletas/').json()
+
+    if desde:
+        desde_date = datetime.strptime(desde, "%Y-%m-%d")
+        boletas = [b for b in boletas if b.get("fecha_creacion") and datetime.strptime(b["fecha_creacion"], "%Y-%m-%dT%H:%M:%S.%fZ") >= desde_date]
+
+    if hasta:
+        hasta_date = datetime.strptime(hasta, "%Y-%m-%d")
+        boletas = [b for b in boletas if b.get("fecha_creacion") and datetime.strptime(b["fecha_creacion"], "%Y-%m-%dT%H:%M:%S.%fZ") <= hasta_date]
+
+    return render(request, 'boletas_admin.html', {
+        'boletas': boletas,
+        'desde': desde,
+        'hasta': hasta
+    })
+
+
+def vista_admin_usuarios(request):
+    data = requests.get('http://127.0.0.1:8000/api/usuarios/').json()
+    return render(request, 'usuarios_admin.html', {'usuarios': data})
+
+def vista_admin_servicios(request):
+    tipo_id = request.GET.get('tipo')
+    comuna_id = request.GET.get('comuna')
+
+    tipos = requests.get('http://127.0.0.1:8000/api/tiposervicios/').json()
+    comunas = requests.get('http://127.0.0.1:8000/api/comunas/').json()
+    servicios = requests.get('http://127.0.0.1:8000/api/servicios/').json()
+    usuarios = requests.get('http://127.0.0.1:8000/api/usuarios/').json()
+
+    usuarios_dict = {u['id']: u for u in usuarios}
+
+    if tipo_id:
+        servicios = [s for s in servicios if str(s.get("tipo_id")) == tipo_id]
+
+    if comuna_id:
+        servicios = [s for s in servicios if any(
+            usuarios_dict.get(t_id, {}).get("comuna") == int(comuna_id)
+            for t_id in s.get("trabajadores", [])
+        )]
+
+    return render(request, 'servicios_admin.html', {
+        'servicios': servicios,
+        'tipos': tipos,
+        'comunas': comunas,
+        'tipo_seleccionado': tipo_id,
+        'comuna_seleccionada': comuna_id
+    })
+
+
+
+def vista_admin_trabajadores(request):
+    especialidad_id = request.GET.get('especialidad')
+    comuna_id = request.GET.get('comuna')
+
+    especialidades = requests.get('http://127.0.0.1:8000/api/especialidades/').json()
+    comunas = requests.get('http://127.0.0.1:8000/api/comunas/').json()
+
+    trabajadores = requests.get('http://127.0.0.1:8000/api/trabajadores/').json()
+
+    # Filtrar por especialidad y comuna
+    if especialidad_id:
+        trabajadores = [t for t in trabajadores if str(t['especialidad']['id']) == especialidad_id]
+
+    if comuna_id:
+        trabajadores = [t for t in trabajadores if str(t['usuario']['comuna']) == comuna_id]
+
+    return render(request, 'trabajadores_admin.html', {
+        'trabajadores': trabajadores,
+        'especialidades': especialidades,
+        'comunas': comunas,
+        'especialidad_seleccionada': especialidad_id,
+        'comuna_seleccionada': comuna_id
+    })
+
 def register(request):
     if request.method == 'POST':
         data = {
