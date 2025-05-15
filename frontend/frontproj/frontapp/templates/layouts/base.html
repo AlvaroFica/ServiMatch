@@ -1,0 +1,42 @@
+{# layouts/base.html #}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Mi App{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/principal_pagina.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/rating.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    {% block head %}{% endblock head %}
+</head>
+
+<body data-service-id="{{ servicio_id }}">
+
+    {% block header %}
+    {% comment %} Aquí va el header por defecto, o se incluye header.html {% endcomment %}
+    {% endblock header %}
+
+    {% block content %}{% endblock content %}
+
+    {% include "layouts/menu_inferior.html" %}
+    {% include "layouts/overlay_buscador.html" %}
+
+    {% block scripts %}
+    <script src="{% static 'js/principal_pagina.js' %}"></script>
+    <script src="{% static 'js/rating.js' %}"></script>
+    {% endblock scripts %}
+
+    {# Modales de calificación #}
+    {% include "layouts/rating_modal.html" %}
+    {% include "layouts/tag_selector_modal.html" %}
+
+</body>
+
+</html>

@@ -30,6 +30,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'usuarios',
     'corsheaders',
+    'servicios.apps.ServiciosConfig',
+    'django.contrib.humanize',
+
 ]
 
 MIDDLEWARE = [

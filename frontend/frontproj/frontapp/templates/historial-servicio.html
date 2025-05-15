@@ -1,0 +1,38 @@
+{# frontapp/templates/historial-servicio.html #}
+{% extends "layouts/base.html" %}
+{% load humanize %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/historial.css' %}">
+{% endblock head %}
+
+{% block content %}
+{% include "layouts/buscador.html" %}
+<div class="cards-fullwidth mt-4">
+    <h2 class="titulo-seccion text-center">Historial de Servicios</h2>
+    {% if boletas %}
+    <div class="row">
+        {% for b in boletas %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                {% if b.servicio.imagenes %}
+                <img src="{{ b.servicio.imagenes.0.imagen }}" class="card-img-top" alt="{{ b.servicio.nombre_serv }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ b.servicio.nombre_serv }}</h5>
+                    <p class="card-text precio">
+                        $ {{ b.monto|floatformat:0|intcomma }}
+                    </p>
+                    <!-- …resto… -->
+                    <a href="{% url 'historial-detalle' b.id %}" class="btn btn-primary btn-sm mt-2">Ver detalles</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-center mt-5">No tienes servicios realizados aún.</p>
+    {% endif %}
+</div>
+{% endblock content %}

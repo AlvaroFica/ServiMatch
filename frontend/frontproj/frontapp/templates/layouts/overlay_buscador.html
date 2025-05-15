@@ -1,0 +1,8 @@
+{# layouts/overlay_buscador.html #}
+<div id="overlay-buscador" class="overlay-buscador">
+    <div class="overlay-contenido">
+        <input type="text" id="busqueda-overlay" placeholder="Buscar servicio..." oninput="mostrarSugerenciasOverlay()">
+        <ul id="sugerencias-overlay" class="sugerencias"></ul>
+        <button onclick="cerrarOverlay()">Cerrar</button>
+    </div>
+</div>

@@ -250,3 +250,31 @@ def vista_mensaje_exito(request):
 
 def vista_ver_planes(request, servicio_id):
     return render(request, 'ver_planes.html', {'servicio_id': servicio_id})
+
+API_BASE = 'http://127.0.0.1:8000/api'
+
+def historial_servicio(request):
+    try:
+        resp = requests.get(f'{API_BASE}/servicios/')
+        servicios = resp.json() if resp.status_code == 200 else []
+    except requests.RequestException:
+        servicios = []
+    return render(request, 'historial-servicio.html', {'servicios': servicios})
+
+def historial_detalle(request, servicio_id):
+    try:
+        resp_serv = requests.get(f'{API_BASE}/servicios/{servicio_id}/')
+        servicio = resp_serv.json() if resp_serv.status_code == 200 else {}
+    except requests.RequestException:
+        servicio = {}
+
+    try:
+        resp_cal = requests.get(f'{API_BASE}/servicios/{servicio_id}/calificaciones/')
+        calificaciones = resp_cal.json() if resp_cal.status_code == 200 else []
+    except requests.RequestException:
+        calificaciones = []
+
+    return render(request, 'historial-detalle.html', {
+        'servicio': servicio,
+        'calificaciones': calificaciones
+    })

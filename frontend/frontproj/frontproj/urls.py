@@ -21,4 +21,7 @@ urlpatterns = [
     path('exito/', views.vista_mensaje_exito, name='mensaje_exito'),
     path('ver_planes/<int:servicio_id>/', views.vista_ver_planes, name='ver_planes'),
 
+    path('historial/', views.historial_servicio, name='historial-servicio-list'),
+    path('servicios/<int:servicio_id>/calificaciones/', views.historial_detalle, name='historial-detalle'),
+
 ]

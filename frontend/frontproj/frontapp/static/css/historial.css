@@ -1,0 +1,67 @@
+/* Contenedor principal */
+.cards-fullwidth {
+    padding: 20px;
+}
+
+/* Título de sección */
+.titulo-seccion {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+/* Tarjetas */
+.card {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Imagen superior de la tarjeta */
+.card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+/* Cuerpo de la tarjeta */
+.card-body {
+    padding: 1rem;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: #222;
+}
+
+/* Precio y fecha */
+.precio {
+    font-weight: 600;
+    color: #007bff;
+    margin-bottom: 0.25rem;
+}
+
+.fecha {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 0.75rem;
+}
+
+/* Descripción */
+.descripcion {
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.4;
+}
+
+/* Enlace de tarjeta para quitar texto azul */
+.enlace-tarjeta,
+.enlace-tarjeta:hover {
+    color: inherit;
+    text-decoration: none;
+}

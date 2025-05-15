@@ -1,0 +1,100 @@
+{% extends "layouts/base.html" %}
+{% load static humanize %}
+
+{% block head %}
+<!-- Sólo el CSS específico de esta vista -->
+<link rel="stylesheet" href="{% static 'css/detalle.css' %}">
+{% endblock head %}
+
+{% block content %}
+{% include "layouts/buscador.html" %}
+
+<div class="detalle-fullscreen">
+    <div class="tarjeta-detalle card mx-auto" style="width:95vw; max-width:1300px;">
+        {% if boleta.servicio.imagenes %}
+        <img src="{{ boleta.servicio.imagenes.0.imagen }}" alt="Imagen servicio" class="card-img-top detalle-img">
+        {% endif %}
+
+        <div class="card-body">
+            <h2 class="card-title">{{ boleta.servicio.nombre_serv }}</h2>
+            <p class="precio">$ {{ boleta.monto|floatformat:0|intcomma }}</p>
+            <p class="fecha">Fecha: {{ boleta.fecha_creacion|date:"d M Y H:i" }}</p>
+            <p class="descripcion">
+                {{ boleta.servicio.descripcion_breve|default:"Sin descripción." }}
+            </p>
+
+            <hr>
+
+            <!-- Datos del trabajador -->
+            <section class="mb-4">
+                <h5 class="card-subtitle mb-2">Datos del trabajador</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Nombre:</strong> {{ boleta.trabajador.nombre }} {{ boleta.trabajador.apellido }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Servicio cumplido:</strong> {{ boleta.servicio.nombre_serv }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <hr>
+
+            <!-- Detalles generales -->
+            <section class="mb-4">
+                <h5 class="card-subtitle mb-2">Detalles generales</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Asunto:</strong> {{ boleta.asunto }}</p>
+                        <p><strong>Fecha:</strong> {{ boleta.fecha|date:"d M Y H:i" }}</p>
+                        <p><strong>Dirección:</strong> {{ boleta.direccion }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Duración estimada:</strong> {{ boleta.duracion_estimada }} {{ boleta.unidad_tiempo }}
+                        </p>
+                        <p><strong>Duración real:</strong> {{ boleta.duracion_real }} {{ boleta.unidad_tiempo }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <hr>
+
+            <!-- Información de pago -->
+            <section>
+                <h5 class="card-subtitle mb-2">Información de pago</h5>
+                <div class="row">
+                    <div class="col-md-4">
+                        <p><strong>Precio total del servicio:</strong> ${{ boleta.precio_total|floatformat:0|intcomma }}
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Comisión ServiMatch:</strong> ${{ boleta.comision_servimatch|floatformat:0|intcomma
+                            }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Total recibido:</strong> ${{ boleta.total_recibido|floatformat:0|intcomma }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Método de pago:</strong> {{ boleta.metodo_pago }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Estado de pago:</strong> {{ boleta.estado_pago }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <a href="{% url 'historial-servicios' %}" class="btn volver-btn btn-sm mt-4">
+                ← Volver al Historial
+            </a>
+            <a href="{% url 'calificacion' boleta.servicio.id %}" class="btn btn-primary btn-sm mt-2">
+                Calificar Servicio
+            </a>
+
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block menu_inferior %}
+{% include "layouts/menu_inferior.html" %}
+{% endblock menu_inferior %}
