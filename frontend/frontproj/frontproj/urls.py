@@ -26,5 +26,7 @@ urlpatterns = [
     path('admin/trabajadores/', views.vista_admin_trabajadores, name='admin_trabajadores'),
     path('admin/servicios/', views.vista_admin_servicios, name='admin_servicios'),
     path('admin/boletas/', views.vista_admin_boletas, name='admin_boletas'),
-
+    path('dashboard-admin/pendientes/', views.vista_admin_pendientes, name='admin_pendientes'),
+    path('admin/cpu_admin', views.cpu_admin, name='cpu_admin'),
+    path('admin/acciones', views.acciones, name='acciones'),
 ]

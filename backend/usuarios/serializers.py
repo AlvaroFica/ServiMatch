@@ -12,6 +12,12 @@ class RegionSerializer(serializers.ModelSerializer):
         model = Region
         fields = '__all__'
 
+class FeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Feedback
+        fields = ['id','usuario','mensaje','creado']
+        read_only_fields = ['id','usuario','creado']
+
 class CiudadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ciudad

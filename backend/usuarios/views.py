@@ -1,43 +1,190 @@
+# Standard library
+import json
+import time
+from datetime import timedelta
+import psutil
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+# Django imports
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import *
-from .serializers import *
-from rest_framework import viewsets
-
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import check_password
-import json
+from django.db.models import Count, Sum
+from django.utils.timezone import now
 
+# DRF imports
+from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
-from rest_framework import status
 
-from django.db.models import Count, Sum
+# Local app imports
+from .models import *
+from .serializers import *
+
+@api_view(['GET'])
+def api_system_metrics(request):
+    """
+    Devuelve uso de CPU y memoria en porcentaje.
+    """
+    cpu = psutil.cpu_percent(interval=None)
+    mem = psutil.virtual_memory().percent
+    return Response({'cpu_percent': cpu, 'memory_percent': mem})
+
+
+@api_view(['POST'])
+def api_feedback(request):
+    # el ID de usuario en sesión (o null si está anónimo)
+    user_id = request.session.get('usuario_id')
+    data = {'mensaje': request.data.get('mensaje'), 'usuario': user_id}
+    serializer = FeedbackSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'ok': True}, status=201)
+    return Response(serializer.errors, 400)
+
+
+@api_view(['GET'])
+def api_audit_logs(request):
+    logs = AuditLog.objects.select_related('usuario') \
+        .order_by('-timestamp')[:20]
+    data = [{
+        'timestamp': log.timestamp,
+        'usuario':   log.usuario.nombre if log.usuario else 'Sistema',
+        'modelo':    log.modelo,
+        'detalle':   log.detalle,     # ← incluido
+        'accion':    log.accion,
+        'objeto_id': log.objeto_id
+    } for log in logs]
+    return Response(data)
+
+
+START_TIME = time.time()
+
+@api_view(['GET'])
+def api_users_active_new(request):
+    week_ago  = now() - timedelta(days=7)
+    month_ago = now() - timedelta(days=30)
+
+    new_users    = Usuario.objects.filter(fecha_creacion__gte=week_ago).count()
+    active_users = Usuario.objects.filter(last_login__gte=month_ago).count()
+
+    return Response({
+        'new_users':    new_users,
+        'active_users': active_users
+    })
+
+
+
+@api_view(['GET'])
+def api_monitor_uptime(request):
+    """
+    Retorna el tiempo de actividad del servidor en formato h m s.
+    """
+    seconds = int(time.time() - START_TIME)
+    hours, rem = divmod(seconds, 3600)
+    minutes, secs = divmod(rem, 60)
+    return Response({'uptime': f'{hours}h {minutes}m {secs}s'})
+
+@api_view(['GET'])
+def api_monitor_errors(request):
+    """
+    Cuenta líneas con códigos 5xx y 4xx en el archivo de logs.
+    Ajusta 'logfile' a la ruta de tu log.
+    """
+    errors_5xx = errors_4xx = 0
+    try:
+        logfile = '/var/log/myapp/error.log'  # <- ruta a tu log de Django/NGINX
+        with open(logfile) as f:
+            lines = f.readlines()
+        errors_5xx = sum(1 for l in lines if ' 5' in l)
+        errors_4xx = sum(1 for l in lines if ' 4' in l)
+    except Exception:
+        pass
+    return Response({'errors_5xx': errors_5xx, 'errors_4xx': errors_4xx})
+
+def vista_admin_pendientes(request):
+    trabajadores = Trabajador.objects.filter(
+        estado_verificado=False
+    ).select_related('usuario')
+    return render(request, 'pendientes_verificacion.html', {
+        'trabajadores': trabajadores
+    })
+
+@api_view(['GET'])
+def api_trabajadores_pendientes(request):
+    total = Trabajador.objects.filter(estado_verificado=False).count()
+    return Response({'total': total})
+
+@api_view(['GET'])
+def api_usuarios_online(request):
+    from django.utils.timezone import now
+    from datetime import timedelta
+    hace_5_min = now() - timedelta(minutes=5)
+    total = Usuario.objects.filter(last_login__gte=hace_5_min).count()
+    return Response({'total': total})
+
+
+@api_view(['GET'])
+def api_total_usuarios(request):
+    total = Usuario.objects.count()
+    return Response({'total': total})
+
+@api_view(['GET'])
+def api_total_trabajadores(request):
+    total = Trabajador.objects.count()
+    return Response({'total': total})
+
+@api_view(['GET'])
+def api_total_servicios(request):
+    total = Servicio.objects.count()
+    return Response({'total': total})
+
+@api_view(['GET'])
+def api_citas_este_mes(request):
+    hoy = now()
+    inicio_mes = hoy.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    total = Cita.objects.filter(fecha_creacion__gte=inicio_mes).count()
+    return Response({'total': total})
+
+
 
 @csrf_exempt
 @api_view(['POST'])
 def vista_login(request):
-    correo = request.data.get('correo')
+    correo     = request.data.get('correo')
     contraseña = request.data.get('contraseña')
 
     if not correo or not contraseña:
-        return Response({'error': 'Correo y contraseña son obligatorios'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {'error': 'Correo y contraseña son obligatorios'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     try:
         usuario = Usuario.objects.get(correo=correo)
         if check_password(contraseña, usuario.contraseña):
+            # Actualizar last_login
+            usuario.last_login = now()
+            usuario.save(update_fields=['last_login'])
+
             return Response({
-                'mensaje': 'Login exitoso',
+                'mensaje':    'Login exitoso',
                 'usuario_id': usuario.id,
-                'nombre': usuario.nombre,
-                'apellido': usuario.apellido,
-                'correo': usuario.correo
+                'nombre':     usuario.nombre,
+                'apellido':   usuario.apellido,
+                'correo':     usuario.correo
             }, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'Contraseña incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {'error': 'Contraseña incorrecta'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
     except Usuario.DoesNotExist:
-        return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_401_UNAUTHORIZED)
-
+        return Response(
+            {'error': 'Usuario no encontrado'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
 
 @api_view(['GET', 'PUT'])
 def vista_usuario_detalle(request, usuario_id):

@@ -1,0 +1,148 @@
+{% extends 'base_admin.html' %}
+{% block title %}Dashboard Administrativo{% endblock %}
+
+{% block content %}
+  <h1 style="margin-bottom: 1.5rem;">Dashboard Administrativo</h1>
+
+  <div class="dashboard-grid">
+    <!-- Uso de CPU -->
+    <div class="chart-card">
+      <h3>Uso de CPU (%)</h3>
+      <canvas id="cpuChart"></canvas>
+    </div>
+
+    <!-- Uso de Memoria -->
+    <div class="chart-card">
+      <h3>Uso de Memoria (%)</h3>
+      <canvas id="memChart"></canvas>
+    </div>
+
+    <!-- Uptime -->
+    <div class="chart-card">
+      <h3>Uptime</h3>
+      <p id="uptime" class="stat-value">...</p>
+    </div>
+
+    <!-- Errores -->
+    <div class="chart-card">
+      <h3>Errores (4xx / 5xx)</h3>
+      <p id="errors" class="stat-value">...</p>
+    </div>
+
+    <!-- Usuarios nuevos -->
+    <div class="chart-card">
+      <h3>Usuarios Nuevos (última semana)</h3>
+      <p id="newUsers" class="stat-value">...</p>
+    </div>
+
+    <!-- Usuarios activos -->
+    <div class="chart-card">
+      <h3>Usuarios Activos (último mes)</h3>
+      <p id="activeUsers" class="stat-value">...</p>
+    </div>
+  </div>
+
+  <style>
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    .chart-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    .chart-card canvas {
+      width: 100% !important;
+      height: auto !important;
+      aspect-ratio: 16/9;
+    }
+    .stat-value {
+      font-size: 2rem;
+      color: #2980b9;
+      margin: 0.5rem 0 0;
+    }
+  </style>
+
+  <!-- Carga de Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const API = 'http://127.0.0.1:8000/api';
+
+      // Inicializar gráficos
+      const cpuCtx = document.getElementById('cpuChart').getContext('2d');
+      const memCtx = document.getElementById('memChart').getContext('2d');
+      const cpuChart = new Chart(cpuCtx, {
+        type: 'line',
+        data: { labels: [], datasets: [{ label: 'CPU %', data: [] }] },
+        options: { scales: { y: { beginAtZero: true, max: 100 } } }
+      });
+      const memChart = new Chart(memCtx, {
+        type: 'line',
+        data: { labels: [], datasets: [{ label: 'Memoria %', data: [] }] },
+        options: { scales: { y: { beginAtZero: true, max: 100 } } }
+      });
+
+      async function updateSystemMetrics() {
+        try {
+          const res = await fetch(`${API}/monitor/system-metrics/`);
+          if (!res.ok) throw new Error(res.status);
+          const { cpu_percent, memory_percent } = await res.json();
+          const time = new Date().toLocaleTimeString();
+
+          // CPU
+          if (cpuChart.data.labels.length >= 20) {
+            cpuChart.data.labels.shift();
+            cpuChart.data.datasets[0].data.shift();
+          }
+          cpuChart.data.labels.push(time);
+          cpuChart.data.datasets[0].data.push(cpu_percent);
+          cpuChart.update();
+
+          // Memoria
+          if (memChart.data.labels.length >= 20) {
+            memChart.data.labels.shift();
+            memChart.data.datasets[0].data.shift();
+          }
+          memChart.data.labels.push(time);
+          memChart.data.datasets[0].data.push(memory_percent);
+          memChart.update();
+        } catch (e) {
+          console.error('Error actualizando métricas:', e);
+        }
+      }
+
+      // Inicializa y programa refresco
+      updateSystemMetrics();
+      setInterval(updateSystemMetrics, 5000);
+
+      // Uptime
+      fetch(`${API}/monitor/uptime/`)
+        .then(r => r.json())
+        .then(d => document.getElementById('uptime').textContent = d.uptime)
+        .catch(() => document.getElementById('uptime').textContent = '-');
+
+      // Errores
+      fetch(`${API}/monitor/errors/`)
+        .then(r => r.json())
+        .then(d => document.getElementById('errors').textContent = `${d.errors_4xx} / ${d.errors_5xx}`)
+        .catch(() => document.getElementById('errors').textContent = '-');
+
+      // Usuarios nuevos y activos
+      fetch(`${API}/monitor/users/`)
+        .then(r => r.json())
+        .then(d => {
+          document.getElementById('newUsers').textContent    = d.new_users;
+          document.getElementById('activeUsers').textContent = d.active_users;
+        })
+        .catch(() => {
+          document.getElementById('newUsers').textContent    = '-';
+          document.getElementById('activeUsers').textContent = '-';
+        });
+    });
+  </script>
+{% endblock %}

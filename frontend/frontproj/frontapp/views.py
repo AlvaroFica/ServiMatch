@@ -1,6 +1,40 @@
 import requests
 from django.shortcuts import render, redirect
 
+def cpu_admin(request):
+    return render(request, 'cpu_admin.html')
+
+def acciones(request):
+    return render(request, 'acciones.html')
+
+
+def vista_admin_pendientes(request):
+    try:
+        # Trae todos (o lo que devuelva tu API) con ese querystring
+        res = requests.get(
+            'http://127.0.0.1:8000/api/trabajadores/?estado_verificado=false',
+            timeout=5
+        )
+        res.raise_for_status()
+        datos = res.json()
+    except requests.RequestException:
+        datos = []
+
+    # Filtra sólo los que realmente tengan estado_verificado == False
+    pendientes = [t for t in datos if not t.get('estado_verificado')]
+
+    # Ajusta rutas absolutas para las imágenes
+    for t in pendientes:
+        for campo in ('foto_cedula', 'foto_cedula_atras', 'foto_autoretrato'):
+            ruta = t.get(campo) or ''
+            if ruta and not ruta.startswith('http'):
+                ruta = ruta if ruta.startswith('/') else '/' + ruta
+                t[campo] = 'http://127.0.0.1:8000' + ruta
+
+    return render(request, 'pendientes_verificacion.html', {
+        'trabajadores': pendientes
+    })
+
 def vista_dashboard_admin(request):
     return render(request, 'dashboard_admin.html')
 

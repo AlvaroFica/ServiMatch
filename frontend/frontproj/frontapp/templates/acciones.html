@@ -1,0 +1,82 @@
+{% extends 'base_admin.html' %}
+{% block title %}Últimas 20 Acciones{% endblock %}
+
+{% block content %}
+  <h1 style="margin-bottom: 1.5rem;">Últimas 20 Acciones</h1>
+
+  <div class="card-log">
+    <div class="table-responsive">
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Usuario</th>
+            <th>Modelo</th>
+            <th>Detalle</th>  
+            <th>Acción</th>
+            <th>ID</th>
+          </tr>
+        </thead>
+        <tbody id="auditLogs">
+          <!-- filas generadas por JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <style>
+    .card-log {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
+    .table-responsive {
+      overflow-x: auto;
+    }
+    .log-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .log-table th, .log-table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+      font-size: 0.9rem;
+    }
+    .log-table th {
+      background: #f4f6f8;
+      font-weight: 600;
+    }
+    .log-table tr:nth-child(even) td {
+      background: #fafafa;
+    }
+    @media (max-width: 600px) {
+      .log-table th, .log-table td {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+
+  <script>
+    fetch('http://127.0.0.1:8000/api/monitor/logs/')
+      .then(r => r.json())
+      .then(logs => {
+        const tbody = document.getElementById('auditLogs');
+        logs.forEach(l => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${new Date(l.timestamp).toLocaleString()}</td>
+            <td>${l.usuario}</td>
+            <td>${l.modelo}</td>
+            <td>${l.detalle}</td>
+            <td>${l.accion}</td>
+            <td>${l.objeto_id}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+  </script>
+{% endblock %}

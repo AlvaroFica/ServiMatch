@@ -33,6 +33,7 @@
       border-radius: 6px;
       border: 1px solid #ccc;
       margin-top: 5px;
+      font-size: 0.9rem;
     }
 
     textarea {
@@ -48,6 +49,7 @@
       font-size: 1rem;
       border: none;
       border-radius: 6px;
+      cursor: pointer;
     }
 
     .mensaje-exito {
@@ -55,6 +57,7 @@
       text-align: center;
       color: green;
       font-weight: bold;
+      display: none;
     }
   </style>
 </head>
@@ -81,15 +84,13 @@
     <button type="submit" class="btn-agregar-plan">+ Agregar Plan</button>
   </form>
 
-  <div id="mensaje" class="mensaje-exito" style="display:none;">¡Cambios guardados con éxito!</div>
+  <div id="mensaje" class="mensaje-exito">¡Cambios guardados con éxito!</div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const servicioId = window.location.pathname.split("/").filter(Boolean).pop();
-
   const form = document.getElementById("form-plan");
-  const mensaje = document.getElementById("mensaje");
+  const servicioId = window.location.pathname.split("/").filter(Boolean).pop();
 
   form.addEventListener("submit", async e => {
     e.preventDefault();
@@ -111,8 +112,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (res.ok) {
-        mensaje.style.display = "block";
-        form.reset();
+        // Redirigir a Mis Servicios tras crear el plan
+        window.location.href = "/mis_servicios/";
       } else {
         alert("Error al guardar el plan.");
       }

@@ -35,6 +35,7 @@ class Usuario(models.Model):
     telefono = models.CharField(max_length=20)
     fecha_nac = models.DateField()
     fecha_creacion = models.DateTimeField(auto_now_add=True)
+    last_login   = models.DateTimeField(null=True, blank=True)
     comuna = models.ForeignKey(Comuna, on_delete=models.SET_NULL, null=True)
     contraseña = models.CharField(max_length=255)
     foto_perfil = models.ImageField(upload_to='usuarios/fotos_perfil/', null=True, blank=True)
@@ -154,3 +155,24 @@ class Mensaje(models.Model):
 
     def __str__(self):
         return f"Mensaje en chat #{self.chat.id}"
+
+class AuditLog(models.Model):
+    usuario    = models.ForeignKey(Usuario, null=True, on_delete=models.SET_NULL)
+    accion     = models.CharField(max_length=200)
+    modelo     = models.CharField(max_length=50)
+    objeto_id  = models.PositiveIntegerField()
+    detalle = models.CharField(max_length=200, null=True, blank=True)
+    timestamp  = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.timestamp:%Y-%m-%d %H:%M} – {self.usuario or 'Sistema'} – {self.accion}: {self.detalle}"
+
+
+class Feedback(models.Model):
+    usuario    = models.ForeignKey(Usuario, null=True, blank=True, on_delete=models.SET_NULL)
+    mensaje    = models.TextField()
+    creado     = models.DateTimeField(auto_now_add=True)
+    leido      = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.creado:%Y-%m-%d %H:%M} – {self.usuario or 'Anónimo'}"
