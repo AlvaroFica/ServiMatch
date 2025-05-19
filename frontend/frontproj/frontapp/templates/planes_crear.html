@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Plan de Servicio</title>
+  <link rel="stylesheet" href="{% static 'css/planes_crear.css' %}">
+</head>
+<body>
+  <div class="contenedor">
+    <h2>Crear un nuevo plan</h2>
+    {% if error %}
+      <p style="color:red;">{{ error }}</p>
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="servicio" value="{{ servicio_id }}">
+
+      <label>Nombre del plan</label>
+      <input type="text" name="nombre_plan" required>
+
+      <label>Precio $</label>
+      <input type="number" name="precio" required>
+
+      <label>Duración estimada</label>
+      <input type="text" name="duracion" placeholder="Ej: 1 hora" required>
+
+      <label>Incluye (una línea por ítem)</label>
+      <textarea name="incluye" rows="3"></textarea>
+
+      <label>Descripción breve</label>
+      <textarea name="descripcion_breve" rows="2"></textarea>
+
+      <button type="submit">+ Agregar Plan</button>
+    </form>
+  </div>
+</body>
+</html>

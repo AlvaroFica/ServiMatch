@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Contratación de Servicio</title>
+  <link rel="stylesheet" href="{% static 'css/contratacion.css' %}">
+  <link rel="stylesheet" href="{% static 'css/chat.css' %}">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <div class="mobile-container">
+
+    <div class="icon-large"><i class="fa fa-briefcase"></i></div>
+    <h2 id="service-name">Cargando servicio…</h2>
+    <p class="price" id="price">—</p>
+    <p id="service-desc">—</p>
+    <h3>Incluye:</h3>
+    <ul id="includes"></ul>
+    <div class="info-row">
+      <div class="info-item">
+        <i class="fa fa-clock"></i>
+        <p id="duration">—</p>
+      </div>
+      <div class="info-item">
+        <i class="fa fa-list"></i>
+        <p id="jobs">— ítems</p>
+      </div>
+    </div>
+
+    <button id="btn-contratar" class="btn-contratar">INICIAR CONTRATACIÓN</button>
+
+  </div>
+    <script>
+    const API = 'http://localhost:8000/api';
+    const planId = {{ plan_id|default:"null" }};
+    const usuarioId = Number(localStorage.getItem('usuario_id')) || null;
+
+    (async () => {
+      if (planId === null) return alert('plan_id no definido.');
+
+      // Obtener el plan
+      let res = await fetch(`${API}/planeservicio/${planId}/`);
+      if (!res.ok) return alert('Plan no encontrado');
+      const plan = await res.json();
+
+      // Obtener el servicio
+      res = await fetch(`${API}/servicios/${plan.servicio}/`);
+      if (!res.ok) return alert('Servicio no encontrado');
+      const serv = await res.json();
+
+      // Rellenar la UI (esto ya lo tienes, pero lo dejo igual)
+      document.getElementById('service-name').innerText = serv.nombre_serv;
+      document.getElementById('price').innerText = `$${plan.precio}`;
+      document.getElementById('service-desc').innerText = serv.descripcion_breve;
+      document.getElementById('duration').innerText = plan.duracion;
+
+      const items = plan.incluye.split('\n');
+      document.getElementById('jobs').innerText = `${items.length} ítems`;
+      document.getElementById('includes').innerHTML = items.map(i => `<li><i class="fa fa-star"></i> ${i}</li>`).join('');
+
+      document.getElementById('btn-contratar').addEventListener('click', async () => {
+        if (!usuarioId) {
+          alert('Debes iniciar sesión.');
+          return window.location.href = '/';
+        }
+
+        // Elige el primer trabajador disponible (o cambia la lógica si tienes varios)
+        const trabajadorId = serv.trabajadores[0];
+        if (!trabajadorId) return alert('No hay trabajador disponible en este servicio');
+
+        // Crear la cita
+        let resCita = await fetch(`${API}/citas/`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            usuario: usuarioId,
+            trabajador: trabajadorId,
+            plan: planId
+          })
+        });
+
+        if (!resCita.ok) return alert('Error al crear la cita');
+        const cita = await resCita.json();
+
+        // Crear el chat
+        let resChat = await fetch(`${API}/chats/`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            cita: cita.id,
+            termino: ''
+          })
+        });
+
+        if (!resChat.ok) return alert('Error al crear el chat');
+        const chat = await resChat.json();
+
+        // Redirigir al chat
+        window.location.href = `/chat/${chat.id}/`;
+      });
+    })();
+</script>
+
+</body>
+</html>

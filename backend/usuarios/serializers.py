@@ -102,9 +102,12 @@ class ChatSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class MensajeSerializer(serializers.ModelSerializer):
+    usuario_nombre = serializers.CharField(source="chat.cita.usuario.nombre", read_only=True)
+
     class Meta:
         model = Mensaje
         fields = '__all__'
+
 
 # SERIALIZADORES DE TRABAJADOR
 

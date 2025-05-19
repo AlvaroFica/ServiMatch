@@ -4,145 +4,84 @@
 <head>
   <meta charset="UTF-8">
   <title>Perfil Trabajador</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{% static 'css/perfil_trabajador.css' %}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/perfil_trabajador.css' %}">
 </head>
 <body>
-<div class="contenedor-app">
-  <!-- Barra superior -->
-  <div class="barra-superior">
-    <a href="/" class="btn-activo">CLIENTE Y TRABAJADOR</a>
-    <a href="/logout/" class="btn-inactivo">Cerrar sesión</a>
-  </div>
 
-  <!-- Perfil -->
-  <div class="perfil-info">
-    <div class="avatar" id="avatar"></div>
-    <h3 id="nombre-trabajador">Cargando...</h3>
-    <p id="especialidad-trabajador" class="text-muted">Especialidad</p>
-    <div class="estrellas">
-      <i class="fa fa-star"></i><i class="fa fa-star"></i>
-      <i class="fa fa-star"></i><i class="fa fa-star"></i>
-      <i class="fa-regular fa-star"></i>
+  <div class="mobile-container">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div>
+        <button>CLIENTE</button>
+        <button>TRABAJADOR</button>
+      </div>
+      <div><i class="fa fa-map-marker-alt"></i></div>
+    </div>
+    <div class="address-bar">Dirección 123...</div>
+
+    <!-- Perfil card -->
+    <div class="card-perfil">
+      <div class="avatar" id="avatar"></div>
+      <h2 id="nombre-trabajador">Juanito Pérez</h2>
+      <p class="prof" id="especialidad-trabajador">Abogado</p>
+      <div class="stars">
+        <i class="fa fa-star"></i><i class="fa fa-star"></i>
+        <i class="fa fa-star"></i><i class="fa fa-star"></i>
+        <i class="fa fa-star-half-alt"></i>
+      </div>
+        <a id="btn-contratar"
+           href="#"
+           class="btn-contratar">
+          Contratar
+        </a>
+
+    </div>
+
+    <!-- Menú de gestión de servicios -->
+    <div id="menu-servicios" class="flex center mt-1">
+      <a id="link-mis-servicios" href="/mis_servicios/" class="btn-contratar">Mis servicios</a>
+      <a id="link-editar-info"  href="/editar_trabajador/" class="btn-contratar">Editar info</a>
+    </div>
+
+    <!-- Métricas -->
+    <div class="metrics">
+      <div class="item">
+        <i class="fa fa-calendar-alt"></i>
+        <p>ANTIGÜEDAD<br><strong id="fecha-creacion">marzo 2024</strong></p>
+      </div>
+      <div class="item">
+        <i class="fa fa-briefcase"></i>
+        <p><strong id="cantidad-servicios">55</strong><br>SERVICIOS</p>
+      </div>
+    </div>
+
+    <!-- Portafolio -->
+    <div class="portfolio">
+      <h3>PORTAFOLIO</h3>
+      <div class="portfolio-grid">
+        <div class="thumb"></div>
+        <div class="thumb"></div>
+      </div>
+    </div>
+
+    <!-- Evaluaciones -->
+    <div class="reviews">
+      <h3>Evaluaciones</h3>
+      <div class="review-tags">
+        <!-- Se llenan por JS -->
+      </div>
     </div>
   </div>
 
-  <!-- Métricas -->
-  <div class="metricas">
-    <div class="item">
-      <i class="fa fa-calendar-alt"></i>
-      <p><strong>ANTIGÜEDAD</strong><br><span id="fecha-creacion">---</span></p>
-    </div>
-    <div class="item">
-      <i class="fa fa-briefcase"></i>
-      <p><strong id="cantidad-servicios">0</strong><br>SERVICIOS</p>
-    </div>
+  <!-- Menú inferior -->
+  <div class="bottom-nav">
+    <a href="#"><i class="fa fa-bars"></i> OPCIONES</a>
+    <a href="#"><i class="fa fa-map-marked-alt"></i> RANKING</a>
+    <a href="#"><i class="fa fa-user"></i> PERFIL</a>
   </div>
 
-  <!-- Menú -->
-  <div class="menu" id="menu-servicios">
-    <a href="/"><i class="fa fa-home"></i> Inicio</a>
-    <a href="#"><i class="fa fa-book"></i> Historial de servicios</a>
-<<<<<<< HEAD
-<<<<<<< HEAD
-    <a href="/mis_servicios/" id="link-mis-servicios"><i class="fa fa-tasks"></i> Mis servicios y planes</a>
-    <a href="#"><i class="fa fa-user-edit"></i> Editar información personal</a>
-=======
-    <a href="/mis_servicios/" class="solo-propietario"><i class="fa fa-tasks"></i> Mis servicios y planes</a>
-    <a href="#" class="solo-propietario"><i class="fa fa-user-edit"></i> Editar información personal</a>
->>>>>>> origin/bastian-movimientos
-=======
-    <a href="/mis_servicios/" class="solo-propietario"><i class="fa fa-tasks"></i> Mis servicios y planes</a>
-    <a href="#" class="solo-propietario"><i class="fa fa-user-edit"></i> Editar información personal</a>
->>>>>>> origin/bastian-movimientos
-    <a href="/logout/"><i class="fa fa-sign-out-alt"></i> Cerrar sesión</a>
-  </div>
-
-  <!-- Menú inferior fijo -->
-  <div class="menu-inferior">
-    <div><i class="fa fa-bars"></i><p>OPCIONES</p></div>
-    <div><i class="fa fa-map-marked-alt"></i><p>RANKING</p></div>
-    <div><i class="fa fa-user"></i><p>PERFIL</p></div>
-  </div>
-</div>
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-<script>
-document.addEventListener("DOMContentLoaded", async function () {
-  const usuarioId = localStorage.getItem("usuario_id");
-  if (!usuarioId) {
-    alert("Sesión expirada. Iniciá sesión de nuevo.");
-    window.location.href = "/login/";
-    return;
-  }
-
-  try {
-    const response = await fetch(`http://localhost:8000/api/trabajadores/?usuario=${usuarioId}`);
-    const data = await response.json();
-
-    if (!data.length) {
-      alert("Trabajador no encontrado.");
-      return;
-    }
-
-    const trabajador = data[0];
-
-    // Nombre completo
-    const nombre = trabajador.usuario.nombre + " " + trabajador.usuario.apellido;
-    document.getElementById("nombre-trabajador").innerText = nombre;
-
-    // Especialidad
-    document.getElementById("especialidad-trabajador").innerText =
-      trabajador.especialidad?.nombre_esp || "Sin especialidad";
-
-    // Fecha creación (antigüedad)
-    const fecha = new Date(trabajador.usuario.fecha_creacion);
-    document.getElementById("fecha-creacion").innerText =
-      fecha.toLocaleDateString("es-CL", { year: "numeric", month: "long" });
-
-    // Cantidad de servicios
-    document.getElementById("cantidad-servicios").innerText =
-      trabajador.servicios?.length || 0;
-
-    // Imagen de perfil
-    if (trabajador.usuario.foto_perfil) {
-      const avatar = document.getElementById("avatar");
-      const img = document.createElement("img");
-      const foto = trabajador.usuario.foto_perfil;
-      img.src = foto.startsWith("http") ? foto : `http://localhost:8000${foto.startsWith("/") ? foto : "/" + foto}`;
-      img.alt = "Foto de perfil";
-      img.style.borderRadius = "50%";
-      img.style.width = "100px";
-      img.style.height = "100px";
-      avatar.appendChild(img);
-    }
-
-    // Restringir creación de servicios si no está verificado
-    if (!trabajador.estado_verificado) {
-      // Ocultar enlace a "Mis servicios y planes"
-      const link = document.getElementById("link-mis-servicios");
-      link.style.display = 'none';
-      // Mostrar aviso
-      const menu = document.getElementById("menu-servicios");
-      const aviso = document.createElement('p');
-      aviso.style.color = '#c0392b';
-      aviso.style.margin = '1rem';
-      aviso.textContent = 'Tu cuenta está en revisión. No puedes crear ni ver servicios hasta ser verificado.';
-      menu.insertBefore(aviso, menu.firstChild);
-    }
-
-  } catch (error) {
-    console.error("Error al cargar perfil:", error);
-    alert("No se pudo cargar la información del perfil.");
-  }
-});
-</script>
-=======
-<script src="{% static 'js/perfil_trabajador.js' %}"></script>
->>>>>>> origin/bastian-movimientos
-=======
-<script src="{% static 'js/perfil_trabajador.js' %}"></script>
->>>>>>> origin/bastian-movimientos
+  <script src="{% static 'js/perfil_trabajador.js' %}"></script>
 </body>
+</html>

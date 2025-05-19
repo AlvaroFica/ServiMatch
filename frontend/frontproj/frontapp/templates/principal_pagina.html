@@ -52,6 +52,54 @@
         </div>
     </div>
 
+    
+
     <script src="{% static 'js/principal_pagina.js' %}"></script>
+
 </body>
+
+    <a id="btn-chat" href="#" style="
+    position: fixed;
+    left: 18px;
+    bottom: 98px;
+    width: 44px;
+    height: 44px;
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    ">
+    <div style="
+        position: relative;
+        width: 44px; height: 44px;
+        background: #25d366;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px #25d36655;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    ">
+        <i class="fa fa-comments" style="color: #fff; font-size: 22px;"></i>
+        <span id="noti-chat" style="
+        display: none;
+        position: absolute;
+        right: 3px;
+        top: 3px;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: #ff3d00;
+        border: 2px solid #fff;
+        box-shadow: 0 0 4px #ff3d0077;
+        text-align: center;
+        color: #fff;
+        font-size: 11px;
+        font-weight: bold;
+        line-height: 11px;
+        pointer-events: none;
+        "></span>
+    </div>
+    </a>
+
 </html>

@@ -136,6 +136,8 @@ class Pago(models.Model):
 
 class Cita(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    trabajador = models.ForeignKey(Trabajador, on_delete=models.CASCADE)
+    plan = models.ForeignKey(PlanServicio, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -144,7 +146,7 @@ class Cita(models.Model):
 class Chat(models.Model):
     cita = models.ForeignKey(Cita, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    termino = models.TextField()
+    termino = models.TextField(blank=True, default='')
 
     def __str__(self):
         return f"Chat de la cita #{self.cita.id}"
@@ -152,6 +154,7 @@ class Chat(models.Model):
 class Mensaje(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
     mensaje = models.TextField()
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Mensaje en chat #{self.chat.id}"

@@ -1,79 +1,81 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Planes del Servicio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      background: #f2f2f2;
-    }
-    .contenedor {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-    }
-    .plan {
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 10px;
-      margin-bottom: 15px;
-    }
-    .plan h3 {
-      margin: 0 0 5px 0;
-    }
-    ul {
-      padding-left: 20px;
-    }
-  </style>
+  <title>Planes del Servicio</title>
+  <link rel="stylesheet" href="{% static 'css/ver_planes.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-  <div class="contenedor">
-    <h2>Planes del servicio</h2>
-    <div id="lista-planes">
-      <p>Cargando...</p>
+  <div class="mobile-container">
+    <div id="plans-container" class="plans-grid">
+      <!-- aquí se inyectan las tarjetas -->
     </div>
   </div>
 
   <script>
-    const servicioId = "{{ servicio_id }}";
+    (async () => {
+      const cont = document.getElementById('plans-container');
+      const servicioId = {{ servicio_id }};
+      if (!servicioId) {
+        cont.innerHTML = '<h1 style="color:red">ID de servicio no proporcionado.</h1>';
+        return;
+      }
 
-    async function cargarPlanes() {
       try {
-        const res = await fetch(`http://localhost:8000/api/planeservicio/?servicio=${servicioId}`);
-        const planes = await res.json();
-        const contenedor = document.getElementById("lista-planes");
-        contenedor.innerHTML = "";
+        // 1) Traer detalles del servicio
+        let res = await fetch(`http://localhost:8000/api/servicios/${servicioId}/`);
+        if (!res.ok) throw 'Servicio no encontrado';
+        const servicio = await res.json();
 
-        if (!planes.length) {
-          contenedor.innerHTML = "<p>No hay planes registrados para este servicio.</p>";
+        // 2) Obtener nombre del primer trabajador
+        let nombreTrab = 'Trabajador';
+        if (servicio.trabajadores.length) {
+          const tId = servicio.trabajadores[0];
+          res = await fetch(`http://localhost:8000/api/trabajadores/${tId}/`);
+          if (res.ok) {
+            const trab = await res.json();
+            nombreTrab = `${trab.usuario.nombre} ${trab.usuario.apellido}`;
+          }
+        }
+
+        // 3) Cabecera
+        cont.innerHTML = `
+          <h1>Planes de trabajo de ${nombreTrab}</h1>
+          <p class="subtitle">Elige el que más te acomode</p>
+        `;
+
+        // 4) Si no hay planes
+        if (!servicio.planes.length) {
+          cont.innerHTML += '<p>No hay planes disponibles.</p>';
           return;
         }
 
-        planes.forEach(plan => {
-          const div = document.createElement("div");
-          div.classList.add("plan");
-          div.innerHTML = `
-            <h3>${plan.nombre_plan}</h3>
-            <p><strong>Precio:</strong> $${plan.precio}</p>
-            <p><strong>Duración:</strong> ${plan.duracion}</p>
-            <p><strong>Incluye:</strong></p>
-            <ul>${plan.incluye.split('\n').map(i => `<li>${i}</li>`).join("")}</ul>
-            <p><em>${plan.descripcion_breve}</em></p>
+        // 5) Crear una tarjeta por plan
+        servicio.planes.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'plan-card';
+          card.innerHTML = `
+            <div class="icon"><i class="fa fa-briefcase"></i></div>
+            <div class="info">
+              <h3>${p.nombre_plan}</h3>
+              <p>${p.descripcion_breve}</p>
+            </div>
           `;
-          contenedor.appendChild(div);
+            card.addEventListener('click', () => {
+            // aquí p.id es el plan, o p.servicio si quieres id de servicio
+            window.location.href = `/contratar/${p.id}/`;
+          });
+          cont.appendChild(card);
         });
-      } catch (error) {
-        console.error("Error al cargar planes:", error);
-        document.getElementById("lista-planes").innerHTML = "<p>Error al obtener los planes.</p>";
-      }
-    }
 
-    document.addEventListener("DOMContentLoaded", cargarPlanes);
+      } catch (err) {
+        console.error(err);
+        cont.innerHTML = '<h1 style="color:red">Error al cargar los planes.</h1>';
+      }
+    })();
   </script>
 </body>
 </html>

@@ -23,6 +23,18 @@ from .models import *
 from .serializers import *
 
 @api_view(['GET'])
+def api_chats_usuario(request, usuario_id):
+    # Si el usuario es cliente
+    como_cliente = Chat.objects.filter(cita__usuario_id=usuario_id).count()
+    # Si el usuario es trabajador
+    como_trabajador = Chat.objects.filter(cita__trabajador__usuario_id=usuario_id).count()
+    return Response({
+        "cliente": como_cliente,
+        "trabajador": como_trabajador,
+        "total": como_cliente + como_trabajador
+    })
+
+@api_view(['GET'])
 def api_system_metrics(request):
     """
     Devuelve uso de CPU y memoria en porcentaje.
@@ -322,6 +334,20 @@ class ChatViewSet(viewsets.ModelViewSet):
     queryset = Chat.objects.all()
     serializer_class = ChatSerializer
 
+    @action(detail=False, methods=['get'], url_path='usuario/(?P<usuario_id>[^/.]+)')
+    def por_usuario(self, request, usuario_id=None):
+        # Solo chats donde participa como cliente o trabajador (pero NO ambos del mismo usuario)
+        chats = Chat.objects.filter(
+            models.Q(cita__usuario_id=usuario_id) | 
+            models.Q(cita__trabajador__usuario_id=usuario_id)
+        ).distinct()
+
+        # Excluir chats donde cliente y trabajador sean el mismo usuario
+        chats = chats.exclude(
+            cita__usuario_id=models.F('cita__trabajador__usuario_id')
+        )
+
+        return Response(ChatSerializer(chats, many=True).data)
 
 class MensajeViewSet(viewsets.ModelViewSet):
     queryset = Mensaje.objects.all()

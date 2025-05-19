@@ -114,6 +114,16 @@ body {
   position: relative;
 }
 
+.bolita-chat {
+  display:inline-block;
+  width:12px; height:12px;
+  border-radius:50%;
+  background:#25d366;
+  margin-left:4px;
+  vertical-align:middle;
+  box-shadow:0 0 4px #25d366aa;
+  border:2px solid #fff;
+}
 
 .menu-inferior {
     position: fixed;

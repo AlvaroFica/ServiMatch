@@ -1,5 +1,17 @@
+import datetime
 import requests
 from django.shortcuts import render, redirect
+
+def vista_contratar(request, plan_id):
+    return render(request, 'contratacion.html', {
+        'plan_id': plan_id
+    })
+
+
+def vista_chat(request, chat_id):
+    return render(request, 'chat.html', {
+        'chat_id': chat_id
+    })
 
 def cpu_admin(request):
     return render(request, 'cpu_admin.html')
@@ -7,10 +19,18 @@ def cpu_admin(request):
 def acciones(request):
     return render(request, 'acciones.html')
 
+# Mostrar planos de servicio al cliente (solo ID)
+
+def vista_planes_servicio(request, servicio_id):
+    # Sólo le pasamos el ID al template; el fetch lo hará el JS
+    return render(request, 'planes_servicios.html', {
+        'servicio_id': servicio_id
+    })
+
+# Pendientes de verificación
 
 def vista_admin_pendientes(request):
     try:
-        # Trae todos (o lo que devuelva tu API) con ese querystring
         res = requests.get(
             'http://127.0.0.1:8000/api/trabajadores/?estado_verificado=false',
             timeout=5
@@ -20,7 +40,6 @@ def vista_admin_pendientes(request):
     except requests.RequestException:
         datos = []
 
-    # Filtra sólo los que realmente tengan estado_verificado == False
     pendientes = [t for t in datos if not t.get('estado_verificado')]
 
     # Ajusta rutas absolutas para las imágenes
@@ -35,11 +54,12 @@ def vista_admin_pendientes(request):
         'trabajadores': pendientes
     })
 
+# Dashboard admin simple
+
 def vista_dashboard_admin(request):
     return render(request, 'dashboard_admin.html')
 
-from datetime import datetime
-
+# Listado de boletas con filtros de fecha
 def vista_admin_boletas(request):
     desde = request.GET.get('desde')
     hasta = request.GET.get('hasta')
@@ -60,6 +80,7 @@ def vista_admin_boletas(request):
         'hasta': hasta
     })
 
+# Usuarios y servicios admin
 
 def vista_admin_usuarios(request):
     data = requests.get('http://127.0.0.1:8000/api/usuarios/').json()
@@ -93,8 +114,6 @@ def vista_admin_servicios(request):
         'comuna_seleccionada': comuna_id
     })
 
-
-
 def vista_admin_trabajadores(request):
     especialidad_id = request.GET.get('especialidad')
     comuna_id = request.GET.get('comuna')
@@ -119,6 +138,7 @@ def vista_admin_trabajadores(request):
         'comuna_seleccionada': comuna_id
     })
 
+# Registro de trabajador y usuario
 def register(request):
     if request.method == 'POST':
         data = {
@@ -144,12 +164,10 @@ def register(request):
                 # Crear trabajador asociado inmediatamente
                 trabajador_data = {
                     "usuario": usuario['id'],
-                    "especialidad": None,  # o un ID válido si tienes una por defecto
+                    "especialidad": None,
                     "estado_verificado": False
                 }
-
-                # Puedes enviar campos vacíos de imagen si aún no los tienes
-                requests.post("http://127.0.0.1:8000/api/trabajadores/", data=trabajador_data)
+                requests.post("http://127.0.0.1:8000/api/trabajadores/", json=trabajador_data)
 
                 return redirect('login')
             else:
@@ -168,9 +186,6 @@ def register(request):
     comunas = get_comunas()
     return render(request, 'registrar-trabajador.html', {'comunas': comunas})
 
-
-
-
 def get_comunas():
     try:
         response = requests.get('http://127.0.0.1:8000/api/comunas/')
@@ -180,6 +195,7 @@ def get_comunas():
     except:
         return []
 
+# Autenticación front
 def login(request):
     if request.method == 'POST':
         data = {
@@ -193,7 +209,6 @@ def login(request):
                 usuario = response.json()
                 request.session['usuario_id'] = usuario['usuario_id']
                 request.session['nombre'] = usuario['nombre']
-                print(">>> Login exitoso, ID guardado en sesión:", request.session['usuario_id'])
                 return redirect('principal_pagina')
             else:
                 return render(request, 'login.html', {'error': 'Credenciales incorrectas'})
@@ -202,42 +217,64 @@ def login(request):
 
     return render(request, 'login.html')
 
-    
 def logout(request):
-    request.session.flush()  # Esto borra TODA la sesión
+    request.session.flush()
     return redirect('login')
 
+# Clientes: crear y ver planes
+def vista_crear_plan(request, servicio_id):
+    error = None
+    if request.method == 'POST':
+        payload = {
+            'servicio': servicio_id,
+            'nombre_plan': request.POST.get('nombre_plan'),
+            'precio': request.POST.get('precio'),
+            'duracion': request.POST.get('duracion'),
+            'incluye': request.POST.get('incluye'),
+            'descripcion_breve': request.POST.get('descripcion_breve'),
+        }
+        try:
+            res = requests.post(
+                'http://localhost:8000/api/planeservicio/',
+                json=payload,
+                timeout=5
+            )
+            if res.status_code == 201:
+                return redirect('ver_planes', servicio_id=servicio_id)
+            else:
+                error = res.json() or 'Error al crear plan'
+        except requests.RequestException:
+            error = 'Error de conexión con la API'
 
+    return render(request, 'planes_crear.html', {
+        'servicio_id': servicio_id,
+        'error': error,
+    })
 
 def prueba(request):
     return render(request, 'prueba.html')
 
-def vista_pagina_inicio(request):
-    return render(request, 'pagina_inicio.html')
+# Páginas básicas
 
-def vista_cliente_inicio(request):
-    return render(request, 'cliente_inicio.html')
+def vista_pagina_inicio(request): return render(request, 'pagina_inicio.html')
+def vista_cliente_inicio(request): return render(request, 'cliente_inicio.html')
 
-def vista_perfil_trabajador(request,):
+def vista_perfil_trabajador(request):
     usuario_id = request.session.get('usuario_id')
     trabajador_data = {}
-    
     if usuario_id:
         try:
             trab_response = requests.get(f'http://localhost:8000/api/trabajadores/?usuario={usuario_id}')
             if trab_response.status_code == 200:
                 trabajadores = trab_response.json()
                 if trabajadores:
-                    trabajador_data = trabajadores[0]  # solo uno porque es OneToOne
-        except requests.exceptions.RequestException:
+                    trabajador_data = trabajadores[0]
+        except:
             pass
+    return render(request, 'perfil_trabajador.html', {'trabajador': trabajador_data})
 
-    return render(request, 'perfil_trabajador.html', {
-        'trabajador': trabajador_data
-    })
 def vista_perfil_trabajador_id(request, usuario_id):
     trabajador_data = {}
-
     try:
         trab_response = requests.get(f'http://localhost:8000/api/trabajadores/?usuario={usuario_id}')
         if trab_response.status_code == 200:
@@ -246,20 +283,13 @@ def vista_perfil_trabajador_id(request, usuario_id):
                 trabajador_data = trabajadores[0]
     except requests.exceptions.RequestException:
         pass
+    return render(request, 'perfil_trabajador.html', {'trabajador': trabajador_data})
 
-    return render(request, 'perfil_trabajador.html', {
-        'trabajador': trabajador_data
-    })
-
-
-
+# Mis servicios del trabajador
 def vista_mis_servicios(request):
     usuario_id = request.session.get('usuario_id')
-
     if not usuario_id:
         return render(request, 'mis_servicios.html', {'servicios': []})
-
-    # Paso 1: obtener el trabajador del usuario
     try:
         r_trab = requests.get(f'http://localhost:8000/api/trabajadores/?usuario={usuario_id}')
         trabajador_data = r_trab.json()
@@ -268,49 +298,34 @@ def vista_mis_servicios(request):
         trabajador_id = trabajador_data[0]['id']
     except:
         return render(request, 'mis_servicios.html', {'servicios': []})
-
-    # Paso 2: obtener todos los servicios
     try:
         r_serv = requests.get('http://localhost:8000/api/servicios/')
         servicios_data = r_serv.json()
     except:
         servicios_data = []
-
-    # Paso 3: filtrar solo los servicios de este trabajador
     servicios_usuario = []
     for serv in servicios_data:
         if trabajador_id in serv.get('trabajadores', []):
-            # Añadir lista de imágenes vacía si no hay campo
-            if 'imagenes' not in serv:
-                serv['imagenes'] = []
+            serv.setdefault('imagenes', [])
             servicios_usuario.append(serv)
-
     return render(request, 'mis_servicios.html', {'servicios': servicios_usuario})
 
-
+# Agregar nuevo servicio
 def vista_agregar_servicio(request):
     if request.method == 'POST':
         usuario_id = request.session.get('usuario_id')
-
-        # Obtener el trabajador asociado
         trabajador_resp = requests.get(f'http://localhost:8000/api/trabajadores/?usuario={usuario_id}')
         trabajadores = trabajador_resp.json()
         if trabajadores:
             trabajador_id = trabajadores[0]['id']
-
-            # Crear el servicio
             data = {
                 "nombre_serv": request.POST.get("nombre_serv"),
                 "tipo": int(request.POST.get("tipo")),
                 "trabajadores": [trabajador_id],
             }
-
             servicio_resp = requests.post('http://localhost:8000/api/servicios/', json=data)
-
             if servicio_resp.status_code == 201:
                 servicio_id = servicio_resp.json()['id']
-
-                # Subir imágenes si se mandaron
                 imagenes = request.FILES.getlist('imagenes')
                 if imagenes:
                     files = [('imagenes', img) for img in imagenes]
@@ -318,70 +333,91 @@ def vista_agregar_servicio(request):
                         f'http://localhost:8000/api/servicios/{servicio_id}/imagenes/',
                         files=files
                     )
-
-                    if upload_resp.status_code not in [200, 201]:
-                        print(">>> Error subiendo imágenes:", upload_resp.status_code, upload_resp.text)
-
                 return redirect('mis_servicios')
-
         return render(request, 'agregar_servicio.html', {'error': 'No se pudo crear el servicio.'})
-
-    # GET → cargar tipos
     try:
         tipos = requests.get('http://localhost:8000/api/tiposervicios/').json()
     except:
         tipos = []
-
     return render(request, 'agregar_servicio.html', {'tipos_servicio': tipos})
 
-
-
-def vista_perfil(request):
-    return render(request, 'perfil.html')
+# Perfil genérico
+def vista_perfil(request): return render(request, 'perfil.html')
 
 def vista_principal_pagina(request):
     usuario_id = request.session.get('usuario_id')
-    print(">>> vista_principal_pagina: usuario_id en sesión:", usuario_id)
-
     es_trabajador = False
     nombre_usuario = None
-
     if usuario_id:
         try:
-            # Obtener usuario desde API
             response = requests.get(f'http://127.0.0.1:8000/api/usuarios/{usuario_id}/')
             if response.status_code == 200:
                 usuario_data = response.json()
                 nombre_usuario = usuario_data['nombre']
-
-                # Verificar si es trabajador
                 trab_response = requests.get(f'http://127.0.0.1:8000/api/trabajadores/?usuario={usuario_id}')
                 if trab_response.status_code == 200:
-                    trabajadores = trab_response.json()
-                    es_trabajador = len(trabajadores) > 0
+                    es_trabajador = bool(trab_response.json())
         except:
-            print(">>> Error consultando API")
-
+            pass
     return render(request, 'principal_pagina.html', {
         'logueado': bool(usuario_id),
         'es_trabajador': es_trabajador,
         'nombre_usuario': nombre_usuario
     })
 
+# Creación de trabajador después de login
 def C_trabajador(request):
-    return render(request, 'c_trabajador.html')
+    if request.method == 'GET': return render(request, 'c_trabajador.html')
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+    try:
+        resp_check = requests.get(
+            f'http://127.0.0.1:8000/api/usuarios/{usuario_id}/',
+            timeout=5
+        )
+        if resp_check.status_code != 200:
+            request.session.flush()
+            return redirect('login')
+    except requests.RequestException:
+        request.session.flush()
+        return redirect('login')
+    especialidad = request.POST.get('especialidad')
+    payload = {
+        "usuario": usuario_id,
+        "especialidad": int(especialidad) if especialidad else None,
+        "estado_verificado": False
+    }
+    try:
+        crea = requests.post(
+            'http://127.0.0.1:8000/api/trabajadores/',
+            json=payload,
+            timeout=5
+        )
+    except requests.RequestException:
+        error = "No se pudo conectar con la API."
+    else:
+        if crea.status_code == 201:
+            return redirect('perfil_trabajador')
+        error = crea.json()
+    return render(request, 'c_trabajador.html', {'error': error})
 
-def introduccion_trab(request):
-    return render(request, 'introduccion_trab.html')
+def introduccion_trab(request): return render(request, 'introduccion_trab.html')
 
-def vista_registro_trabajador(request):
-    return render(request, 'registro_trabajador.html')  # crea esta plantilla si quieres
+def vista_registro_trabajador(request): return render(request, 'registro_trabajador.html')
 
+# Duplicado: muestra planes (solo ID)
 def vista_planes_servicio(request, servicio_id):
     return render(request, 'planes_servicios.html', {'servicio_id': servicio_id})
 
-def vista_mensaje_exito(request):
-    return render(request, 'mensaje_exito.html')
+# Mensaje de éxito
+
+def vista_mensaje_exito(request): return render(request, 'mensaje_exito.html')
+
+# Vista final: recibe ID y renderiza con JS
 
 def vista_ver_planes(request, servicio_id):
-    return render(request, 'ver_planes.html', {'servicio_id': servicio_id})
+    # Renderiza la plantilla con el ID del servicio
+    return render(request, 'ver_planes.html', {
+        'servicio_id': servicio_id
+    })
