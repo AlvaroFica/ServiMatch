@@ -10,26 +10,21 @@
 </head>
 <body>
 <div class="contenedor-app">
-
   <!-- Barra superior -->
   <div class="barra-superior">
-    <a href="#" class="btn-activo">CLIENTE Y TRABAJADOR</a>
+    <a href="/" class="btn-activo">CLIENTE Y TRABAJADOR</a>
     <a href="/logout/" class="btn-inactivo">Cerrar sesión</a>
   </div>
 
   <!-- Perfil -->
   <div class="perfil-info">
-    <div class="foto-perfil">
-      <div class="avatar" id="avatar"></div>
-    </div>
-    <div class="nombre">
-      <h3 id="nombre-trabajador">Cargando...</h3>
-      <p id="especialidad-trabajador">Especialidad</p>
-      <div class="estrellas">
-        <i class="fa fa-star"></i><i class="fa fa-star"></i>
-        <i class="fa fa-star"></i><i class="fa fa-star"></i>
-        <i class="fa-regular fa-star"></i>
-      </div>
+    <div class="avatar" id="avatar"></div>
+    <h3 id="nombre-trabajador">Cargando...</h3>
+    <p id="especialidad-trabajador" class="text-muted">Especialidad</p>
+    <div class="estrellas">
+      <i class="fa fa-star"></i><i class="fa fa-star"></i>
+      <i class="fa fa-star"></i><i class="fa fa-star"></i>
+      <i class="fa-regular fa-star"></i>
     </div>
   </div>
 
@@ -49,8 +44,8 @@
   <div class="menu">
     <a href="/"><i class="fa fa-home"></i> Inicio</a>
     <a href="#"><i class="fa fa-book"></i> Historial de servicios</a>
-    <a href="/mis_servicios/"><i class="fa fa-tasks"></i> Mis servicios y planes</a>
-    <a href="#"><i class="fa fa-user-edit"></i> Editar información personal</a>
+    <a href="/mis_servicios/" class="solo-propietario"><i class="fa fa-tasks"></i> Mis servicios y planes</a>
+    <a href="#" class="solo-propietario"><i class="fa fa-user-edit"></i> Editar información personal</a>
     <a href="/logout/"><i class="fa fa-sign-out-alt"></i> Cerrar sesión</a>
   </div>
 
@@ -62,67 +57,5 @@
   </div>
 </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", async function () {
-  const usuarioId = localStorage.getItem("usuario_id");
-  if (!usuarioId) {
-    alert("Sesión expirada. Iniciá sesión de nuevo.");
-    window.location.href = "/login/";
-    return;
-  }
-
-  try {
-    const response = await fetch(`http://localhost:8000/api/trabajadores/?usuario=${usuarioId}`);
-    const data = await response.json();
-
-    if (!data.length) {
-      alert("Trabajador no encontrado.");
-      return;
-    }
-
-    const trabajador = data[0];
-
-    // Nombre completo
-    const nombre = trabajador.usuario.nombre + " " + trabajador.usuario.apellido;
-    document.getElementById("nombre-trabajador").innerText = nombre;
-
-    // Especialidad
-    document.getElementById("especialidad-trabajador").innerText =
-      trabajador.especialidad?.nombre_esp || "Sin especialidad";
-
-    // Fecha creación (antigüedad)
-    const fecha = new Date(trabajador.usuario.fecha_creacion);
-    document.getElementById("fecha-creacion").innerText =
-      fecha.toLocaleDateString("es-CL", { year: "numeric", month: "long" });
-
-    // Cantidad de servicios
-    document.getElementById("cantidad-servicios").innerText =
-      trabajador.servicios?.length || 0;
-
-    // Imagen de perfil
-    if (trabajador.usuario.foto_perfil) {
-      const avatar = document.getElementById("avatar");
-      const img = document.createElement("img");
-        const foto = trabajador.usuario.foto_perfil;
-
-        if (foto && !foto.startsWith("http")) {
-        img.src = `http://localhost:8000${foto.startsWith("/") ? foto : "/" + foto}`;
-        } else {
-        img.src = foto;  // por si ya viene como URL absoluta (raro, pero seguro)
-        };
-
-      img.alt = "Foto de perfil";
-      img.style.borderRadius = "50%";
-      img.style.width = "100px";
-      img.style.height = "100px";
-      avatar.appendChild(img);
-    }
-
-  } catch (error) {
-    console.error("Error al cargar perfil:", error);
-    alert("No se pudo cargar la información del perfil.");
-  }
-});
-</script>
+<script src="{% static 'js/perfil_trabajador.js' %}"></script>
 </body>
-</html>

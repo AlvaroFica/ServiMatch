@@ -91,13 +91,14 @@ body {
     top: 100%;
     left: 0;
     right: 0;
-    z-index: 1000;
+    z-index: 000;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .sugerencias li {
     padding: 10px;
     cursor: pointer;
+    z-index: 2000;
 }
 
 .sugerencias li:hover {
@@ -105,11 +106,14 @@ body {
 }
 
 #mapa {
-    width: 100%;
-    height: 80vh;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  height: 300px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  position: relative;
 }
+
 
 .menu-inferior {
     position: fixed;
@@ -151,17 +155,18 @@ body {
 }
 
 .overlay-buscador {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(255,255,255,0.95);
-    display: none;
-    flex-direction: column;
-    padding: 20px;
-    z-index: 2000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255,255,255,0.95);
+  display: none;
+  flex-direction: column;
+  padding: 20px;
+  z-index: 5000;  /* 🔥 aseguramos que esté sobre el mapa */
 }
+
 
 .overlay-contenido {
     max-width: 480px;
@@ -188,4 +193,30 @@ body {
     border-radius: 6px;
     font-size: 14px;
     cursor: pointer;
+}
+#centrar-ubicacion {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  z-index: 9999;
+  background-color: #4B0082;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#centrar-ubicacion:hover {
+  background-color: #5e1dbd;
+}
+
+#centrar-ubicacion i {
+  pointer-events: none;
 }
