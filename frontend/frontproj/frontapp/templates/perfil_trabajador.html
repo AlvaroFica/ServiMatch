@@ -10,26 +10,21 @@
 </head>
 <body>
 <div class="contenedor-app">
-
   <!-- Barra superior -->
   <div class="barra-superior">
-    <a href="#" class="btn-activo">CLIENTE Y TRABAJADOR</a>
+    <a href="/" class="btn-activo">CLIENTE Y TRABAJADOR</a>
     <a href="/logout/" class="btn-inactivo">Cerrar sesión</a>
   </div>
 
   <!-- Perfil -->
   <div class="perfil-info">
-    <div class="foto-perfil">
-      <div class="avatar" id="avatar"></div>
-    </div>
-    <div class="nombre">
-      <h3 id="nombre-trabajador">Cargando...</h3>
-      <p id="especialidad-trabajador">Especialidad</p>
-      <div class="estrellas">
-        <i class="fa fa-star"></i><i class="fa fa-star"></i>
-        <i class="fa fa-star"></i><i class="fa fa-star"></i>
-        <i class="fa-regular fa-star"></i>
-      </div>
+    <div class="avatar" id="avatar"></div>
+    <h3 id="nombre-trabajador">Cargando...</h3>
+    <p id="especialidad-trabajador" class="text-muted">Especialidad</p>
+    <div class="estrellas">
+      <i class="fa fa-star"></i><i class="fa fa-star"></i>
+      <i class="fa fa-star"></i><i class="fa fa-star"></i>
+      <i class="fa-regular fa-star"></i>
     </div>
   </div>
 
@@ -49,8 +44,13 @@
   <div class="menu" id="menu-servicios">
     <a href="/"><i class="fa fa-home"></i> Inicio</a>
     <a href="#"><i class="fa fa-book"></i> Historial de servicios</a>
+<<<<<<< HEAD
     <a href="/mis_servicios/" id="link-mis-servicios"><i class="fa fa-tasks"></i> Mis servicios y planes</a>
     <a href="#"><i class="fa fa-user-edit"></i> Editar información personal</a>
+=======
+    <a href="/mis_servicios/" class="solo-propietario"><i class="fa fa-tasks"></i> Mis servicios y planes</a>
+    <a href="#" class="solo-propietario"><i class="fa fa-user-edit"></i> Editar información personal</a>
+>>>>>>> origin/bastian-movimientos
     <a href="/logout/"><i class="fa fa-sign-out-alt"></i> Cerrar sesión</a>
   </div>
 
@@ -62,6 +62,7 @@
   </div>
 </div>
 
+<<<<<<< HEAD
 <script>
 document.addEventListener("DOMContentLoaded", async function () {
   const usuarioId = localStorage.getItem("usuario_id");
@@ -132,5 +133,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 });
 </script>
+=======
+<script src="{% static 'js/perfil_trabajador.js' %}"></script>
+>>>>>>> origin/bastian-movimientos
 </body>
-</html>

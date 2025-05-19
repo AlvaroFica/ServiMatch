@@ -15,6 +15,7 @@ urlpatterns = [
     path('registro_trabajador/', views.vista_registro_trabajador, name='registro_trabajador'),
     path('logout/', views.logout, name='logout'),
     path('perfil_trabajador/', views.vista_perfil_trabajador, name='perfil_trabajador'),
+    path('perfil_trabajador/<int:usuario_id>/', views.vista_perfil_trabajador_id, name='perfil_trabajador_id'),
     path('mis_servicios/', views.vista_mis_servicios, name='mis_servicios'),
     path('agregar_servicio/', views.vista_agregar_servicio, name='agregar_servicio'),
     path('planes_servicio/<int:servicio_id>/', views.vista_planes_servicio, name='planes_servicio'),

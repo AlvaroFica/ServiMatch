@@ -149,6 +149,8 @@ def api_citas_este_mes(request):
 
 
 
+from rest_framework.parsers import MultiPartParser, FormParser
+
 @csrf_exempt
 @api_view(['POST'])
 def vista_login(request):
@@ -232,7 +234,7 @@ class ComunaViewSet(viewsets.ModelViewSet):
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
-
+    parser_classes = [MultiPartParser, FormParser]
 
 class MembresiaViewSet(viewsets.ModelViewSet):
     queryset = Membresia.objects.all()

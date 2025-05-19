@@ -218,7 +218,7 @@ def vista_pagina_inicio(request):
 def vista_cliente_inicio(request):
     return render(request, 'cliente_inicio.html')
 
-def vista_perfil_trabajador(request):
+def vista_perfil_trabajador(request,):
     usuario_id = request.session.get('usuario_id')
     trabajador_data = {}
     
@@ -235,6 +235,23 @@ def vista_perfil_trabajador(request):
     return render(request, 'perfil_trabajador.html', {
         'trabajador': trabajador_data
     })
+def vista_perfil_trabajador_id(request, usuario_id):
+    trabajador_data = {}
+
+    try:
+        trab_response = requests.get(f'http://localhost:8000/api/trabajadores/?usuario={usuario_id}')
+        if trab_response.status_code == 200:
+            trabajadores = trab_response.json()
+            if trabajadores:
+                trabajador_data = trabajadores[0]
+    except requests.exceptions.RequestException:
+        pass
+
+    return render(request, 'perfil_trabajador.html', {
+        'trabajador': trabajador_data
+    })
+
+
 
 def vista_mis_servicios(request):
     usuario_id = request.session.get('usuario_id')

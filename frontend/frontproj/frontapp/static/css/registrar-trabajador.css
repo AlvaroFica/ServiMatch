@@ -1,105 +1,74 @@
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #4b6cb7, #182848);
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(180deg, #2c3e50, #3498db);
     min-height: 100vh;
     display: flex;
-    justify-content: center;
     align-items: center;
-    padding: 20px;
+    justify-content: center;
 }
 
-form {
-    background: #fff;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.25);
-    width: 100%;
+.container {
     max-width: 400px;
+    width: 90%;
+}
+
+h1 {
     text-align: center;
-}
-
-h2 {
+    color: #fff;
+    font-size: 2rem;
     margin-bottom: 20px;
-    color: #333;
 }
 
-label {
+.form-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-weight: 600;
     display: block;
-    text-align: left;
-    margin-top: 10px;
-    font-weight: 500;
-    color: #555;
+    margin-bottom: 5px;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-input[type="date"],
-input[type="file"],
-input[type="password"],
-select {
+.form-group input,
+.form-group select {
     width: 100%;
-    padding: 12px;
-    margin: 10px 0;
+    padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
+    border-radius: 6px;
+    font-size: 1rem;
 }
 
-button {
+.form-group input[type="file"] {
+    padding: 5px;
+}
+
+.btn-submit {
     width: 100%;
     padding: 12px;
-    background-color: #4b6cb7;
-    border: none;
+    background: #28a745;
     color: white;
-    font-size: 16px;
-    border-radius: 8px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 10px;
+    transition: background 0.3s ease;
 }
 
-button:hover {
-    background-color: #3a539b;
+.btn-submit:hover {
+    background: #218838;
 }
 
-.prev-btn,
-.next-btn {
-    width: 48%;
-    display: inline-block;
-    margin: 10px 1%;
-}
-
-.prev-btn {
-    background-color: #f44336;
-}
-
-.prev-btn:hover {
-    background-color: #d32f2f;
-}
-
-.step {
-    display: none;
-}
-
-.step.active {
-    display: block;
-}
-
-@media (max-width: 576px) {
-    form {
-        padding: 30px 20px;
-    }
-
-    .prev-btn,
-    .next-btn {
-        width: 100%;
-        margin: 5px 0;
+@media (max-width: 500px) {
+    h1 {
+        font-size: 1.5rem;
     }
 }

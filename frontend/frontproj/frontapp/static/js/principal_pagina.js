@@ -7,56 +7,89 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let markersLayer = L.layerGroup().addTo(mapa);
 
+    // Geolocalización automática al cargar
     if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-        position => {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
 
-            mapa.setView([lat, lon], 16); // Zoom más cercano
+                mapa.setView([lat, lon], 16);
 
-            L.marker([lat, lon])
-                .addTo(mapa)
-                .bindPopup("¡Estás aquí!")
-                .openPopup();
-        },
-        error => {
-            console.error("No se pudo obtener la ubicación:", error.message);
-        },
-        {
-            enableHighAccuracy: true, // ✅ activa máxima precisión
-            timeout: 10000,
-            maximumAge: 0
-        }
-    );
-} else {
-    alert("Tu navegador no soporta geolocalización.");
-}
+                L.marker([lat, lon])
+                    .addTo(mapa)
+                    .bindPopup("¡Estás aquí!")
+                    .openPopup();
+            },
+            error => {
+                console.error("No se pudo obtener la ubicación:", error.message);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+    } else {
+        alert("Tu navegador no soporta geolocalización.");
+    }
 
+    // Botón manual para centrar ubicación
+    document.getElementById("centrar-ubicacion").addEventListener("click", () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
 
-    async function mostrarTrabajadores(trabajadores) {
-    markersLayer.clearLayers();
-    let encontrados = 0;
+                    mapa.setView([lat, lon], 16);
 
-    trabajadores.forEach(trab => {
-        if (trab.latitud && trab.longitud) {
-            const icono = trab.especialidad ? obtenerIconoPorEspecialidad(trab.especialidad.nombre_esp) : null;
-            const marker = L.marker([trab.latitud, trab.longitud], icono ? { icon: icono } : undefined)
-                .bindPopup(`
-                    <strong>${trab.usuario.nombre} ${trab.usuario.apellido}</strong><br>
-                    Especialidad: ${trab.especialidad ? trab.especialidad.nombre_esp : 'No definida'}
-                `);
-            markersLayer.addLayer(marker);
-            encontrados++;
+                    L.marker([lat, lon])
+                        .addTo(mapa)
+                        .bindPopup("¡Tu ubicación actual!")
+                        .openPopup();
+                },
+                error => {
+                    alert("No se pudo obtener tu ubicación.");
+                    console.error(error);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        } else {
+            alert("Tu navegador no soporta geolocalización.");
         }
     });
 
-    if (encontrados > 0) {
-        const primero = trabajadores.find(t => t.latitud && t.longitud);
-        if (primero) mapa.setView([primero.latitud, primero.longitud], 14);
-    }
-}
+    async function mostrarTrabajadores(trabajadores) {
+        markersLayer.clearLayers();
+        let encontrados = 0;
 
+        trabajadores.forEach(trab => {
+            if (trab.latitud && trab.longitud) {
+                const icono = trab.especialidad ? obtenerIconoPorEspecialidad(trab.especialidad.nombre_esp) : null;
+                const popupContent = `
+                    <strong>${trab.usuario.nombre} ${trab.usuario.apellido}</strong><br>
+                    Especialidad: ${trab.especialidad ? trab.especialidad.nombre_esp : 'No definida'}<br>
+                    <a href="/perfil_trabajador/${trab.usuario.id}/" class="btn btn-sm btn-primary mt-2">Ver Perfil</a>
+                `;
+
+                const marker = L.marker([trab.latitud, trab.longitud], icono ? { icon: icono } : undefined)
+                    .bindPopup(popupContent);
+
+                markersLayer.addLayer(marker);
+                encontrados++;
+            }
+        });
+
+        if (encontrados > 0) {
+            const primero = trabajadores.find(t => t.latitud && t.longitud);
+            if (primero) mapa.setView([primero.latitud, primero.longitud], 14);
+        }
+    }
 
     async function cargarTodosTrabajadores() {
         try {
@@ -70,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     cargarTodosTrabajadores();
 
-    // Buscador
+    // Buscador principal
     document.getElementById("btn-buscar").addEventListener("click", buscarServicio);
 
     async function buscarServicio() {
@@ -100,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Sugerencias de servicios
+    // Sugerencias
     document.getElementById("busqueda-servicio").addEventListener("input", mostrarSugerencias);
     const lista = document.getElementById("sugerencias");
 
@@ -110,47 +143,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (texto === "") return;
 
         const ejemplos = [
-    "Gasfiter",
-    "Electricista",
-    "Carpintero",
-    "Pintor",
-    "Cerrajero",
-    "Jardinero",
-    "Albañil",
-    "Técnico en refrigeración",
-    "Técnico en aire acondicionado",
-    "Mecánico automotriz",
-    "Mecánico de bicicletas",
-    "Técnico en electrodomésticos",
-    "Yesero",
-    "Soldador",
-    "Techador",
-    "Maestro de obras",
-    "Instalador de pisos",
-    "Instalador de ventanas y vidrios",
-    "Instalador de puertas",
-    "Instalador de cortinas y persianas",
-    "Tapicero",
-    "Herrero",
-    "Paisajista",
-    "Podador de árboles",
-    "Mantenimiento de piscinas",
-    "Personal de aseo domiciliario",
-    "Personal de aseo industrial",
-    "Limpieza de vidrios en altura",
-    "Lavado de alfombras y tapices",
-    "Flete y mudanza",
-    "Chofer particular",
-    "Motoboy / Delivery independiente",
-    "Instalador de sistemas de riego",
-    "Técnico en calefacción",
-    "Técnico en paneles solares",
-    "Instalador de sistemas de seguridad",
-    "Instalador de antenas y TV cable",
-    "Técnico en computación",
-    "Desabollador y pintor automotriz"
-];
-
+            "Gasfiter", "Electricista", "Carpintero", "Pintor", "Cerrajero", "Jardinero", "Albañil",
+            "Técnico en refrigeración", "Técnico en aire acondicionado", "Mecánico automotriz",
+            "Mecánico de bicicletas", "Yesero", "Soldador", "Techador", "Instalador de pisos",
+            "Tapicero", "Paisajista", "Podador de árboles", "Flete y mudanza", "Técnico en computación"
+        ];
 
         const filtrados = ejemplos.filter(servicio =>
             servicio.toLowerCase().includes(texto)
@@ -167,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Manejo de barra superior con sesión (sin tocar)
+    // Barra superior según sesión
     const usuarioId = localStorage.getItem("usuario_id");
     const barra = document.getElementById("barra-superior");
 
@@ -195,6 +192,8 @@ document.addEventListener("DOMContentLoaded", () => {
         })();
     }
 });
+
+// Íconos por especialidad
 function obtenerIconoPorEspecialidad(nombreEspecialidad) {
     const iconos = {
         "Gasfiter": "gasfiter.png",
@@ -212,30 +211,12 @@ function obtenerIconoPorEspecialidad(nombreEspecialidad) {
         "Yesero": "yesero.png",
         "Soldador": "soldador.png",
         "Techador": "techador.png",
-        "Maestro de obras": "maestro_obras.png",
         "Instalador de pisos": "pisos.png",
-        "Instalador de ventanas y vidrios": "ventanas_vidrios.png",
-        "Instalador de puertas": "puertas.png",
-        "Instalador de cortinas y persianas": "cortinas.png",
         "Tapicero": "tapicero.png",
-        "Herrero": "herrero.png",
         "Paisajista": "paisajista.png",
         "Podador de árboles": "podador.png",
-        "Mantenimiento de piscinas": "piscinas.png",
-        "Personal de aseo domiciliario": "aseo_domiciliario.png",
-        "Personal de aseo industrial": "aseo_industrial.png",
-        "Limpieza de vidrios en altura": "limpieza_altura.png",
-        "Lavado de alfombras y tapices": "alfombras.png",
         "Flete y mudanza": "flete.png",
-        "Chofer particular": "chofer.png",
-        "Motoboy / Delivery independiente": "motoboy.png",
-        "Instalador de sistemas de riego": "riego.png",
-        "Técnico en calefacción": "calefaccion.png",
-        "Técnico en paneles solares": "paneles_solares.png",
-        "Instalador de sistemas de seguridad": "seguridad.png",
-        "Instalador de antenas y TV cable": "antenas.png",
-        "Técnico en computación": "computacion.png",
-        "Desabollador y pintor automotriz": "desabollador.png"
+        "Técnico en computación": "computacion.png"
     };
 
     const iconoURL = iconos[nombreEspecialidad] || "default.png";

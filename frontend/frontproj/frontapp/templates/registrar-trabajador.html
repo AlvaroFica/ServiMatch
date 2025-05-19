@@ -3,178 +3,75 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Trabajador</title>
+    <title>Registro</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/registrar-trabajador.css' %}">
 </head>
 <body>
-    <form id="multi-step-form" enctype="multipart/form-data">
+    <div class="container">
+        <h1>Registro</h1>
+        <form id="registro-form" enctype="multipart/form-data" class="form-card">
+            <div class="form-group">
+                <label for="rut">RUT:</label>
+                <input type="text" id="rut" name="rut" placeholder="18.978.310-4" required>
+            </div>
 
-        <!-- Paso 1 -->
-        <div class="step active" id="step-1">
-            <h2>¡Empecemos!</h2>
-            <label for="rut">RUT:</label>
-            <input type="text" id="rut" name="rut" required>
-            <button type="button" class="next-btn" onclick="nextStep(1)">Siguiente</button>
-        </div>
+            <div class="form-group">
+                <label for="correo">Correo electrónico:</label>
+                <input type="email" id="correo" name="correo" placeholder="ejemplo@duocuc.cl" required>
+            </div>
 
-        <!-- Paso 2 -->
-        <div class="step" id="step-2">
-            <h2>Registro</h2>
-            <label for="correo">Correo electrónico:</label>
-            <input type="email" id="correo" name="correo" required>
+            <div class="form-group">
+                <label for="contraseña">Contraseña:</label>
+                <input type="password" id="contraseña" name="contraseña" required>
+            </div>
 
-            <label for="contraseña">Contraseña:</label>
-            <input type="password" id="contraseña" name="contraseña" required>
+            <div class="form-group">
+                <label for="repetir-contraseña">Repetir Contraseña:</label>
+                <input type="password" id="repetir-contraseña" name="repetir-contraseña" required>
+            </div>
 
-            <label for="repetir-contraseña">Repetir Contraseña:</label>
-            <input type="password" id="repetir-contraseña" name="repetir-contraseña" required>
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" required>
+            </div>
 
-            <button type="button" class="prev-btn" onclick="prevStep(2)">Anterior</button>
-            <button type="button" class="next-btn" onclick="nextStep(2)">Siguiente</button>
-        </div>
+            <div class="form-group">
+                <label for="apellido">Apellido:</label>
+                <input type="text" id="apellido" name="apellido" required>
+            </div>
 
-        <!-- Paso 3 -->
-        <div class="step" id="step-3">
-            <h2>Datos Personales</h2>
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" required>
+            <div class="form-group">
+                <label for="fecha_nacimiento">Fecha de nacimiento:</label>
+                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+            </div>
 
-            <label for="apellido">Apellido:</label>
-            <input type="text" id="apellido" name="apellido" required>
+            <div class="form-group">
+                <label for="celular">Celular:</label>
+                <input type="tel" id="celular" name="celular" placeholder="+569" required>
+            </div>
 
-            <label for="fecha_nacimiento">Fecha de nacimiento:</label>
-            <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+            <div class="form-group">
+                <label for="comuna">Comuna:</label>
+                <select id="comuna" name="comuna" required>
+                    <option value="">Seleccione su comuna</option>
+                </select>
+            </div>
 
-            <label for="celular">Celular:</label>
-            <input type="tel" id="celular" name="celular" required>
+            <div class="form-group">
+                <label for="direccion">Dirección:</label>
+                <input type="text" id="direccion" name="direccion" required>
+            </div>
 
-            <button type="button" class="prev-btn" onclick="prevStep(3)">Anterior</button>
-            <button type="button" class="next-btn" onclick="nextStep(3)">Siguiente</button>
-        </div>
+            <div class="form-group">
+                <label for="foto_perfil">Foto de perfil (opcional):</label>
+                <input type="file" id="foto_perfil" name="foto_perfil" accept="image/*">
+            </div>
 
-        <!-- Paso 4 -->
-        <div class="step" id="step-4">
-            <h2>Dirección</h2>
-            <label for="comuna">Comuna:</label>
-            <select id="comuna" name="comuna" required></select>
+            <button type="submit" class="btn-submit">Registrar</button>
+        </form>
+    </div>
 
-            <label for="direccion">Dirección:</label>
-            <input type="text" id="direccion" name="direccion" required>
-
-            <button type="button" class="prev-btn" onclick="prevStep(4)">Anterior</button>
-            <button type="button" class="next-btn" onclick="nextStep(4)">Siguiente</button>
-        </div>
-
-        <!-- Paso 5 -->
-        <div class="step" id="step-5">
-            <h2>Foto de perfil (opcional)</h2>
-            <label for="foto_perfil">Sube tu foto:</label>
-            <input type="file" id="foto_perfil" name="foto_perfil" accept="image/*">
-
-            <button type="button" class="prev-btn" onclick="prevStep(5)">Anterior</button>
-            <button type="submit">Finalizar</button>
-        </div>
-    </form>
-
-    <script>
-        function nextStep(currentStep) {
-            document.getElementById(`step-${currentStep}`).classList.remove('active');
-            document.getElementById(`step-${currentStep + 1}`).classList.add('active');
-        }
-
-        function prevStep(currentStep) {
-            document.getElementById(`step-${currentStep}`).classList.remove('active');
-            document.getElementById(`step-${currentStep - 1}`).classList.add('active');
-        }
-
-        async function cargarComunas() {
-            try {
-                const response = await fetch("http://localhost:8000/api/comunas/");
-                const comunas = await response.json();
-                const select = document.getElementById("comuna");
-                comunas.forEach(comuna => {
-                    const option = document.createElement("option");
-                    option.value = comuna.id;
-                    option.textContent = comuna.nombre_comuna;
-                    select.appendChild(option);
-                });
-            } catch (error) {
-                console.error("Error cargando comunas:", error);
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", function () {
-            cargarComunas();
-
-            const form = document.getElementById("multi-step-form");
-
-            form.addEventListener("submit", async function (e) {
-                e.preventDefault();
-
-                const pass1 = document.getElementById("contraseña").value;
-                const pass2 = document.getElementById("repetir-contraseña").value;
-                if (pass1 !== pass2) {
-                    alert("Las contraseñas no coinciden");
-                    return;
-                }
-
-                const formData = new FormData(form);
-                const dataUsuario = {
-                    rut: formData.get("rut"),
-                    nombre: formData.get("nombre"),
-                    apellido: formData.get("apellido"),
-                    correo: formData.get("correo"),
-                    telefono: formData.get("celular"),
-                    fecha_nac: formData.get("fecha_nacimiento"),
-                    comuna: formData.get("comuna"),
-                    contraseña: formData.get("contraseña"),
-                };
-
-                const fotoPerfil = formData.get("foto_perfil");
-
-                const dataToSend = new FormData();
-                for (let key in dataUsuario) {
-                    dataToSend.append(key, dataUsuario[key]);
-                }
-
-                if (fotoPerfil && fotoPerfil.size > 0) {
-                    dataToSend.append("foto_perfil", fotoPerfil);
-                }
-
-                try {
-                    const responseUsuario = await fetch("http://localhost:8000/api/usuarios/", {
-                        method: "POST",
-                        body: dataToSend,
-                    });
-
-                    if (!responseUsuario.ok) {
-                        const error = await responseUsuario.json();
-                        alert("Error al registrar usuario: " + JSON.stringify(error));
-                        return;
-                    }
-
-                    const usuario = await responseUsuario.json();
-                    const trabajadorData = {
-                        usuario: usuario.id,
-                        especialidad: null,
-                        estado_verificado: false
-                    };
-
-                    await fetch("http://localhost:8000/api/trabajadores/", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(trabajadorData)
-                    });
-                    window.location.href = "/";
-                } catch (error) {
-                    console.error("Error de conexión:", error);
-                    alert("No se pudo conectar al servidor.");
-                }
-            });
-        });
-    </script>
+    <script src="{% static 'js/registrar-trabajador.js' %}"></script>
 </body>
 </html>
