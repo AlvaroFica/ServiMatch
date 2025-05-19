@@ -1,0 +1,58 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/calificar_etiquetas.css' %}">
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const tarjetas = document.querySelectorAll('.card-etiqueta');
+        let seleccionadas = [];
+
+        tarjetas.forEach(card => {
+            card.addEventListener('click', () => {
+                const valor = card.getAttribute('data-valor');
+
+                if (card.classList.contains('selected')) {
+                    card.classList.remove('selected');
+                    seleccionadas = seleccionadas.filter(v => v !== valor);
+                } else {
+                    if (seleccionadas.length < 3) {
+                        card.classList.add('selected');
+                        seleccionadas.push(valor);
+                    }
+                }
+
+                document.getElementById('etiquetas-input').value = seleccionadas.join(',');
+            });
+        });
+    });
+</script>
+{% endblock head %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow-sm p-3">
+        <div class="text-center mb-3">
+            <img src="{% static 'img/default-avatar.png' %}" alt="Avatar" class="rounded-circle mb-2" width="80">
+            <h4>Califica a tu trabajador 2/2</h4>
+            <p>Elige hasta 3 cualidades que lo representen</p>
+        </div>
+
+        <input type="text" class="barra-busqueda" placeholder="Buscar atributo... (opcional)" />
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" id="etiquetas-input" name="etiquetas">
+
+            <div class="card-container">
+                {% for etiqueta in etiquetas %}
+                <div class="card-etiqueta" data-valor="{{ etiqueta }}">{{ etiqueta }}</div>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-next">Siguiente</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

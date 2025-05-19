@@ -132,7 +132,24 @@ class ServicioViewSet(viewsets.ModelViewSet):
         imagenes = request.FILES.getlist('imagenes')
         for img in imagenes:
             ImagenServicio.objects.create(servicio=servicio, imagen=img)
-        return Response({'mensaje': 'Imágenes subidas con éxito'}, status=status.HTTP_201_CREATED)
+        return Response({'mensaje': 'Imágenes subidas con éxito'}, status=201)
+
+    @action(detail=True, methods=['get'])
+    def etiquetas(self, request, pk=None):
+        servicio = self.get_object()
+        qs = (
+            CalificacionEtiqueta.objects
+            .filter(servicio=servicio)
+            .values('etiquetas__nombre')
+            .annotate(conteo=Count('etiquetas__nombre'))
+            .order_by('-conteo')
+        )
+        data = [
+            {'nombre': d['etiquetas__nombre'], 'conteo': d['conteo']}
+            for d in qs
+        ]
+        return Response(data)
+
 
 
 class PlanServicioViewSet(viewsets.ModelViewSet):
@@ -175,3 +192,7 @@ class ChatViewSet(viewsets.ModelViewSet):
 class MensajeViewSet(viewsets.ModelViewSet):
     queryset = Mensaje.objects.all()
     serializer_class = MensajeSerializer
+
+class CalificacionEtiquetaViewSet(viewsets.ModelViewSet):
+    queryset = CalificacionEtiqueta.objects.all()
+    serializer_class = CalificacionEtiquetaSerializer

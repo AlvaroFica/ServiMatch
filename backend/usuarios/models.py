@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 class Pais(models.Model):
     nombre_pais = models.CharField(max_length=100)
@@ -152,3 +153,29 @@ class Mensaje(models.Model):
 
     def __str__(self):
         return f"Mensaje en chat #{self.chat.id}"
+    
+class Etiqueta(models.Model):
+    nombre = models.CharField(max_length=30, unique=True)
+
+    def __str__(self):
+        return self.nombre
+
+
+class CalificacionEtiqueta(models.Model):
+    servicio = models.ForeignKey(
+        'Servicio',                  # asegúrate de que coincide con tu modelo Servicio
+        on_delete=models.CASCADE,
+        related_name='calificaciones'
+    )
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,    # o 'Usuario' si usas tu propio modelo aquí
+        on_delete=models.CASCADE
+    )
+    etiquetas = models.ManyToManyField(Etiqueta)
+    creado = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('servicio', 'usuario')
+
+    def __str__(self):
+        return f"Calificación de {self.usuario} a {self.servicio}"

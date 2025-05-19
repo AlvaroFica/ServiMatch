@@ -22,7 +22,7 @@ from .views import (
     ChatViewSet,
     MensajeViewSet,
     PlanServicioViewSet,
-    ServicioViewSet
+    CalificacionEtiquetaViewSet,
 )
 
 router = DefaultRouter()
@@ -44,6 +44,7 @@ router.register(r'citas', CitaViewSet)
 router.register(r'chats', ChatViewSet)
 router.register(r'mensajes', MensajeViewSet)
 router.register(r'planeservicio', PlanServicioViewSet)
+router.register(r'calificacion-etiquetas', CalificacionEtiquetaViewSet, basename='calificacion-etiqueta')
 
 
 urlpatterns = [
@@ -52,6 +53,5 @@ urlpatterns = [
     path('registrar-trabajador/', views.vista_registrar_trabajador, name='Registrar-trabajador'),
     path('usuario/<int:usuario_id>/', views.vista_usuario_detalle, name='detalle-usuario'),
     path('servicios/<int:pk>/imagenes/', ServicioViewSet.as_view({'post': 'subir_imagenes'}), name='servicio-subir-imagenes'),
-
 
 ]

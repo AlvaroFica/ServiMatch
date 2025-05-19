@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
 </head>
+
 <body>
     <div class="login-container">
         <h2>Iniciar Sesión</h2>
@@ -27,34 +29,35 @@
     </div>
 
     <script>
-    document.getElementById('loginForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-        const form = e.target;
-        const data = {
-            correo: form.correo.value,
-            contraseña: form.contraseña.value
-        };
+            const form = e.target;
+            const data = {
+                correo: form.correo.value,
+                contraseña: form.contraseña.value
+            };
 
-        const response = await fetch('http://localhost:8000/api/login/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
+            const response = await fetch('http://localhost:8000/api/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const resultado = await response.json();
+            const mensajeDiv = document.getElementById('mensaje');
+
+            if (response.ok) {
+                localStorage.setItem('usuario_id', resultado.usuario_id);
+                window.location.href = "/principal_pagina/";
+            } else {
+                mensajeDiv.textContent = resultado.error || "Error al iniciar sesión";
+                mensajeDiv.classList.add('alert', 'alert-danger');
+            }
         });
-
-        const resultado = await response.json();
-        const mensajeDiv = document.getElementById('mensaje');
-
-        if (response.ok) {
-            localStorage.setItem('usuario_id', resultado.usuario_id);
-            window.location.href = "/principal_pagina/";
-        } else {
-            mensajeDiv.textContent = resultado.error || "Error al iniciar sesión";
-            mensajeDiv.classList.add('alert', 'alert-danger');
-        }
-    });
     </script>
 </body>
+
 </html>

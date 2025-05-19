@@ -1,13 +1,42 @@
-{# layouts/rating_modal.html #}
-<div id="rating-overlay" class="modal-overlay">
-    <div class="modal-contenido">
-        <h2>Califica a tu trabajador 1/2</h2>
-        <div class="star-rating">
-            {% for i in "12345" %}
-            <span class="star" data-star="{{ i }}">★</span>
-            {% endfor %}
+{% load static %}
+
+{% if servicio.id %}
+<div class="modal fade" id="ratingModal{{ servicio.id }}" tabindex="-1" aria-labelledby="ratingLabel{{ servicio.id }}"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <form method="post" action="{% url 'calificar-servicio' servicio.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ratingLabel{{ servicio.id }}">Calificar trabajador</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+
+                <div class="modal-body text-center">
+                    <p class="mb-3">¿Qué valoración le das a este servicio?</p>
+                    <div class="d-flex justify-content-center">
+                        {% for i in "12345" %}
+                        {% if forloop.last %}
+                        <input type="radio" name="valor" value="{{ forloop.counter }}"
+                            id="star{{ forloop.counter }}_{{ servicio.id }}" class="d-none" checked>
+                        {% else %}
+                        <input type="radio" name="valor" value="{{ forloop.counter }}"
+                            id="star{{ forloop.counter }}_{{ servicio.id }}" class="d-none">
+                        {% endif %}
+                        <label for="star{{ forloop.counter }}_{{ servicio.id }}" class="mx-1 fs-3 text-warning"
+                            style="cursor:pointer;">★</label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </div>
+            </form>
+
         </div>
-        <p id="star-message" style="display:none;"></p>
-        <button id="rating-next-1" disabled>Siguiente</button>
     </div>
 </div>
+{% endif %}

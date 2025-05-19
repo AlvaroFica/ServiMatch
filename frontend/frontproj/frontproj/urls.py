@@ -21,7 +21,11 @@ urlpatterns = [
     path('exito/', views.vista_mensaje_exito, name='mensaje_exito'),
     path('ver_planes/<int:servicio_id>/', views.vista_ver_planes, name='ver_planes'),
 
-    path('historial/', views.historial_servicio, name='historial-servicio-list'),
-    path('servicios/<int:servicio_id>/calificaciones/', views.historial_detalle, name='historial-detalle'),
+    path('admin/', admin.site.urls),
+    path('historial/', views.historial_servicio, name='historial-servicio'),
+    path('historial/<int:servicio_id>/', views.historial_detalle,   name='historial-detalle'),
+    path('servicio/<int:servicio_id>/calificar/', views.calificar_servicio, name='calificar-servicio'),
+    path('servicio/<int:servicio_id>/etiquetas/', views.ver_etiquetas, name='ver-etiquetas'),
+    path('servicio/<int:servicio_id>/etiquetas/calificar/', views.calificar_etiquetas, name='calificar-etiquetas'),
 
 ]

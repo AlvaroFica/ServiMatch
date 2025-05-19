@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Inicio</title>
+    <link rel="stylesheet" href="{% static 'css/principal_pagina.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+
+<body>
+    <div class="contenedor-app">
+        <div class="barra-superior" id="barra-superior"></div>
+        <div class="bloque-direccion-vacia" id="bloque-direccion"></div>
+
+        <div class="buscador">
+            <div class="buscador-contenedor">
+                <input type="text" placeholder="Buscar servicio cerca de ti" id="busqueda-servicio">
+                <button id="btn-buscar" class="icono-lupa">
+                    <i class="fa fa-search"></i>
+                </button>
+                <ul id="sugerencias" class="sugerencias"></ul>
+            </div>
+        </div>
+
+        <div id="mapa" style="height: 560px; margin-top: 120px;"></div>
+
+        {% block content %}
+        <!-- Aquí irá el contenido dinámico: servicios + modales -->
+        {% endblock %}
+
+        <div class="menu-inferior">
+            <div><i class="fa fa-bars"></i>
+                <p>OPCIONES</p>
+            </div>
+            <div><i class="fa fa-map-marked-alt"></i>
+                <p>CATEGORÍAS</p>
+            </div>
+            <div><i class="fa fa-star"></i>
+                <p>RANKING</p>
+            </div>
+            <div><i class="fa fa-user"></i>
+                <p>PERFIL</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay-buscador" class="overlay-buscador">
+        <div class="overlay-contenido">
+            <input type="text" id="busqueda-overlay" placeholder="Buscar servicio..."
+                oninput="mostrarSugerenciasOverlay()">
+            <ul id="sugerencias-overlay" class="sugerencias"></ul>
+            <button onclick="cerrarOverlay()">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="{% static 'js/principal_pagina.js' %}"></script>
+</body>
+
+</html>

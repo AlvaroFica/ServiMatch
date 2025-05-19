@@ -1,5 +1,11 @@
 import requests
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+
+from .models import Servicio, CalificacionEtiqueta, Etiqueta
+from .forms import EtiquetasForm
+
+API_BASE = 'http://127.0.0.1:8000/api'
 
 def register(request):
     if request.method == 'POST':
@@ -13,26 +19,19 @@ def register(request):
             'comuna': request.POST.get('comuna'),
             'contraseña': request.POST.get('contraseña'),
         }
-
         files = {}
         if 'foto_perfil' in request.FILES:
             files['foto_perfil'] = request.FILES['foto_perfil']
-
         try:
-            response = requests.post('http://127.0.0.1:8000/api/usuarios/', data=data, files=files)
+            response = requests.post(f'{API_BASE}/usuarios/', data=data, files=files)
             if response.status_code == 201:
                 usuario = response.json()
-
-                # Crear trabajador asociado inmediatamente
                 trabajador_data = {
                     "usuario": usuario['id'],
-                    "especialidad": None,  # o un ID válido si tienes una por defecto
+                    "especialidad": None,
                     "estado_verificado": False
                 }
-
-                # Puedes enviar campos vacíos de imagen si aún no los tienes
-                requests.post("http://127.0.0.1:8000/api/trabajadores/", data=trabajador_data)
-
+                requests.post(f'{API_BASE}/trabajadores/', data=trabajador_data)
                 return redirect('login')
             else:
                 comunas = get_comunas()
@@ -46,20 +45,14 @@ def register(request):
                 'error': 'Error de conexión con la API',
                 'comunas': get_comunas()
             })
-
     comunas = get_comunas()
     return render(request, 'registrar-trabajador.html', {'comunas': comunas})
 
-
-
-
 def get_comunas():
     try:
-        response = requests.get('http://127.0.0.1:8000/api/comunas/')
-        if response.status_code == 200:
-            return response.json()
-        return []
-    except:
+        resp = requests.get(f'{API_BASE}/comunas/')
+        return resp.json() if resp.status_code == 200 else []
+    except requests.exceptions.RequestException:
         return []
 
 def login(request):
@@ -68,28 +61,22 @@ def login(request):
             'correo': request.POST.get('username'),
             'contraseña': request.POST.get('password'),
         }
-
         try:
-            response = requests.post('http://localhost:8000/api/login/', json=data)
-            if response.status_code == 200:
-                usuario = response.json()
-                request.session['usuario_id'] = usuario['usuario_id']
-                request.session['nombre'] = usuario['nombre']
-                print(">>> Login exitoso, ID guardado en sesión:", request.session['usuario_id'])
+            resp = requests.post(f'{API_BASE}/login/', json=data)
+            if resp.status_code == 200:
+                u = resp.json()
+                request.session['usuario_id'] = u['usuario_id']
+                request.session['nombre'] = u['nombre']
                 return redirect('principal_pagina')
             else:
                 return render(request, 'login.html', {'error': 'Credenciales incorrectas'})
         except requests.exceptions.RequestException:
             return render(request, 'login.html', {'error': 'No se pudo conectar con el servidor'})
-
     return render(request, 'login.html')
 
-    
 def logout(request):
-    request.session.flush()  # Esto borra TODA la sesión
+    request.session.flush()
     return redirect('login')
-
-
 
 def prueba(request):
     return render(request, 'prueba.html')
@@ -103,134 +90,104 @@ def vista_cliente_inicio(request):
 def vista_perfil_trabajador(request):
     usuario_id = request.session.get('usuario_id')
     trabajador_data = {}
-    
     if usuario_id:
         try:
-            trab_response = requests.get(f'http://localhost:8000/api/trabajadores/?usuario={usuario_id}')
-            if trab_response.status_code == 200:
-                trabajadores = trab_response.json()
-                if trabajadores:
-                    trabajador_data = trabajadores[0]  # solo uno porque es OneToOne
+            resp = requests.get(f'{API_BASE}/trabajadores/?usuario={usuario_id}')
+            if resp.status_code == 200 and resp.json():
+                trabajador_data = resp.json()[0]
         except requests.exceptions.RequestException:
             pass
-
-    return render(request, 'perfil_trabajador.html', {
-        'trabajador': trabajador_data
-    })
+    return render(request, 'perfil_trabajador.html', {'trabajador': trabajador_data})
 
 def vista_mis_servicios(request):
     usuario_id = request.session.get('usuario_id')
-
     if not usuario_id:
         return render(request, 'mis_servicios.html', {'servicios': []})
-
-    # Paso 1: obtener el trabajador del usuario
     try:
-        r_trab = requests.get(f'http://localhost:8000/api/trabajadores/?usuario={usuario_id}')
-        trabajador_data = r_trab.json()
-        if not trabajador_data:
+        r = requests.get(f'{API_BASE}/trabajadores/?usuario={usuario_id}')
+        trab = r.json()
+        if not trab:
             return render(request, 'mis_servicios.html', {'servicios': []})
-        trabajador_id = trabajador_data[0]['id']
-    except:
+        trabajador_id = trab[0]['id']
+    except requests.exceptions.RequestException:
         return render(request, 'mis_servicios.html', {'servicios': []})
 
-    # Paso 2: obtener todos los servicios
     try:
-        r_serv = requests.get('http://localhost:8000/api/servicios/')
-        servicios_data = r_serv.json()
-    except:
-        servicios_data = []
+        r = requests.get(f'{API_BASE}/servicios/')
+        servicios = r.json()
+    except requests.exceptions.RequestException:
+        servicios = []
 
-    # Paso 3: filtrar solo los servicios de este trabajador
     servicios_usuario = []
-    for serv in servicios_data:
-        if trabajador_id in serv.get('trabajadores', []):
-            # Añadir lista de imágenes vacía si no hay campo
-            if 'imagenes' not in serv:
-                serv['imagenes'] = []
-            servicios_usuario.append(serv)
-
+    for s in servicios:
+        if trabajador_id in s.get('trabajadores', []):
+            s.setdefault('imagenes', [])
+            servicios_usuario.append(s)
     return render(request, 'mis_servicios.html', {'servicios': servicios_usuario})
-
 
 def vista_agregar_servicio(request):
     if request.method == 'POST':
         usuario_id = request.session.get('usuario_id')
+        try:
+            r = requests.get(f'{API_BASE}/trabajadores/?usuario={usuario_id}')
+            trabajador_id = r.json()[0]['id']
+        except:
+            trabajador_id = None
 
-        # Obtener el trabajador asociado
-        trabajador_resp = requests.get(f'http://localhost:8000/api/trabajadores/?usuario={usuario_id}')
-        trabajadores = trabajador_resp.json()
-        if trabajadores:
-            trabajador_id = trabajadores[0]['id']
-
-            # Crear el servicio
+        if trabajador_id:
             data = {
                 "nombre_serv": request.POST.get("nombre_serv"),
                 "tipo": int(request.POST.get("tipo")),
                 "trabajadores": [trabajador_id],
             }
-
-            servicio_resp = requests.post('http://localhost:8000/api/servicios/', json=data)
-
-            if servicio_resp.status_code == 201:
-                servicio_id = servicio_resp.json()['id']
-
-                # Subir imágenes si se mandaron
-                imagenes = request.FILES.getlist('imagenes')
-                if imagenes:
-                    files = [('imagenes', img) for img in imagenes]
-                    upload_resp = requests.post(
-                        f'http://localhost:8000/api/servicios/{servicio_id}/imagenes/',
-                        files=files
-                    )
-
-                    if upload_resp.status_code not in [200, 201]:
-                        print(">>> Error subiendo imágenes:", upload_resp.status_code, upload_resp.text)
-
+            resp = requests.post(f'{API_BASE}/servicios/', json=data)
+            if resp.status_code == 201:
+                sid = resp.json()['id']
+                imgs = request.FILES.getlist('imagenes')
+                if imgs:
+                    files = [('imagenes', img) for img in imgs]
+                    requests.post(f'{API_BASE}/servicios/{sid}/imagenes/', files=files)
                 return redirect('mis_servicios')
-
         return render(request, 'agregar_servicio.html', {'error': 'No se pudo crear el servicio.'})
 
-    # GET → cargar tipos
     try:
-        tipos = requests.get('http://localhost:8000/api/tiposervicios/').json()
-    except:
+        tipos = requests.get(f'{API_BASE}/tiposervicios/').json()
+    except requests.exceptions.RequestException:
         tipos = []
-
     return render(request, 'agregar_servicio.html', {'tipos_servicio': tipos})
-
-
 
 def vista_perfil(request):
     return render(request, 'perfil.html')
 
 def vista_principal_pagina(request):
     usuario_id = request.session.get('usuario_id')
-    print(">>> vista_principal_pagina: usuario_id en sesión:", usuario_id)
-
-    es_trabajador = False
-    nombre_usuario = None
-
+    es_trab = False
+    nombre = None
     if usuario_id:
         try:
-            # Obtener usuario desde API
-            response = requests.get(f'http://127.0.0.1:8000/api/usuarios/{usuario_id}/')
-            if response.status_code == 200:
-                usuario_data = response.json()
-                nombre_usuario = usuario_data['nombre']
-
-                # Verificar si es trabajador
-                trab_response = requests.get(f'http://127.0.0.1:8000/api/trabajadores/?usuario={usuario_id}')
-                if trab_response.status_code == 200:
-                    trabajadores = trab_response.json()
-                    es_trabajador = len(trabajadores) > 0
-        except:
-            print(">>> Error consultando API")
+            r = requests.get(f'{API_BASE}/usuarios/{usuario_id}/')
+            if r.status_code == 200:
+                nombre = r.json()['nombre']
+                rt = requests.get(f'{API_BASE}/trabajadores/?usuario={usuario_id}')
+                es_trab = bool(rt.json())
+        except requests.exceptions.RequestException:
+            pass
+    # Obtener servicios y etiquetas para mostrar en la página principal
+    try:
+        servicios = requests.get(f'{API_BASE}/servicios/').json()
+    except requests.exceptions.RequestException:
+        servicios = []
+    try:
+        etiquetas = requests.get(f'{API_BASE}/etiquetas/').json()
+    except requests.exceptions.RequestException:
+        etiquetas = []
 
     return render(request, 'principal_pagina.html', {
         'logueado': bool(usuario_id),
-        'es_trabajador': es_trabajador,
-        'nombre_usuario': nombre_usuario
+        'es_trabajador': es_trab,
+        'nombre_usuario': nombre,
+        'servicios': servicios,
+        'etiquetas': etiquetas,
     })
 
 def C_trabajador(request):
@@ -240,7 +197,7 @@ def introduccion_trab(request):
     return render(request, 'introduccion_trab.html')
 
 def vista_registro_trabajador(request):
-    return render(request, 'registro_trabajador.html')  # crea esta plantilla si quieres
+    return render(request, 'registro_trabajador.html')
 
 def vista_planes_servicio(request, servicio_id):
     return render(request, 'planes_servicios.html', {'servicio_id': servicio_id})
@@ -251,30 +208,129 @@ def vista_mensaje_exito(request):
 def vista_ver_planes(request, servicio_id):
     return render(request, 'ver_planes.html', {'servicio_id': servicio_id})
 
-API_BASE = 'http://127.0.0.1:8000/api'
-
 def historial_servicio(request):
     try:
         resp = requests.get(f'{API_BASE}/servicios/')
         servicios = resp.json() if resp.status_code == 200 else []
-    except requests.RequestException:
+    except requests.exceptions.RequestException:
         servicios = []
+
+    for s in servicios:
+        try:
+            etiquetas_resp = requests.get(f'{API_BASE}/servicios/{s["id"]}/etiquetas/')
+            s['etiquetas'] = etiquetas_resp.json() if etiquetas_resp.status_code == 200 else []
+        except requests.exceptions.RequestException:
+            s['etiquetas'] = []
     return render(request, 'historial-servicio.html', {'servicios': servicios})
 
 def historial_detalle(request, servicio_id):
+    # 1. Traer servicio
     try:
-        resp_serv = requests.get(f'{API_BASE}/servicios/{servicio_id}/')
-        servicio = resp_serv.json() if resp_serv.status_code == 200 else {}
-    except requests.RequestException:
-        servicio = {}
+        resp = requests.get(f'{API_BASE}/servicios/{servicio_id}/')
+        servicio = resp.json() if resp.status_code == 200 else {}
+    except requests.exceptions.RequestException:
+        return render(request, "404.html", status=404)
 
+    # 2. Calificaciones (opcional; no afecta al problema)
     try:
-        resp_cal = requests.get(f'{API_BASE}/servicios/{servicio_id}/calificaciones/')
-        calificaciones = resp_cal.json() if resp_cal.status_code == 200 else []
-    except requests.RequestException:
+        r2 = requests.get(f'{API_BASE}/servicios/{servicio_id}/calificaciones/')
+        calificaciones = r2.json() if r2.status_code == 200 else []
+    except requests.exceptions.RequestException:
         calificaciones = []
 
-    return render(request, 'historial-detalle.html', {
+    # 3. Comprobamos sesión
+    logueado = bool(request.session.get("usuario_id"))
+
+    return render(
+        request,
+        "historial-detalle.html",
+        {
+            "servicio": servicio,
+            "calificaciones": calificaciones,
+            "logueado": logueado,   # ← **importante**
+        },
+    )
+
+def calificar_servicio(request, servicio_id):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión para calificar.")
+        return redirect('login')
+
+    # Obtener servicio desde la API
+    resp = requests.get(f'{API_BASE}/servicios/{servicio_id}/')
+    if resp.status_code != 200:
+        return render(request, '404.html', status=404)
+
+    servicio = resp.json()
+
+    if request.method == 'POST':
+        valor = request.POST.get('valor')
+        comentario = request.POST.get('comentario')
+
+        request.session['calificacion'] = {
+            'servicio_id': servicio_id,
+            'usuario_id': usuario_id,
+            'valor': valor,
+            'comentario': comentario
+        }
+
+        return redirect('calificar-etiquetas', servicio_id=servicio_id)
+
+    return render(request, 'calificar-servicio.html', {
+        'trabajador': servicio['trabajadores'][0] if servicio['trabajadores'] else {},
+        'servicio_id': servicio_id
+    })
+
+def ver_etiquetas(request, servicio_id):
+    from django.db.models import Count, Q
+    servicio = get_object_or_404(Servicio, id=servicio_id)
+    etiquetas = Etiqueta.objects.annotate(
+        menciones=Count(
+            'calificacionetiqueta__etiquetas',
+            filter=Q(calificacionetiqueta__servicio=servicio)
+        )
+    ).order_by('-menciones')
+    return render(request, 'ver-etiquetas.html', {
         'servicio': servicio,
-        'calificaciones': calificaciones
+        'etiquetas': etiquetas
+    })
+
+def calificar_etiquetas(request, servicio_id):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return redirect('login')
+
+    etiquetas = [
+        "Puntual", "Amable", "Rápido", "Atento",
+        "Profesional", "Detallista", "Respetuoso", "Limpio", "Empático"
+    ]
+
+    if request.method == 'POST':
+        seleccionadas = request.POST.get('etiquetas', "").split(",")
+
+        datos_previos = request.session.get('calificacion')
+        if not datos_previos:
+            messages.error(request, "No se encontró la información previa.")
+            return redirect('calificar-servicio', servicio_id=servicio_id)
+
+        data = {
+            'servicio': servicio_id,
+            'usuario': usuario_id,
+            'valor': datos_previos['valor'],
+            'comentario': datos_previos['comentario'],
+            'etiquetas': seleccionadas
+        }
+
+        r = requests.post(f'{API_BASE}/calificaciones/', json=data)
+        if r.status_code in (200, 201):
+            messages.success(request, "¡Gracias por tu calificación!")
+            request.session.pop('calificacion', None)
+            return redirect('historial-detalle', servicio_id=servicio_id)
+        else:
+            messages.error(request, "Error al guardar la calificación.")
+
+    return render(request, 'calificar-etiquetas.html', {
+        'etiquetas': etiquetas,
+        'servicio_id': servicio_id
     })

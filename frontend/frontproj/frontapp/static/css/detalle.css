@@ -1,0 +1,149 @@
+body {
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1300px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: none;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+}
+
+.card-header h5 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-body img {
+    border: 2px solid #e9ecef;
+    object-fit: cover;
+}
+
+h4.border-bottom {
+    border-color: #e9ecef !important;
+    padding-bottom: 0.5rem;
+}
+
+dl.row dt {
+    font-weight: 500;
+}
+
+dl.row dd {
+    margin: 0 0 0.75rem 0;
+}
+
+.badge {
+    font-size: 0.85rem;
+    padding: 0.4em 0.8em;
+    border-radius: 0.5rem;
+}
+
+.badge-primary {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.badge-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary\:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+.text-right {
+    margin-top: 2rem;
+}
+
+form.calificacion-form {
+    display: none;
+}
+
+.cards-fullwidth {
+    padding: 20px;
+}
+
+.titulo-seccion {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: #222;
+}
+
+.precio {
+    font-weight: 600;
+    color: #007bff;
+    margin-bottom: 0.25rem;
+}
+
+.fecha {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 0.75rem;
+}
+
+.descripcion {
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.4;
+}
+
+.enlace-tarjeta,
+.enlace-tarjeta\:hover {
+    color: inherit;
+    text-decoration: none;
+}
+
+.modal-content {
+    border-radius: .75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+}
+
+.modal-header h5 {
+    font-weight: 600;
+}
+
+.modal-footer .btn+.btn {
+    margin-left: .5rem;
+}

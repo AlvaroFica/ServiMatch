@@ -1,113 +1,43 @@
+{% extends "layouts/principal_base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Página de Inicio</title>
-  <link rel="stylesheet" href="{% static 'css/principal_pagina.css' %}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-</head>
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    {% for servicio in servicios %}
+    <div class="col-md-6 mb-4">
+      <div class="card p-3 shadow-sm">
+        <h5 class="card-title">{{ servicio.nombre }}</h5>
+        <p class="card-text">{{ servicio.descripcion }}</p>
 
-<body>
-  <div class="contenedor-app">
-    <div class="barra-superior" id="barra-superior">
-      <!-- Aquí se inyectan los botones según sesión -->
-    </div>
+        <!-- Depuración temporal -->
+        <p><strong>Servicio ID:</strong> {{ servicio.id }}</p>
 
-    <!-- BLOQUE DE DIRECCIÓN (oculto por ahora, ya que sesión se maneja desde el frontend) -->
-    <div class="bloque-direccion-vacia" id="bloque-direccion">
-      <!-- Dirección irá aquí si la agregás más adelante -->
-    </div>
-
-    <!-- BUSCADOR DE SERVICIOS -->
-    <div class="buscador">
-      <div class="buscador-contenedor">
-        <input type="text" placeholder="Buscar servicio cerca de ti" id="busqueda-servicio">
-        <button id="btn-buscar" class="icono-lupa">
-          <i class="fa fa-search"></i>
+        {% if servicio.id %}
+        <!-- Botón para calificar -->
+        <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
+          data-bs-target="#ratingModal{{ servicio.id }}">
+          Calificar Servicio
         </button>
-        <ul id="sugerencias" class="sugerencias"></ul>
+
+        <!-- Botón para seleccionar etiquetas -->
+        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+          data-bs-target="#tagModal{{ servicio.id }}">
+          Etiquetas
+        </button>
+
+        <!-- Modales individuales por servicio -->
+        {% include "layouts/rating_modal.html" with servicio=servicio %}
+        {% include "layouts/tag_selector_modal.html" with servicio=servicio etiquetas=etiquetas %}
+
+        {% else %}
+        <div class="alert alert-warning">
+          Servicio sin ID válido, no se puede calificar.
+        </div>
+        {% endif %}
       </div>
     </div>
-
-    <!-- MAPA SIMULADO -->
-    <div id="mapa" style="height: 560px; margin-top: 120px;"></div>
-
-    <!-- MENÚ INFERIOR -->
-    <div class="menu-inferior">
-      <div><i class="fa fa-bars"></i>
-        <p>OPCIONES</p>
-      </div>
-      <div><i class="fa fa-map-marked-alt"></i>
-        <p>CATEGORÍAS</p>
-      </div>
-      <div><i class="fa fa-star"></i>
-        <p>RANKING</p>
-      </div>
-      <div><i class="fa fa-user"></i>
-        <p>PERFIL</p>
-      </div>
-    </div>
+    {% endfor %}
   </div>
-
-  <!-- VISTA OVERLAY DE BÚSQUEDA -->
-  <div id="overlay-buscador" class="overlay-buscador">
-    <div class="overlay-contenido">
-      <input type="text" id="busqueda-overlay" placeholder="Buscar servicio..." oninput="mostrarSugerenciasOverlay()">
-      <ul id="sugerencias-overlay" class="sugerencias"></ul>
-      <button onclick="cerrarOverlay()">Cerrar</button>
-    </div>
-  </div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", async function () {
-      const usuarioId = localStorage.getItem("usuario_id");
-      const barra = document.getElementById("barra-superior");
-
-      if (!usuarioId) {
-        barra.innerHTML = `
-          <a href="/login/" class="btn-inactivo">INICIAR SESIÓN</a>
-        `;
-        return;
-      }
-
-      let contenido = `
-        <a href="/logout/" class="opcion-menu">
-          <i class="fa fa-sign-out-alt"></i> Cerrar sesión
-        </a>
-      `;
-
-      try {
-        const response = await fetch(`http://localhost:8000/api/trabajadores/?usuario=${usuarioId}`);
-        const trabajadores = await response.json();
-
-        if (trabajadores.length > 0) {
-          contenido += `
-            <a href="#" class="btn-activo">CLIENTE Y TRABAJADOR</a>
-            <a href="/perfil_trabajador/" class="btn-inactivo">PANEL TRABAJADOR</a>
-          `;
-        } else {
-          contenido += `
-            <a href="#" class="btn-activo">SOLO CLIENTE</a>
-            <a href="/pagina_inicio/" class="btn-inactivo">REGISTRARSE COMO TRABAJADOR</a>
-          `;
-        }
-      } catch (err) {
-        console.error("Error al verificar rol de usuario:", err);
-        contenido += `<p>Error cargando opciones</p>`;
-      }
-
-      barra.innerHTML = contenido;
-    });
-  </script>
-
-  <script src="{% static 'js/principal_pagina.js' %}"></script>
-  {% include "layouts/rating_modal.html" %}
-  {% include "layouts/tag_selector_modal.html" %}
-</body>
-
-</html>
+</div>
+{% endblock %}

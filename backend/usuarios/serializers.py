@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import *
 from django.contrib.auth.hashers import make_password
+from .models import CalificacionEtiqueta
 
 class PaisSerializer(serializers.ModelSerializer):
     class Meta:
@@ -117,3 +118,14 @@ class TrabajadorReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trabajador
         fields = '__all__'
+
+class EtiquetaCountSerializer(serializers.Serializer):
+    nombre = serializers.CharField()
+    conteo = serializers.IntegerField()
+
+class CalificacionEtiquetaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CalificacionEtiqueta
+        # Incluye el campo valor si lo estás usando
+        fields = ['servicio', 'usuario', 'etiquetas', 'valor', 'creado']
+        read_only_fields = ['creado']
