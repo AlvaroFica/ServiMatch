@@ -39,24 +39,29 @@
     color: #222;
 }
 
-/* Precio y fecha */
-.precio {
-    font-weight: 600;
-    color: #007bff;
-    margin-bottom: 0.25rem;
-}
-
-.fecha {
-    font-size: 0.875rem;
-    color: #666;
-    margin-bottom: 0.75rem;
-}
-
 /* Descripción */
 .descripcion {
     font-size: 0.9rem;
     color: #555;
     line-height: 1.4;
+}
+
+/* Botones personalizados */
+.btn-box {
+    border: 2px solid #007bff;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 0.5rem 0 0;
+    display: inline-block;
+    text-decoration: none;
+    color: #007bff;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-box:hover {
+    background-color: #007bff;
+    color: #fff;
 }
 
 /* Enlace de tarjeta para quitar texto azul */

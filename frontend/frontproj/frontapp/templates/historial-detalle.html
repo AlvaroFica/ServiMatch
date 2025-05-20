@@ -14,9 +14,10 @@
     {# ─────── BOTÓN CALIFICAR (arriba) ─────── #}
     {% if logueado and servicio.trabajadores|length > 0 %}
     <div class="text-end mb-3">
-        <a href="{% url 'calificar-servicio' servicio.id %}" class="btn btn-primary btn-sm">
+        <button type="button" class="btn btn-primary btn-sm"
+            onclick="window.location.href='{% url 'calificar-servicio' servicio.id %}'">
             Calificar trabajador
-        </a>
+        </button>
     </div>
     {% endif %}
 

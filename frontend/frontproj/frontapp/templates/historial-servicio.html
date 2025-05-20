@@ -24,7 +24,9 @@
                     <h5 class="card-title">{{ s.nombre_serv }}</h5>
 
                     {% if s.descripcion_breve %}
-                    <p class="card-text">{{ s.descripcion_breve }}</p>
+                    <p class="card-text">
+                        <strong>Descripción:</strong> {{ s.descripcion_breve }}
+                    </p>
                     {% endif %}
 
                     <!-- Etiquetas -->
@@ -38,25 +40,16 @@
                     </div>
                     {% endif %}
 
-                    <!-- Botones -->
-                    <a href="{% url 'historial-detalle' s.id %}" class="btn btn-primary btn-sm mt-2">
+                    <!-- Botones  -->
+                    <button type="button" class="btn btn-outline-primary btn-sm btn-box"
+                        onclick="window.location.href='{% url 'historial-detalle' s.id %}'">
                         Ver detalle
-                    </a>
-
-                    {% if s.id %}
-                    <!-- Redirección a página de calificación completa -->
-                    <a href="{% url 'calificar-servicio' s.id %}" class="btn btn-outline-success btn-sm mt-2 ms-2">
-                        Evaluar servicio
-                    </a>
-
-                    <!-- Modal de calificación rápida -->
-                    <button type="button" class="btn btn-outline-primary btn-sm mt-2 ms-2" data-bs-toggle="modal"
-                        data-bs-target="#ratingModal{{ s.id }}">
-                        Calificar rápido
                     </button>
 
-                    {% include "layouts/rating_modal.html" with servicio=s %}
-                    {% endif %}
+                    <button type="button" class="btn btn-outline-primary btn-sm btn-box"
+                        onclick="window.location.href='{% url 'calificar-servicio' s.id %}'">
+                        Evaluar servicio
+                    </button>
                 </div>
             </div>
         </div>
