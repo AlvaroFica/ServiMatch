@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil Trabajador</title>
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/perfil_trabajador.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+  <div class="perfil-container">
+    <div class="header-tabs">
+      <button class="header-tab active">TRABAJADOR</button>
+      <button class="header-tab" onclick="window.location.href='/perfil_cliente/'">CLIENTE</button>
+    </div>
+    <div class="perfil-box">
+      <div class="perfil-direccion" id="direccion-trabajador"></div>
+      <div class="perfil-card">
+        <img src="/static/img/default-user.png" class="perfil-img-circulo" id="img-perfil-trabajador">
+        <div class="perfil-nombre" id="nombre-trabajador"></div>
+        <div class="perfil-especialidad" id="especialidad-trabajador"></div>
+        <div class="perfil-rating" id="rating-trabajador">
+          <i class="fa fa-star"></i>
+          <i class="fa fa-star"></i>
+          <i class="fa fa-star"></i>
+          <i class="fa fa-star"></i>
+          <i class="fa-regular fa-star"></i>
+        </div>
+        <div class="perfil-info-row">
+          <div class="perfil-info-block">
+            <i class="fa fa-calendar"></i>
+            <div>ANTIGÜEDAD</div>
+            <div id="fecha-trabajador"></div>
+          </div>
+          <div class="perfil-info-block">
+            <i class="fa fa-briefcase"></i>
+            <div>SERVICIOS</div>
+            <div id="servicios-trabajador"></div>
+          </div>
+        </div>
+        <div class="perfil-btns">
+          <button class="perfil-btn" onclick="window.location.href='/mis_servicios/'">Mis servicios y planes</button>
+          <button class="perfil-btn" onclick="window.location.href='/editar_trabajador/'">Editar información personal</button>
+        </div>
+        <ul class="perfil-menu-list">
+          <li data-link="/principal_pagina/"><i class="fa fa-home"></i>Inicio</li>
+          <li data-link="/historial/"><i class="fa fa-history"></i>Historial de servicios</li>
+          <li data-link="/mis_servicios/"><i class="fa fa-list"></i>Mis servicios y planes</li>
+          <li data-link="/editar_trabajador/"><i class="fa fa-user-edit"></i>Editar información personal</li>
+          <li data-link="/logout/"><i class="fa fa-sign-out-alt"></i>Cerrar sesión</li>
+        </ul>
+      </div>
+      <nav class="perfil-bottom-nav">
+        <div class="icon-nav"><i class="fa fa-bars"></i><div style="font-size:11px;">OPCIONES</div></div>
+        <div class="icon-nav"><i class="fa fa-star"></i><div style="font-size:11px;">RANKING</div></div>
+        <div class="icon-nav"><i class="fa fa-user"></i><div style="font-size:11px;">PERFIL</div></div>
+      </nav>
+    </div>
+  </div>
+  <script src="{% static 'js/perfil_trabajador.js' %}"></script>
+</body>
+</html>

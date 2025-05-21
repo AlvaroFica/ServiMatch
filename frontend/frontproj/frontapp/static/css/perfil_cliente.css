@@ -1,0 +1,207 @@
+:root {
+  --violeta: #6a1bb1;
+  --gris: #f8f8fc;
+  --gris-claro: #e0e7ff;
+  --icon: #6a1bb1;
+}
+body {
+  background: var(--gris);
+  padding-bottom: 58px;
+}
+.header-tabs {
+  width: 100%;
+  display: flex;
+  background: var(--violeta);
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+  margin-bottom: 0;
+  min-height: 45px;
+}
+.header-tab {
+  flex: 1 1 50%;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 14px 0 12px 0;
+  border: none;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.header-tab.active {
+  background: #fff;
+  color: var(--violeta);
+  border-radius: 12px 12px 0 0;
+  cursor: default;
+}
+.trabajador-msg {
+  flex: 1 1 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #eee;
+  font-size: 14px;
+  font-style: italic;
+  background: transparent;
+  padding: 0 6px;
+  height: 100%;
+  gap: 4px;
+}
+.perfil-container {
+  background: var(--gris);
+  border-radius: 0 0 16px 16px;
+  margin-top: 0;
+  box-shadow: 0 2px 8px #e4e4ed33;
+  padding-bottom: 30px;
+}
+.perfil-box {
+  max-width: 420px;
+  margin: 0 auto;
+  padding-bottom: 60px;
+  background: #fff;
+  min-height: 100vh;
+}
+.perfil-direccion {
+  color: #666;
+  font-size: 15px;
+  padding: 0 16px 10px 16px;
+  margin-bottom: 4px;
+}
+.perfil-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 14px #b9b7f340;
+  margin: 14px 16px 10px 16px;
+  padding: 16px 14px 10px 14px;
+  text-align: center;
+  position: relative;
+}
+.perfil-img-circulo {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: var(--gris-claro);
+  object-fit: cover;
+  border: 3px solid #fff;
+  margin: 0 auto 6px auto;
+  display: block;
+}
+.perfil-nombre {
+  font-size: 21px;
+  font-weight: bold;
+  color: var(--violeta);
+  margin-top: 3px;
+}
+.perfil-especialidad {
+  font-size: 15px;
+  color: #444;
+  margin-bottom: 7px;
+}
+.perfil-info-row {
+  display: flex;
+  justify-content: space-around;
+  margin: 16px 0 8px 0;
+  gap: 12px;
+}
+.perfil-info-block {
+  background: var(--gris-claro);
+  border-radius: 10px;
+  flex: 1;
+  padding: 13px 4px;
+  min-width: 90px;
+  font-size: 14px;
+}
+.perfil-info-block i {
+  color: var(--icon);
+  margin-bottom: 2px;
+  font-size: 19px;
+}
+.perfil-btns {
+  display: flex;
+  gap: 10px;
+  margin: 8px 0 6px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.perfil-btn {
+  background: var(--violeta);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+  margin-bottom: 4px;
+  transition: background 0.13s;
+}
+.perfil-btn:active,
+.perfil-btn:hover {
+  background: #37125c;
+}
+.perfil-menu-list {
+  margin: 12px 0 0 0;
+  padding: 0;
+  list-style: none;
+}
+.perfil-menu-list li {
+  padding: 11px 15px;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 16px;
+  cursor: pointer;
+  background: #fff;
+  transition: background 0.12s;
+}
+.perfil-menu-list li:last-child {
+  border-radius: 0 0 14px 14px;
+  border-bottom: none;
+}
+.perfil-menu-list li i {
+  color: var(--violeta);
+  font-size: 18px;
+}
+.perfil-menu-list li:active {
+  background: var(--gris-claro);
+}
+.perfil-bottom-nav {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  background: #fff;
+  border-top: 1.5px solid #eee;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 54px;
+  z-index: 100;
+  width: 100vw;
+  max-width: 420px;
+  box-shadow: 0 -1px 8px #e2c9fa44;
+  padding-bottom: 3px;
+  padding-top: 2px;
+  border-radius: 0 0 18px 18px;
+}
+.perfil-bottom-nav .icon-nav {
+  color: var(--violeta);
+  font-size: 24px;
+  text-align: center;
+  padding: 0;
+}
+@media (max-width: 500px) {
+  .perfil-box {
+    padding-bottom: 80px;
+  }
+  .perfil-card {
+    margin: 10px 2vw 6px 2vw;
+    padding: 10px 5vw 6px 5vw;
+  }
+}
+@media (max-width: 480px) {
+  .perfil-bottom-nav {
+    border-radius: 0;
+    max-width: 100vw;
+  }
+}

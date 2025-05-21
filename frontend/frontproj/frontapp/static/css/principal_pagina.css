@@ -230,3 +230,80 @@ body {
 #centrar-ubicacion i {
   pointer-events: none;
 }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+        }
+        .header-app {
+            width: 100%;
+            max-width: 480px;
+            margin: auto;
+            padding: 0 0 12px 0;
+            position: sticky;
+            top: 0;
+            background: rgba(255,255,255,0.96);
+            z-index: 1001;
+            box-shadow: 0 2px 8px #b9b7f340;
+        }
+        .header-app-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px 0 16px;
+        }
+        .logo-header {
+            font-weight: bold;
+            font-size: 22px;
+            color: #4B0082;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .user-short {
+            font-size: 15px;
+            color: #222;
+            font-weight: 600;
+        }
+        .header-app-row .fa-user-circle {
+            font-size: 28px;
+            color: #8667e2;
+        }
+        .barra-superior {
+            display: none !important;
+        }
+        /* Ajustar buscador visualmente */
+        .buscador {
+            margin-top: 0;
+        }
+        /* Menú inferior flotante */
+        .menu-inferior {
+            border-radius: 18px 18px 0 0;
+            box-shadow: 0 -2px 14px #b9b7f340;
+            border-top: none;
+            background: #fff;
+            padding: 8px 0 5px 0;
+            max-width: 480px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .menu-inferior div {
+            cursor: pointer;
+            transition: background 0.12s;
+            padding: 4px 0;
+            border-radius: 10px;
+        }
+        .menu-inferior div:active {
+            background: #f3f2fe;
+        }
+        /* Animación iconos */
+        .menu-inferior i {
+            transition: color 0.2s;
+        }
+        .menu-inferior div:hover i {
+            color: #8667e2;
+        }
+        /* Botón chat flotante */
+        #btn-chat {
+            filter: drop-shadow(0 2px 6px #8882);
+        }
