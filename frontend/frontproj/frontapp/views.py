@@ -172,6 +172,18 @@ def vista_registro_trabajador(request):
 
 # PERFILES
 
+def vista_perfil_trabajador_publico(request, id):
+    trabajador_data = {}
+    try:
+        trab_response = requests.get(f'http://localhost:8000/api/trabajadores/{id}/')
+        if trab_response.status_code == 200:
+            trabajador_data = trab_response.json()
+    except Exception:
+        pass
+    return render(request, 'perfiles/perfil_trabajador_publico.html', {'trabajador': trabajador_data})
+
+
+
 def perfil_cliente(request):
     return render(request, 'perfiles/perfil_cliente.html')
 
@@ -202,6 +214,11 @@ def vista_perfil_trabajador_id(request, usuario_id):
     return render(request, 'perfiles/perfil_trabajador.html', {'trabajador': trabajador_data})
 
 # PLANES
+
+
+def ver_planes_pov_trab(request, servicio_id):
+    return render(request, 'planes/ver_planes_pov_trab.html', {'servicio_id': servicio_id})
+
 
 def vista_planes_servicio(request, servicio_id):
     return render(request, 'planes/planes_servicios.html', {'servicio_id': servicio_id})
@@ -370,3 +387,9 @@ def vista_contratar(request, plan_id):
 
 def vista_chat(request, chat_id):
     return render(request, 'chat.html', {'chat_id': chat_id})
+
+def pago_exitoso(request):
+    return render(request, 'pago_exitoso.html')
+
+def pago_fallido(request):
+    return render(request, 'pago_fallido.html')

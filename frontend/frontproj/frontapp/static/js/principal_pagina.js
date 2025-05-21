@@ -61,13 +61,12 @@ document.addEventListener("DOMContentLoaded", () => {
         servicioId = (typeof s === 'object' && s !== null) ? s.id : s;
       }
 
-      // Construir el HTML del popup
       const popupContent = `
         <div style="text-align:center; font-family:Arial,sans-serif;">
           <strong>${trab.usuario.nombre} ${trab.usuario.apellido}</strong><br/>
           <em>${trab.especialidad?.nombre_esp || 'Sin especialidad'}</em><br/><br/>
           <a
-            href="/perfil_trabajador/${trab.usuario.id}/"
+            href="/perfil_trabajador_publico/${trab.id}/"
             style="
               display:inline-block;
               margin:0 4px 4px 0;
@@ -81,21 +80,22 @@ document.addEventListener("DOMContentLoaded", () => {
           >👤 Ver Perfil</a>
           ${servicioId
             ? `<a
-                 href="/planes_servicio/${servicioId}/"
-                 style="
-                   display:inline-block;
-                   margin:0 0 4px 4px;
-                   padding:6px 12px;
-                   background:#27ae60;
-                   color:#fff;
-                   border-radius:4px;
-                   text-decoration:none;
-                   font-weight:600;
-                 "
-               >🛠️ Contratar</a>`
+                href="/planes_servicio/${servicioId}/"
+                style="
+                  display:inline-block;
+                  margin:0 0 4px 4px;
+                  padding:6px 12px;
+                  background:#27ae60;
+                  color:#fff;
+                  border-radius:4px;
+                  text-decoration:none;
+                  font-weight:600;
+                "
+              >🛠️ Contratar</a>`
             : ''}
         </div>
       `;
+
 
       L.marker([trab.latitud, trab.longitud], icono ? { icon: icono } : undefined)
         .bindPopup(popupContent)

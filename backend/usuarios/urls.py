@@ -76,4 +76,5 @@ urlpatterns = [
     path('graficos/usuarios-online/', views.api_usuarios_online),
     path('admin/pendientes/', views.vista_admin_pendientes, name='admin_pendientes'),
     path('chats-usuario/<int:usuario_id>/', views.api_chats_usuario),
+    path('mercadopago/preferencia/', views.crear_preferencia_mp, name='crear_preferencia_mp'),
 ]

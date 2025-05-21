@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Planes del Servicio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/ver_planes_pov_trab.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="planes-container">
+  <h2 class="titulo-seccion">Planes del Servicio</h2>
+  <div id="planes-list"></div>
+  <div class="btn-agregar-plan">
+    <a href="{% url 'crear_plan' servicio_id=servicio_id %}" id="btn-agregar-plan"><i class="fa fa-plus"></i> Agregar plan</a>
+  </div>
+</div>
+<script src="{% static 'js/ver_planes_pov_trab.js' %}"></script>
+</body>
+</html>

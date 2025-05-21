@@ -309,6 +309,47 @@ class PlanServicioViewSet(viewsets.ModelViewSet):
         return self.queryset.all()
 
 
+# backend/principal/views.py
+import json
+import requests
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+ACCESS_TOKEN = 'TU_ACCESS_TOKEN_DE_MERCADOPAGO'
+
+@csrf_exempt
+def crear_preferencia_mp(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        monto = data.get("precio", 10000)
+        descripcion = data.get("descripcion", "Plan contratado")
+
+        back_urls = {
+            "success": "https://TU_NGROK/pago_exitoso/",
+            "failure": "https://TU_NGROK/pago_fallido/",
+            "pending": "https://TU_NGROK/pago_pendiente/"
+        }
+
+        body = {
+            "items": [{
+                "title": descripcion,
+                "quantity": 1,
+                "currency_id": "CLP",
+                "unit_price": monto
+            }],
+            "back_urls": back_urls,
+            "auto_return": "approved"
+        }
+        url = "https://api.mercadopago.com/checkout/preferences"
+        headers = {
+            "Authorization": f"Bearer {ACCESS_TOKEN}"
+        }
+        r = requests.post(url, json=body, headers=headers)
+        return JsonResponse(r.json())
+    return JsonResponse({"error": "Método no permitido"}, status=405)
+
+
+
 
 class TipoPagoViewSet(viewsets.ModelViewSet):
     queryset = TipoPago.objects.all()

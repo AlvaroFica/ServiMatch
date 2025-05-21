@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Pagar un Plan</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; background: #f7f5fb; }
+    .container { max-width: 420px; margin: 70px auto; padding: 30px 20px; border-radius: 16px; background: #fff; box-shadow: 0 2px 18px #c5bbff33; }
+    h2 { color: #6a1bb1; margin-bottom: 18px; }
+    .campo { margin-bottom: 15px; }
+    label { display: block; color: #4a1372; font-weight: 600; margin-bottom: 6px; }
+    input, select { width: 100%; padding: 8px; border: 1px solid #bcb1e1; border-radius: 7px; }
+    button { background: #6a1bb1; color: #fff; font-weight: bold; border: none; padding: 11px 0; width: 100%; border-radius: 9px; margin-top: 10px; cursor: pointer; font-size: 17px; transition: background 0.18s; }
+    button:hover { background: #4b0082; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Selecciona tu plan</h2>
+    <form id="form-pago">
+      <div class="campo">
+        <label for="precio">Precio ($CLP)</label>
+        <input type="number" id="precio" name="precio" required value="10000">
+      </div>
+      <div class="campo">
+        <label for="descripcion">Descripción del plan</label>
+        <input type="text" id="descripcion" name="descripcion" required value="Plan contratado">
+      </div>
+      <button type="submit">Pagar con MercadoPago</button>
+    </form>
+    <div id="msg" style="text-align:center;margin-top:20px;"></div>
+  </div>
+  <script>
+    document.getElementById("form-pago").addEventListener("submit", async e => {
+      e.preventDefault();
+      document.getElementById("msg").innerText = "Redirigiendo a MercadoPago...";
+      const precio = document.getElementById("precio").value;
+      const descripcion = document.getElementById("descripcion").value;
+      const res = await fetch("https://TU_NGROK/api/mercadopago/preferencia/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ precio: Number(precio), descripcion })
+      });
+      const data = await res.json();
+      if (data.init_point) {
+        window.location.href = data.init_point;
+      } else {
+        document.getElementById("msg").innerText = "Error al crear el pago.";
+      }
+    });
+  </script>
+</body>
+</html>

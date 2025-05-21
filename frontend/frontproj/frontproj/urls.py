@@ -31,4 +31,9 @@ urlpatterns = [
     path('planes_servicio/<int:servicio_id>/crear/',views.vista_crear_plan,name='crear_plan'),
     path('contratar/<int:plan_id>/', views.vista_contratar, name='contratar'),
     path('chat/<int:chat_id>/',   views.vista_chat,      name='chat'),
+    path('perfil_trabajador_publico/<int:id>/', views.vista_perfil_trabajador_publico, name='perfil_trabajador_publico'),
+    path('ver_planes_pov_trab/<int:servicio_id>/', views.ver_planes_pov_trab, name='ver_planes_pov_trab'),
+    path('pago_exitoso/', views.pago_exitoso, name='pago_exitoso'),
+    path('pago_fallido/', views.pago_fallido, name='pago_fallido'),
+
 ]

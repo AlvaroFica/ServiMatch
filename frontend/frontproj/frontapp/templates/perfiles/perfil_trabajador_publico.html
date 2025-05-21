@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil del Trabajador</title>
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/perfil_trabajador_publico.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+  <div class="header-tabs">
+    <button class="header-tab">TRABAJADOR</button>
+  </div>
+
+
+  <div class="perfil-publico-box">
+    <div class="perfil-direccion" id="direccion"></div>
+    <div class="perfil-publico-card">
+      <div class="perfil-publico-img">
+        <img src="/static/img/default-user.png" id="img-perfil-trab-publico">
+      </div>
+      <div class="perfil-nombre" id="nombre-trab"></div>
+      <div class="perfil-especialidad" id="especialidad-trab"></div>
+      <div class="perfil-rating" id="estrellas-trab"></div>
+      <button class="perfil-btn-contratar" id="btn-contratar">CONTRATAR</button>
+      <div class="perfil-publico-info-row">
+        <div class="perfil-info-block">
+          <i class="fa fa-calendar"></i>
+          <div>ANTIGÜEDAD</div>
+          <div id="antiguedad-trab"></div>
+        </div>
+        <div class="perfil-info-block">
+          <i class="fa fa-briefcase"></i>
+          <div>SERVICIOS</div>
+          <div id="servicios-trab"></div>
+        </div>
+      </div>
+      <div class="portfolio-section">
+        <div class="portfolio-title">PORTAFOLIO</div>
+        <div class="portfolio-grid" id="portfolio-grid"></div>
+      </div>
+      <div class="evaluaciones-section">
+        <div class="evaluaciones-title">Evaluaciones</div>
+        <div class="review-tags" id="review-tags"></div>
+      </div>
+    </div>
+  </div>
+  <nav class="perfil-bottom-nav">
+    <div class="icon-nav"><i class="fa fa-bars"></i><div>OPCIONES</div></div>
+    <div class="icon-nav"><i class="fa fa-star"></i><div>RANKING</div></div>
+    <div class="icon-nav"><i class="fa fa-user"></i><div>PERFIL</div></div>
+  </nav>
+  <script src="{% static 'js/perfil_trabajador_publico.js' %}"></script>
+</body>
+</html>

@@ -10,30 +10,27 @@
 <body>
   <div class="contenedor">
     <h2>Crear un nuevo plan</h2>
-    {% if error %}
-      <p style="color:red;">{{ error }}</p>
-    {% endif %}
-    <form method="post">
+    <form id="form-crear-plan">
       {% csrf_token %}
       <input type="hidden" name="servicio" value="{{ servicio_id }}">
-
       <label>Nombre del plan</label>
       <input type="text" name="nombre_plan" required>
-
       <label>Precio $</label>
       <input type="number" name="precio" required>
-
       <label>Duración estimada</label>
       <input type="text" name="duracion" placeholder="Ej: 1 hora" required>
-
       <label>Incluye (una línea por ítem)</label>
       <textarea name="incluye" rows="3"></textarea>
-
       <label>Descripción breve</label>
       <textarea name="descripcion_breve" rows="2"></textarea>
-
       <button type="submit">+ Agregar Plan</button>
+      <button type="submit" onclick="window.location.href='/mis_servicios/'" style="background:#6a1bb1;color:#fff;border:none;padding:10px 22px;border-radius:7px;font-weight:600;cursor:pointer;">
+        Volver a Mis Servicios
+      </button>
+
     </form>
+    <div id="mensaje-exito" style="display:none;color:green;margin-top:15px;text-align:center;">¡Plan creado con éxito!</div>
   </div>
+  <script src="{% static 'js/planes_crear.js' %}"></script>
 </body>
 </html>
