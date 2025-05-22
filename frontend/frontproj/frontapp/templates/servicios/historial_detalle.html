@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Detalle de Servicio</title>
+  <link rel="stylesheet" href="{% static 'css/historial_detalle.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body
+  data-cita="{{ cita_id }}"
+  data-def-serv="{% static 'img/default-service.png' %}"
+  data-def-user="{% static 'img/default-user.png' %}"
+  data-host="http://localhost:8000">
+  <div class="detalle-card">
+    <div class="card-header">
+      <img id="img-servicio">
+      <div class="header-text">
+        <div id="nombre-servicio" class="titulo"></div>
+        <div id="precio-servicio" class="precio"></div>
+        <div id="fecha-servicio" class="fecha"></div>
+      </div>
+    </div>
+    <div class="seccion">
+      <h2>Datos trabajador</h2>
+      <p>
+        <img id="img-trabajador">
+        <span id="nombre-trabajador"></span>
+      </p>
+      <p>Servicio: <span id="servicio-trabajador"></span></p>
+    </div>
+    <div class="seccion">
+      <h2>Detalles generales</h2>
+      <p>Asunto: <span id="asunto-detalle"></span></p>
+      <p>Fecha: <span id="fecha-detalle"></span></p>
+      <p>Dirección: <span id="direccion-detalle"></span></p>
+      <p>Duración estimada: <span id="duracion-detalle"></span></p>
+    </div>
+    <div class="seccion">
+      <h2>Información de pago</h2>
+      <p>Precio total del servicio: <span id="precio-total"></span></p>
+      <p>Comisión (10%): <span id="comision-servicio"></span></p>
+      <p>Total recibido: <span id="total-recibido"></span></p>
+      <p>Método de pago: <span id="metodo-pago"></span></p>
+      <p>Estado del pago: <span id="estado-pago"></span></p>
+    </div>
+  </div>
+
+  <nav class="perfil-bottom-nav">
+    <div class="icon-nav" onclick="location.href='/principal_pagina/'">
+      <i class="fa fa-bars"></i><div>OPCIONES</div>
+    </div>
+    <div class="icon-nav">
+      <i class="fa fa-star"></i><div>RANKING</div>
+    </div>
+    <div class="icon-nav" onclick="location.href='/perfil_cliente/'">
+      <i class="fa fa-user"></i><div>PERFIL</div>
+    </div>
+  </nav>
+
+  <script src="{% static 'js/historial_detalle.js' %}"></script>
+</body>
+</html>

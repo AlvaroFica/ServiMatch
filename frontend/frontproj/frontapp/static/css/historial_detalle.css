@@ -1,0 +1,126 @@
+/* static/css/historial_detalle.css */
+
+:root {
+  --violet: #6a1bb1;
+  --fs-base: 20px;
+  --fs-title: 36px;
+  --fs-price: 32px;
+  --fs-date: 20px;
+  --fs-heading: 26px;
+  --fs-text: 18px;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-size: var(--fs-base);
+}
+
+.detalle-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 60px;
+  background: #fff;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 3px solid var(--violet);
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+#img-servicio {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.titulo {
+  font-size: var(--fs-title);
+  font-weight: 700;
+  color: var(--violet);
+}
+
+.precio {
+  font-size: var(--fs-price);
+  color: var(--violet);
+}
+
+.fecha {
+  font-size: var(--fs-date);
+  color: var(--violet);
+}
+
+.seccion {
+  background: rgba(106,27,177,0.05);
+  border: 2px solid var(--violet);
+  border-radius: 8px;
+  padding: 12px;       /* antes 16px */
+  margin-top: 16px;    /* antes 24px */
+}
+
+.seccion h2 {
+  font-size: 22px;     /* antes 26px */
+  color: #fff;
+  background: var(--violet);
+  display: inline-block;
+  padding: 4px 8px;    /* antes 6px 12px */
+  border-radius: 4px;
+  margin-bottom: 8px;  /* antes 12px */
+}
+
+.seccion p {
+  font-size: var(--fs-text);
+  color: #333;
+  margin: 8px 0;
+}
+
+.seccion p span {
+  font-weight: 600;
+}
+
+#img-trabajador {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  vertical-align: middle;
+  margin-right: 12px;
+}
+
+.perfil-bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: var(--violet);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.perfil-bottom-nav .icon-nav i {
+  font-size: 32px;
+  color: #fff;
+}
+
+.perfil-bottom-nav .icon-nav div {
+  font-size: 14px;
+  color: #fff;
+  margin-top: 6px;
+}

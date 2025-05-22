@@ -35,5 +35,7 @@ urlpatterns = [
     path('ver_planes_pov_trab/<int:servicio_id>/', views.ver_planes_pov_trab, name='ver_planes_pov_trab'),
     path('pago_exitoso/', views.pago_exitoso, name='pago_exitoso'),
     path('pago_fallido/', views.pago_fallido, name='pago_fallido'),
+    path('historial_servicios/', views.vista_historial_servicios, name='historial_servicios'),
+    path('historial_servicios/<int:cita_id>/', views.vista_detalle_historial, name='detalle_historial'),
 
 ]

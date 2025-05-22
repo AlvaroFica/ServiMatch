@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Historial de Servicios</title>
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/perfil_cliente.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    .historial-search { padding: 0 20px; margin: 10px 0 }
+    .historial-search input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px }
+    .historial-lista { margin: 0 }
+    .historial-card { display: flex; align-items: center; background: #fff; margin: 8px 20px; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1) }
+    .historial-icon { font-size: 24px; color: #6a1bb1; margin-right: 12px }
+    .historial-text { flex: 1 }
+    .historial-servicio { font-size: 22px; font-weight: 700; color: #333 }
+    .historial-precio { font-size: 14px; color: #4B0082; margin: 4px 0 }
+    .historial-fecha { font-size: 14px; color: #666 }
+    .perfil-bottom-nav { display: flex; justify-content: space-around; padding: 14px 0; background: #fff }
+    .perfil-bottom-nav .icon-nav i { font-size: 28px }
+    .perfil-bottom-nav .icon-nav div { font-size: 13px }
+    .historial-img { width:50px; height:50px; border-radius:8px; object-fit:cover; margin-right:12px }
+  </style>
+</head>
+<body>
+  <div class="perfil-container">
+    <div class="perfil-box">
+      <div class="perfil-direccion" id="direccion"></div>
+      <div class="historial-search">
+        <input type="date" id="filtro-fecha">
+      </div>
+      <div class="historial-lista">
+        {% for c in citas %}
+          <div class="historial-card" data-fecha="{{ c.fecha }}"
+              onclick="location.href='{% url 'detalle_historial' c.id %}'">
+            <img src="{{ c.imagen }}" class="historial-img">
+            <div class="historial-text">
+              <div class="historial-servicio">{{ c.servicio }}</div>
+              <div class="historial-precio">${{ c.monto }}</div>
+              <div class="historial-fecha">{{ c.fecha }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <nav class="perfil-bottom-nav">
+        <div class="icon-nav"><i class="fa fa-bars"></i><div>OPCIONES</div></div>
+        <div class="icon-nav"><i class="fa fa-star"></i><div>RANKING</div></div>
+        <div class="icon-nav"><i class="fa fa-user"></i><div>PERFIL</div></div>
+      </nav>
+    </div>
+  </div>
+  <script src="{% static 'js/perfil_cliente.js' %}"></script>
+  <script>
+    document.getElementById('filtro-fecha').addEventListener('change', e => {
+      let v = e.target.value
+      document.querySelectorAll('.historial-card').forEach(c => {
+        c.style.display = c.getAttribute('data-fecha') === v ? 'flex' : 'none'
+      })
+    })
+  </script>
+</body>
+</html>

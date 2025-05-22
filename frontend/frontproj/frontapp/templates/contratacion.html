@@ -8,86 +8,109 @@
   <link rel="stylesheet" href="{% static 'css/planes_servicio.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
-    body { background: #f8f8fc; margin:0; font-family:sans-serif;}
-    .planes-container {
-      max-width: 430px; margin: 38px auto 0 auto; background: #fff;
-      border-radius: 18px; box-shadow: 0 4px 24px #b9b7f350; padding: 30px 18px 25px 18px;
-    }
-    .planes-title {
-      font-size:23px; color:#6a1bb1; font-weight:700;
-      text-align:center; margin-bottom:26px;
-    }
-    .plan-card {
-      border: 2px solid #e0e7ff; border-radius: 12px; margin-bottom: 20px;
-      padding: 16px 13px 13px 13px; box-shadow: 0 2px 9px #ede6f670;
-    }
-    .plan-nombre { font-size: 18px; font-weight: 700; color: #6a1bb1; margin-bottom:2px;}
-    .plan-precio { color: #4B0082; font-size: 15px; font-weight:600;}
-    .plan-desc { color: #666; font-size:15px; margin: 9px 0 7px 0;}
-    .plan-datos { color:#333; font-size:14px; margin-bottom:4px;}
-    .plan-items { margin-top:6px; margin-bottom:7px; padding-left: 18px;}
-    .plan-items li { color:#333; font-size:13.5px; margin-bottom:2px; }
-    .btn-elegir {
-      background: #6a1bb1; color: #fff; border: none; border-radius: 8px;
-      padding: 8px 22px; font-size:15px; font-weight:600; cursor:pointer;
-      margin-top: 8px; transition: background 0.15s;
-      width: 100%;
-    }
-    .btn-elegir:hover { background: #4B0082; }
-    .volver {
-      display:block; text-align:center; margin: 32px 0 0 0;
-    }
-    .btn-volver {
-      background: #6a1bb1; color: #fff; border: none; border-radius: 8px;
-      padding: 10px 23px; font-size:16px; font-weight:600; cursor:pointer;
-      margin-top: 12px;
-    }
-    .btn-volver:hover { background: #4B0082; }
+    body{background:#f8f8fc;margin:0;font-family:sans-serif}
+    .planes-container{max-width:430px;margin:38px auto;background:#fff;border-radius:18px;box-shadow:0 4px 24px #b9b7f350;padding:30px 18px 25px}
+    .planes-title{font-size:23px;color:#6a1bb1;font-weight:700;text-align:center;margin-bottom:26px}
+    .plan-card{border:2px solid #e0e7ff;border-radius:12px;margin-bottom:20px;padding:16px 13px 13px;box-shadow:0 2px 9px #ede6f670}
+    .plan-nombre{font-size:18px;font-weight:700;color:#6a1bb1;margin-bottom:2px}
+    .plan-precio{color:#4B0082;font-size:15px;font-weight:600}
+    .plan-desc{color:#666;font-size:15px;margin:9px 0 7px}
+    .plan-datos{color:#333;font-size:14px;margin-bottom:4px}
+    .plan-items{margin:6px 0 7px 18px}
+    .plan-items li{font-size:13.5px;margin-bottom:2px}
+    .btn-elegir{background:#6a1bb1;color:#fff;border:none;border-radius:8px;padding:8px 22px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;width:100%;transition:background .15s}
+    .btn-elegir:hover{background:#4B0082}
+    .volver{text-align:center;margin-top:32px}
+    .btn-volver{background:#6a1bb1;color:#fff;border:none;border-radius:8px;padding:10px 23px;font-size:16px;font-weight:600;cursor:pointer}
+    .btn-volver:hover{background:#4B0082}
+    .modal{position:fixed;top:0;left:0;width:100%;height:100%;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5)}
+    .modal-content{background:#fff;padding:20px;border-radius:12px;text-align:center;max-width:300px;width:90%}
+    .modal-content p{font-size:16px;margin-bottom:20px;color:#333}
+    .modal-content button{margin:0 10px;padding:8px 16px;border:none;border-radius:6px;font-size:14px;cursor:pointer}
+    #btnSi{background:#6a1bb1;color:#fff}
+    #btnNo{background:#ccc;color:#333}
   </style>
 </head>
 <body>
   <div class="planes-container">
     <div class="planes-title"><i class="fa fa-cubes"></i> Elige un Plan para Contratar</div>
-    <div id="planes-lista">
-      <div style="text-align:center;color:#aaa;">Cargando planes...</div>
-    </div>
+    <div id="planes-lista"><div style="text-align:center;color:#aaa">Cargando planes...</div></div>
     <div class="volver">
-      <button class="btn-volver" onclick="window.location.href='/mis_servicios/'"><i class="fa fa-arrow-left"></i> Volver</button>
+      <button class="btn-volver" onclick="location.href='/mis_servicios/'"><i class="fa fa-arrow-left"></i> Volver</button>
     </div>
   </div>
+
+  <div id="confirmModal" class="modal">
+    <div class="modal-content">
+      <p>¿Quieres ir al chat?</p>
+      <button id="btnSi">Sí</button>
+      <button id="btnNo">No</button>
+    </div>
+  </div>
+
   <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      const servicioId = "{{ servicio_id }}";
-      const lista = document.getElementById('planes-lista');
-      try {
-        const resp = await fetch(`http://localhost:8000/api/planeservicio/?servicio=${servicioId}`);
-        const planes = await resp.json();
-        if (!planes.length) {
-          lista.innerHTML = `<div style="text-align:center;color:#aaa;">No hay planes disponibles.</div>`;
+    const servicioId="{{ servicio_id }}";
+    const usuarioId="{{ request.session.usuario_id }}";
+    let planSeleccionado;
+
+    async function contratar(planId){
+      let trabajadorId=null;
+      let r=await fetch(`http://localhost:8000/api/trabajadores/?usuario=${usuarioId}`);
+      let lista=await r.json();
+      if(lista.length) trabajadorId=lista[0].id;
+      await fetch('http://localhost:8000/api/citas/',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({plan:planId,usuario:usuarioId,trabajador:trabajadorId})
+      });
+    }
+
+    document.addEventListener("click", e=>{
+      if(e.target.matches('.btn-elegir')){
+        planSeleccionado=e.target.dataset.plan;
+        document.getElementById('confirmModal').style.display='flex';
+      }
+    });
+
+    document.getElementById('btnSi').onclick=async()=>{
+      document.getElementById('confirmModal').style.display='none';
+      await contratar(planSeleccionado);
+      location.href=`/chat/${planSeleccionado}/`;
+    };
+
+    document.getElementById('btnNo').onclick=async()=>{
+      document.getElementById('confirmModal').style.display='none';
+      await contratar(planSeleccionado);
+      location.href='/principal_pagina/';
+    };
+
+    document.addEventListener("DOMContentLoaded",async()=>{
+      let lista=document.getElementById('planes-lista');
+      try{
+        let resp=await fetch(`http://localhost:8000/api/planeservicio/?servicio=${servicioId}`);
+        let planes=await resp.json();
+        if(!planes.length){
+          lista.innerHTML=`<div style="text-align:center;color:#aaa">No hay planes disponibles.</div>`;
           return;
         }
-        lista.innerHTML = "";
-        planes.forEach(plan => {
-          let items = plan.incluye ? plan.incluye.split('\n') : [];
-          lista.innerHTML += `
+        lista.innerHTML='';
+        planes.forEach(p=>{
+          let items=p.incluye? p.incluye.split('\n'): [];
+          lista.innerHTML+=`
             <div class="plan-card">
-              <div class="plan-nombre">${plan.nombre_plan}</div>
-              <div class="plan-precio">$${plan.precio}</div>
-              <div class="plan-desc">${plan.descripcion_breve || ''}</div>
-              <div class="plan-datos"><b>Duración:</b> ${plan.duracion}</div>
-              <div class="plan-items">
-                <ul>
-                  ${items.map(i => `<li><i class="fa fa-check-circle" style="color:#6a1bb1"></i> ${i}</li>`).join('')}
-                </ul>
-              </div>
-              <button class="btn-elegir" onclick="window.location.href='/contratar/${plan.id}/'">
-                <i class="fa fa-bolt"></i> Elegir este plan
-              </button>
+              <div class="plan-nombre">${p.nombre_plan}</div>
+              <div class="plan-precio">$${p.precio}</div>
+              <div class="plan-desc">${p.descripcion_breve||''}</div>
+              <div class="plan-datos"><b>Duración:</b> ${p.duracion}</div>
+              <div class="plan-items"><ul>${
+                items.map(i=>`<li><i class="fa fa-check-circle"></i> ${i}</li>`).join('')
+              }</ul></div>
+              <button class="btn-elegir" data-plan="${p.id}"><i class="fa fa-bolt"></i> Elegir este plan</button>
             </div>
           `;
         });
-      } catch {
-        lista.innerHTML = `<div style="text-align:center;color:#d92b4a;">Error al cargar los planes.</div>`;
+      }catch{
+        lista.innerHTML=`<div style="text-align:center;color:#d92b4a">Error al cargar los planes.</div>`;
       }
     });
   </script>

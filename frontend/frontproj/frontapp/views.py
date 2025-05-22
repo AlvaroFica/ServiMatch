@@ -368,6 +368,35 @@ def vista_mis_servicios(request):
             servicios_usuario.append(serv)
     return render(request, 'servicios/mis_servicios.html', {'servicios': servicios_usuario})
 
+def vista_detalle_historial(request, cita_id):
+    return render(request, 'servicios/historial_detalle.html', {
+        'cita_id': cita_id,
+    })
+
+# frontapp/views.py
+def vista_historial_servicios(request):
+    usuario_id = request.session.get('usuario_id')
+    raw = requests.get('http://localhost:8000/api/citas/').json()
+    citas = []
+    for c in raw:
+        if c.get('usuario') == usuario_id or c.get('trabajador') == usuario_id:
+            plan = requests.get(f'http://localhost:8000/api/planeservicio/{c["plan"]}/').json()
+            serv = requests.get(f'http://localhost:8000/api/servicios/{plan["servicio"]}/').json()
+            imgs = serv.get('imagenes', [])
+            url = imgs[0]['imagen'] if imgs else ''
+            full = url.startswith('http') and url or f'http://localhost:8000{url}'
+            citas.append({
+                'id':       c['id'],
+                'fecha':    c['fecha_creacion'][:10],
+                'servicio': serv['nombre_serv'],
+                'monto':    plan['precio'],
+                'imagen':   full,
+            })
+    return render(request, 'servicios/historial_serv.html', {'citas': citas})
+
+
+
+
 def vista_historial_trabajador(request):
     return render(request, 'servicios/historial_trabajador.html')
 

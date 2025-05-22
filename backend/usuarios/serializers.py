@@ -95,6 +95,11 @@ class CitaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cita
         fields = '__all__'
+        extra_kwargs = {
+            'usuario':    {'required': False, 'allow_null': True},
+            'trabajador': {'required': False, 'allow_null': True},
+        }
+
 
 class ChatSerializer(serializers.ModelSerializer):
     class Meta:

@@ -135,13 +135,15 @@ class Pago(models.Model):
         return f"Pago #{self.id}"
 
 class Cita(models.Model):
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    trabajador = models.ForeignKey(Trabajador, on_delete=models.CASCADE)
-    plan = models.ForeignKey(PlanServicio, on_delete=models.CASCADE)
+    usuario    = models.ForeignKey(Usuario,   on_delete=models.CASCADE, null=True, blank=True)
+    trabajador = models.ForeignKey(Trabajador,on_delete=models.CASCADE, null=True, blank=True)
+    plan       = models.ForeignKey(PlanServicio,on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Cita de {self.usuario.nombre} el {self.fecha_creacion.strftime('%Y-%m-%d')}"
+        quién = self.usuario or self.trabajador.usuario
+        return f"Cita de {quién.nombre} el {self.fecha_creacion:%Y-%m-%d}"
+
 
 class Chat(models.Model):
     cita = models.ForeignKey(Cita, on_delete=models.CASCADE)
