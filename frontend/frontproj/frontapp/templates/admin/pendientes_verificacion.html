@@ -1,163 +1,45 @@
-{% extends 'base_admin.html' %}
-{% block title %}Verificación de Trabajadores{% endblock %}
-{% block page_title %}Verificación de Trabajadores{% endblock %}
-
+{% extends 'admin/base_admin.html' %}
+{% block title %}Pendientes{% endblock %}
+{% block page_title %}Pendientes Verificar{% endblock %}
 {% block content %}
-<div class="cards-container">
-  {% for t in trabajadores %}
-  <div class="card-verificacion">
-    <h3>{{ t.usuario.nombre }} {{ t.usuario.apellido }}</h3>
-    <div class="images">
-      <div class="img-wrapper">
-        <span class="img-label">Carnet<br>(Frente)</span>
-        <img src="{{ t.foto_cedula }}" alt="Carnet Frente">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.5rem">
+    {% for t in trabajadores %}
+      <div style="background:#fff;padding:1.5rem;border-radius:12px;
+                  box-shadow:0 4px 8px rgba(0,0,0,0.1);text-align:center">
+        <h3>{{ t.usuario.nombre }} {{ t.usuario.apellido }}</h3>
+        <div style="display:flex;justify-content:center;gap:1rem;margin:1rem 0">
+          <div>
+            <small>Cédula Frente</small><br>
+            <img src="{{ t.foto_cedula }}" style="width:100px;height:100px;object-fit:cover;border-radius:8px">
+          </div>
+          <div>
+            <small>Cédula Dorso</small><br>
+            <img src="{{ t.foto_cedula_atras }}" style="width:100px;height:100px;object-fit:cover;border-radius:8px">
+          </div>
+          <div>
+            <small>Selfie</small><br>
+            <img src="{{ t.foto_autoretrato }}" style="width:100px;height:100px;object-fit:cover;border-radius:8px">
+          </div>
+        </div>
+        <button data-id="{{ t.id }}" style="margin:.5rem;padding:.6rem 1rem;
+                background:#27ae60;color:#fff;border:none;border-radius:8px;cursor:pointer"
+                onclick="patch({{ t.id }},true)">✅ Verificar</button>
+        <button data-id="{{ t.id }}" style="margin:.5rem;padding:.6rem 1rem;
+                background:#c0392b;color:#fff;border:none;border-radius:8px;cursor:pointer"
+                onclick="patch({{ t.id }},false)">❌ Rechazar</button>
       </div>
-      <div class="img-wrapper">
-        <span class="img-label">Carnet<br>(Dorso)</span>
-        <img src="{{ t.foto_cedula_atras }}" alt="Carnet Dorso">
-      </div>
-      <div class="img-wrapper">
-        <span class="img-label">Selfie</span>
-        <img src="{{ t.foto_autoretrato }}" alt="Selfie">
-      </div>
-    </div>
-    <div class="actions">
-      <button class="btn-verify" data-id="{{ t.id }}">✅ Verificar</button>
-      <button class="btn-reject" data-id="{{ t.id }}">❌ Rechazar</button>
-    </div>
+    {% empty %}
+      <p>No hay pendientes.</p>
+    {% endfor %}
   </div>
-  {% empty %}
-    <p>No hay trabajadores pendientes de verificación.</p>
-  {% endfor %}
-</div>
-
-<style>
-.cards-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, 600px);
-  justify-content: center;
-  gap: 1.5rem;
-  padding: 2rem 0;
-}
-
-.card-verificacion {
-  background: var(--card-bg);
-  max-width: 360px;
-  width: 100%;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px var(--shadow);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  font-family: 'Inter', sans-serif;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card-verificacion:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px var(--shadow);
-}
-
-.card-verificacion h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: var(--text);
-}
-
-.images {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
-}
-
-.img-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.img-label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: var(--text);
-}
-
-.images img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid #EEE;
-}
-
-.actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  width: 100%;
-}
-
-.actions button {
-  flex: 1;
-  padding: 0.6rem 0;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 2px 4px var(--shadow);
-  transition: background 0.2s, transform 0.1s;
-}
-
-.btn-verify {
-  background: #27ae60;
-  color: #fff;
-}
-.btn-reject {
-  background: #c0392b;
-  color: #fff;
-}
-
-.btn-verify:hover {
-  background: #219150;
-  transform: translateY(-2px);
-}
-.btn-reject:hover {
-  background: #a83227;
-  transform: translateY(-2px);
-}
-</style>
-
-<script>
-async function changeVerification(id, verified) {
-  const res = await fetch(`http://127.0.0.1:8000/api/trabajadores/${id}/`, {
-    method: 'PATCH',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ estado_verificado: verified })
-  });
-  if (res.ok) {
-    document.querySelector(`[data-id="${id}"]`).closest('.card-verificacion').remove();
-  }
-}
-
-document.querySelectorAll('.btn-verify').forEach(btn =>
-  btn.addEventListener('click', () => {
-    if (confirm('¿Confirmar verificación de este trabajador?')) {
-      changeVerification(btn.dataset.id, true);
+  <script>
+    async function patch(id,ver){
+      const r=await fetch(`http://127.0.0.1:8000/api/trabajadores/${id}/`,{
+        method:'PATCH',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({estado_verificado:ver})
+      });
+      if(r.ok)location.reload();
     }
-  })
-);
-document.querySelectorAll('.btn-reject').forEach(btn =>
-  btn.addEventListener('click', () => {
-    if (confirm('¿Confirmar rechazo de este trabajador?')) {
-      changeVerification(btn.dataset.id, false);
-    }
-  })
-);
-</script>
+  </script>
 {% endblock %}

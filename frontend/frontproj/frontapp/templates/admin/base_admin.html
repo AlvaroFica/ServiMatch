@@ -5,116 +5,80 @@
   <meta charset="UTF-8">
   <title>{% block title %}Admin{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Tippy.js para tooltips -->
+  <!-- Tippy.js -->
   <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css">
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <script src="https://unpkg.com/tippy.js@6"></script>
-
   <style>
     :root {
       --primary: #4A90E2;
       --bg: #F5F7FA;
-      --card-bg: #ffffff;
+      --card-bg: #fff;
       --text: #2D3A45;
       --shadow: rgba(0,0,0,0.1);
     }
-    * { box-sizing: border-box; margin:0; padding:0; }
-    body {
-      display: flex;
-      font-family: 'Inter', sans-serif;
-      color: var(--text);
-      background: var(--bg);
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    /* SIDEBAR */
-    aside {
-      width: 220px;
-      background: var(--primary);
-      color: #fff;
-      padding: 2rem 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-    aside h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      text-align: center;
-    }
-    aside nav a {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      color: #fff;
-      text-decoration: none;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      font-weight: 500;
-      transition: background 0.2s, transform 0.1s;
-    }
-    aside nav a .icon {
-      font-size: 1.2rem;
-      line-height: 1;
-    }
-    aside nav a:hover {
-      background: rgba(255,255,255,0.15);
-      transform: translateX(4px);
-    }
-    aside nav a.active {
-      background: rgba(255,255,255,0.25);
-    }
-
-    /* MAIN CONTENT */
-    main {
-      flex: 1;
-      padding: 2rem;
-      overflow-y: auto;
-    }
-    header {
-      margin-bottom: 1.5rem;
-    }
-    header h1 {
-      font-size: 1.75rem;
-      font-weight: 600;
-    }
-
-    /* (el resto de tus estilos… no cambian) */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { display: flex; font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); height: 100vh; overflow: hidden; }
+    aside { width: 220px; background: var(--primary); color: #fff; padding: 2rem 1rem; display: flex; flex-direction: column; gap: 1.5rem; }
+    aside h2 { font-size: 1.5rem; font-weight: 700; text-align: center; }
+    aside nav a { display: flex; align-items: center; gap: .75rem; color: #fff; text-decoration: none; padding: .75rem 1rem; border-radius: 8px; font-weight: 500; transition: background .2s, transform .1s; }
+    aside nav a .icon { font-size: 1.2rem; line-height: 1; }
+    aside nav a:hover { background: rgba(255,255,255,.15); transform: translateX(4px); }
+    aside nav a.active { background: rgba(255,255,255,.25); }
+    main { flex: 1; padding: 2rem; overflow-y: auto; }
+    header h1 { font-size: 1.75rem; font-weight: 600; margin-bottom: 1.5rem; }
   </style>
 </head>
 <body>
-
   <aside>
     <h2>Panel Admin</h2>
     <nav>
-      <a href="{% url 'dashboard_admin' %}" class="active" data-tippy-content="Ver métricas generales">
-        <span class="icon">🏠</span><span>Dashboard</span>
+      <a href="{% url 'dashboard_admin' %}"
+         class="{% if request.resolver_match.url_name == 'dashboard_admin' %}active{% endif %}"
+         data-tippy-content="Dashboard">
+        <span class="icon">🏠</span>Dashboard
       </a>
-      <a href="{% url 'cpu_admin' %}" data-tippy-content="Estado de CPU y memoria">
-        <span class="icon">🖥️</span><span>CPU</span>
+      <a href="{% url 'cpu_admin' %}"
+         class="{% if request.resolver_match.url_name == 'cpu_admin' %}active{% endif %}"
+         data-tippy-content="CPU y memoria">
+        <span class="icon">🖥️</span>CPU
       </a>
-      <a href="{% url 'admin_usuarios' %}" data-tippy-content="Gestión de usuarios">
-        <span class="icon">👥</span><span>Usuarios</span>
+      <a href="{% url 'admin_usuarios' %}"
+         class="{% if request.resolver_match.url_name == 'admin_usuarios' %}active{% endif %}"
+         data-tippy-content="Usuarios">
+        <span class="icon">👥</span>Usuarios
       </a>
-      <a href="{% url 'acciones' %}" data-tippy-content="Ver últimas acciones">
-        <span class="icon">📜</span><span>Logs</span>
+      <a href="{% url 'acciones' %}"
+         class="{% if request.resolver_match.url_name == 'acciones' %}active{% endif %}"
+         data-tippy-content="Logs">
+        <span class="icon">📜</span>Logs
       </a>
-      <a href="{% url 'admin_trabajadores' %}" data-tippy-content="Revisar trabajadores">
-        <span class="icon">🛠️</span><span>Trabajadores</span>
+      <a href="{% url 'admin_trabajadores' %}"
+         class="{% if request.resolver_match.url_name == 'admin_trabajadores' %}active{% endif %}"
+         data-tippy-content="Trabajadores">
+        <span class="icon">🛠️</span>Trabajadores
       </a>
-      <a href="{% url 'admin_servicios' %}" data-tippy-content="Gestión de servicios">
-        <span class="icon">⚙️</span><span>Servicios</span>
+      <a href="{% url 'admin_servicios' %}"
+         class="{% if request.resolver_match.url_name == 'admin_servicios' %}active{% endif %}"
+         data-tippy-content="Servicios">
+        <span class="icon">⚙️</span>Servicios
       </a>
-      <a href="{% url 'admin_boletas' %}" data-tippy-content="Historial de boletas">
-        <span class="icon">💳</span><span>Boletas</span>
+      <a href="{% url 'admin_boletas' %}"
+         class="{% if request.resolver_match.url_name == 'admin_boletas' %}active{% endif %}"
+         data-tippy-content="Boletas">
+        <span class="icon">💳</span>Boletas
+      </a>
+      <a href="{% url 'admin_pagos' %}"
+        class="{% if request.resolver_match.url_name == 'admin_pagos' %}active{% endif %}"
+        data-tippy-content="Pagos"><span class="icon">💳</span>Pagos</a>
+
+      <a href="{% url 'admin_citas' %}"
+        class="{% if request.resolver_match.url_name == 'admin_citas' %}active{% endif %}"
+        data-tippy-content="Citas"><span class="icon">📆</span>Citas</a>
       </a>
     </nav>
   </aside>
@@ -127,10 +91,8 @@
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Feedback / scripts… -->
   <script>
     tippy('[data-tippy-content]');
-    // …lógica feedback…
   </script>
 </body>
 </html>

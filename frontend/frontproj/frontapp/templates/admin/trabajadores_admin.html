@@ -1,53 +1,40 @@
-{% extends 'base_admin.html' %}
-
+{% extends 'admin/base_admin.html' %}
 {% block title %}Trabajadores{% endblock %}
-
+{% block page_title %}Trabajadores{% endblock %}
 {% block content %}
-  <h1>Listado de Trabajadores</h1>
-
-  <form method="get" style="margin-bottom: 1rem;">
-    <label>Especialidad:</label>
+  <form method="get" style="margin-bottom:1rem">
+    <label>Especialidad</label>
     <select name="especialidad">
-      <option value="">-- Todas --</option>
+      <option value="">--Todas--</option>
       {% for e in especialidades %}
-        <option value="{{ e.id }}"
-          {% if especialidad_seleccionada == e.id|stringformat:"s" %}selected{% endif %}>
-          {{ e.nombre_esp }}
-        </option>
+        <option value="{{ e.id }}" {% if especialidad_seleccionada == e.id|stringformat:"s" %}selected{% endif %}>{{ e.nombre_esp }}</option>
       {% endfor %}
     </select>
-
-    <label>Comuna:</label>
+    <label>Comuna</label>
     <select name="comuna">
-      <option value="">-- Todas --</option>
+      <option value="">--Todas--</option>
       {% for c in comunas %}
-        <option value="{{ c.id }}"
-          {% if comuna_seleccionada == c.id|stringformat:"s" %}selected{% endif %}>
-          {{ c.nombre_comuna }}
-        </option>
+        <option value="{{ c.id }}" {% if comuna_seleccionada == c.id|stringformat:"s" %}selected{% endif %}>{{ c.nombre_comuna }}</option>
       {% endfor %}
     </select>
-
     <button type="submit">Filtrar</button>
   </form>
-
-  <div class="table-responsive">
-    <table>
-      <thead>
+  <table style="width:100%;border-collapse:collapse">
+    <thead><tr>
+      <th style="padding:.5rem;border-bottom:1px solid #ccc">Nombre</th>
+      <th style="padding:.5rem;border-bottom:1px solid #ccc">Especialidad</th>
+      <th style="padding:.5rem;border-bottom:1px solid #ccc">Comuna</th>
+      <th style="padding:.5rem;border-bottom:1px solid #ccc">Verificado</th>
+    </tr></thead>
+    <tbody>
+      {% for t in trabajadores %}
         <tr>
-          <th>Nombre</th><th>Especialidad</th><th>Comuna</th><th>Verificado</th>
+          <td style="padding:.5rem;border-bottom:1px solid #eee">{{ t.usuario.nombre }} {{ t.usuario.apellido }}</td>
+          <td style="padding:.5rem;border-bottom:1px solid #eee">{{ t.especialidad.nombre_esp }}</td>
+          <td style="padding:.5rem;border-bottom:1px solid #eee">{{ t.usuario.comuna }}</td>
+          <td style="padding:.5rem;border-bottom:1px solid #eee">{% if t.estado_verificado %}✅{% else %}❌{% endif %}</td>
         </tr>
-      </thead>
-      <tbody>
-        {% for t in trabajadores %}
-        <tr>
-          <td>{{ t.usuario.nombre }} {{ t.usuario.apellido }}</td>
-          <td>{{ t.especialidad.nombre_esp }}</td>
-          <td>{{ t.usuario.comuna }}</td>
-          <td>{% if t.estado_verificado %}✅{% else %}❌{% endif %}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}

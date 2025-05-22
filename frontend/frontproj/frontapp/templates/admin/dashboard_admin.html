@@ -1,100 +1,53 @@
-{% extends 'base_admin.html' %}
+{% extends 'admin/base_admin.html' %}
 {% block title %}Dashboard{% endblock %}
-
+{% block page_title %}Dashboard{% endblock %}
 {% block content %}
-<h1 style="margin-bottom: 1.5rem;">Resumen del Sistema</h1>
-
-<div class="dashboard-grid">
-  <div class="chart-card">
-    <h3>Total de Usuarios</h3>
-    <p id="totalUsuarios" class="stat-value">...</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem">
+    <div style="background:#fff;padding:1rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
+      <h3>Total Usuarios</h3>
+      <p id="totalUsuarios" style="font-size:2.5rem;color:#2980b9;font-weight:700">–</p>
+    </div>
+    <div style="background:#fff;padding:1rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
+      <h3>Total Trabajadores</h3>
+      <p id="totalTrabajadores" style="font-size:2.5rem;color:#2980b9;font-weight:700">–</p>
+    </div>
+    <div style="background:#fff;padding:1rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
+      <h3>Pendientes Verificar</h3>
+      <p id="trabajadoresPendientes" style="font-size:2.5rem;color:#2980b9;font-weight:700">–</p>
+      <a href="{% url 'admin_pendientes' %}"
+         style="display:inline-block;margin-top:.5rem;padding:.5rem 1rem;
+                background:#2980b9;color:#fff;border-radius:6px;text-decoration:none">
+        Ver pendientes
+      </a>
+    </div>
+    <div style="background:#fff;padding:1rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
+      <h3>Usuarios en Línea</h3>
+      <p id="usuariosOnline" style="font-size:2.5rem;color:#2980b9;font-weight:700">–</p>
+    </div>
+    <div style="background:#fff;padding:1rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
+      <h3>Total Servicios</h3>
+      <p id="totalServicios" style="font-size:2.5rem;color:#2980b9;font-weight:700">–</p>
+    </div>
+    <div style="background:#fff;padding:1rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
+      <h3>Citas este Mes</h3>
+      <p id="citasMes" style="font-size:2.5rem;color:#2980b9;font-weight:700">–</p>
+    </div>
   </div>
-  <div class="chart-card">
-    <h3>Total de Trabajadores</h3>
-    <p id="totalTrabajadores" class="stat-value">...</p>
-  </div>
-  <div class="chart-card">
-    <h3>Trabajadores por Verificar</h3>
-    <p id="trabajadoresPendientes" class="stat-value">...</p>
-    <a href="{% url 'admin_pendientes' %}" class="btn-action">Ver Pendientes</a>
-  </div>
-  <div class="chart-card">
-    <h3>Usuarios en Línea</h3>
-    <p id="usuariosOnline" class="stat-value">...</p>
-  </div>
-  <div class="chart-card">
-    <h3>Total de Servicios</h3>
-    <p id="totalServicios" class="stat-value">...</p>
-  </div>
-  <div class="chart-card">
-    <h3>Citas este Mes</h3>
-    <p id="citasMes" class="stat-value">...</p>
-  </div>
-</div>
-
-<style>
-  .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .chart-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .chart-card h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-  }
-
-  .stat-value {
-    font-size: 2.5rem;
-    color: #2980b9;
-    margin-top: 1rem;
-    font-weight: 700;
-  }
-
-  /* Nuevo botón dentro del card */
-  .chart-card .btn-action {
-    margin-top: 0.75rem;
-    padding: 0.5rem 1rem;
-    background: #2980b9;
-    color: #fff;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: background 0.2s, transform 0.1s;
-  }
-  .chart-card .btn-action:hover {
-    background: #1f6fa5;
-    transform: translateY(-2px);
-  }
-</style>
-
-<script>
-  async function fetchAndSet(url, elementId, key = 'total') {
-    try {
-      const res  = await fetch(url);
-      const data = await res.json();
-      document.getElementById(elementId).textContent = data[key];
-    } catch {
-      document.getElementById(elementId).textContent = '-';
+  <script>
+    const API = 'http://127.0.0.1:8000/api';
+    async function setStat(path,id){
+      try{
+        let r=await fetch(API+path), j=await r.json();
+        document.getElementById(id).textContent=j.total;
+      }catch{
+        document.getElementById(id).textContent='–';
+      }
     }
-  }
-
-  fetchAndSet('http://127.0.0.1:8000/api/graficos/total-usuarios/',          'totalUsuarios');
-  fetchAndSet('http://127.0.0.1:8000/api/graficos/total-trabajadores/',     'totalTrabajadores');
-  fetchAndSet('http://127.0.0.1:8000/api/graficos/trabajadores-pendientes/', 'trabajadoresPendientes');
-  fetchAndSet('http://127.0.0.1:8000/api/graficos/usuarios-online/',         'usuariosOnline');
-  fetchAndSet('http://127.0.0.1:8000/api/graficos/total-servicios/',         'totalServicios');
-  fetchAndSet('http://127.0.0.1:8000/api/graficos/citas-este-mes/',          'citasMes');
-</script>
+    setStat('/graficos/total-usuarios/','totalUsuarios');
+    setStat('/graficos/total-trabajadores/','totalTrabajadores');
+    setStat('/graficos/trabajadores-pendientes/','trabajadoresPendientes');
+    setStat('/graficos/usuarios-online/','usuariosOnline');
+    setStat('/graficos/total-servicios/','totalServicios');
+    setStat('/graficos/citas-este-mes/','citasMes');
+  </script>
 {% endblock %}

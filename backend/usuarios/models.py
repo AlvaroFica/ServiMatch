@@ -119,14 +119,6 @@ class TipoPago(models.Model):
     def __str__(self):
         return self.descripcion
 
-class Boleta(models.Model):
-    servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    monto = models.DecimalField(max_digits=10, decimal_places=2)
-    tipo_pago = models.ForeignKey(TipoPago, on_delete=models.SET_NULL, null=True)
-
-    def __str__(self):
-        return f"Boleta de {self.usuario.nombre} - ${self.monto}"
 
 class Pago(models.Model):
     pass  # Solo tiene ID
@@ -139,10 +131,26 @@ class Cita(models.Model):
     trabajador = models.ForeignKey(Trabajador,on_delete=models.CASCADE, null=True, blank=True)
     plan       = models.ForeignKey(PlanServicio,on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
+    estado = models.CharField(max_length=20, default='pendiente')
 
     def __str__(self):
         quién = self.usuario or self.trabajador.usuario
         return f"Cita de {quién.nombre} el {self.fecha_creacion:%Y-%m-%d}"
+
+class Boleta(models.Model):
+    servicio    = models.ForeignKey(Servicio, on_delete=models.CASCADE)
+    usuario     = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    monto       = models.DecimalField(max_digits=10, decimal_places=2)
+    tipo_pago   = models.ForeignKey(TipoPago, on_delete=models.SET_NULL, null=True)
+    cita = models.OneToOneField(Cita, on_delete=models.CASCADE, null=True, blank=True)
+    estado_pago = models.CharField(
+        max_length=10,
+        choices=[('pendiente','Pendiente'), ('pagado','Pagado')],
+        default='pendiente'
+    )
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"Boleta de {self.usuario.nombre} – {self.get_estado_pago_display()}"
 
 
 class Chat(models.Model):

@@ -80,11 +80,16 @@ class TipoPagoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TipoPago
         fields = '__all__'
-
+        
+# principal/serializers.py
 class BoletaSerializer(serializers.ModelSerializer):
+    tipo_pago = serializers.StringRelatedField()
+    estado_pago_display = serializers.CharField(source='get_estado_pago_display', read_only=True)
     class Meta:
         model = Boleta
         fields = '__all__'
+
+
 
 class PagoSerializer(serializers.ModelSerializer):
     class Meta:

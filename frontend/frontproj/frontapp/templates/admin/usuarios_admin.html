@@ -1,12 +1,32 @@
-{% extends 'base_admin.html' %}
-
+{% extends 'admin/base_admin.html' %}
 {% block title %}Usuarios{% endblock %}
-
+{% block page_title %}Usuarios{% endblock %}
 {% block content %}
-  <h1>Usuarios registrados</h1>
-  <ul>
-    {% for u in usuarios %}
-      <li>{{ u.nombre }} {{ u.apellido }} - {{ u.correo }}</li>
-    {% endfor %}
-  </ul>
+  <table style="width:100%;border-collapse:collapse">
+    <thead>
+      <tr>
+        <th style="padding:.5rem;border-bottom:1px solid #ccc">ID</th>
+        <th style="padding:.5rem;border-bottom:1px solid #ccc">Nombre</th>
+        <th style="padding:.5rem;border-bottom:1px solid #ccc">Correo</th>
+        <th style="padding:.5rem;border-bottom:1px solid #ccc">Comuna</th>
+      </tr>
+    </thead>
+    <tbody id="usuarios-body"></tbody>
+  </table>
+  <script>
+    fetch('http://127.0.0.1:8000/api/usuarios/')
+      .then(r=>r.json()).then(arr=>{
+        let b=document.getElementById('usuarios-body');
+        arr.forEach(u=>{
+          let tr=document.createElement('tr');
+          tr.innerHTML=`
+            <td style="padding:.5rem;border-bottom:1px solid #eee">${u.id}</td>
+            <td style="padding:.5rem;border-bottom:1px solid #eee">${u.nombre} ${u.apellido}</td>
+            <td style="padding:.5rem;border-bottom:1px solid #eee">${u.correo}</td>
+            <td style="padding:.5rem;border-bottom:1px solid #eee">${u.comuna||'-'}</td>
+          `;
+          b.appendChild(tr);
+        });
+      });
+  </script>
 {% endblock %}

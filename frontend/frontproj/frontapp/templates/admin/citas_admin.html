@@ -1,0 +1,121 @@
+{% extends 'admin/base_admin.html' %}
+{% block page_title %}Gestión de Citas{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom:1.5rem;">Citas Registradas</h1>
+<div class="table-responsive">
+  <table style="width:100%; background:#fff; border-collapse:collapse;">
+    <thead>
+      <tr>
+        <th>ID</th><th>Usuario</th><th>Trabajador</th>
+        <th>Plan</th><th>Fecha</th><th>Estado</th><th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in citas %}
+      <tr data-id="{{ c.id }}">
+        <td>{{ c.id }}</td>
+        <td>{{ c.usuario }}</td>
+        <td>{{ c.trabajador }}</td>
+        <td>{{ c.plan }}</td>
+        <td>{{ c.fecha }}</td>
+        <td class="estado">{{ c.estado }}</td>
+        <td>
+          <button class="toggle-btn styled-btn">
+            {% if c.estado == 'pendiente' %}Marcar completada{% else %}Reabrir{% endif %}
+          </button>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" style="text-align:center;">No hay citas.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<button id="btn-marcar-todos" class="styled-btn" style="margin-top: 1rem;">
+  Marcar todas como completadas
+</button>
+
+<style>
+  .styled-btn {
+    padding: 0.4rem 0.8rem;
+    background: #7b2cbf;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .styled-btn:hover {
+    background: #5a189a;
+  }
+</style>
+
+<script>
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  const csrftoken = getCookie('csrftoken');
+
+  document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const tr = btn.closest('tr');
+      const citaId = tr.dataset.id;
+      const estadoTd = tr.querySelector('.estado');
+      const nuevoEstado = estadoTd.textContent.trim() === 'pendiente' ? 'completada' : 'pendiente';
+
+      const res = await fetch(`/admin/citas/${citaId}/toggle/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({ estado: nuevoEstado })
+      });
+      if (res.ok) {
+        estadoTd.textContent = nuevoEstado;
+        btn.textContent = nuevoEstado === 'pendiente' ? 'Marcar completada' : 'Reabrir';
+      } else {
+        alert('Error al actualizar el estado.');
+      }
+    });
+  });
+
+  document.getElementById('btn-marcar-todos').addEventListener('click', async () => {
+    const rows = document.querySelectorAll('tbody tr');
+    for (let tr of rows) {
+      const estadoTd = tr.querySelector('.estado');
+      const btn = tr.querySelector('.toggle-btn');
+      if (estadoTd && estadoTd.textContent.trim() === 'pendiente') {
+        const citaId = tr.dataset.id;
+        const res = await fetch(`/admin/citas/${citaId}/toggle/`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+          },
+          body: JSON.stringify({ estado: 'completada' })
+        });
+        if (res.ok) {
+          estadoTd.textContent = 'completada';
+          btn.textContent = 'Reabrir';
+        }
+      }
+    }
+    window.location.reload();
+  });
+</script>
+{% endblock %}

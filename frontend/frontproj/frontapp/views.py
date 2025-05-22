@@ -1,8 +1,43 @@
 import datetime
+import json
 import requests
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
+from django.views.decorators.http import require_http_methods
 
 # ADMIN
+
+
+API = 'http://127.0.0.1:8000/api'
+
+def admin_citas(request):
+    try:
+        citas = requests.get('http://127.0.0.1:8000/api/citas/').json()
+    except requests.RequestException:
+        citas = []
+
+    return render(request, 'admin/citas_admin.html', {
+        'citas': citas
+    })
+@require_http_methods(["PATCH"])
+def admin_cita_toggle(request, cita_id):
+    payload = json.loads(request.body)
+    nuevo = payload['estado']
+    r = requests.patch(f"{API}/citas/{cita_id}/", json={'estado': nuevo}, timeout=5)
+    if r.status_code in (200, 204):
+        b = requests.get(f"{API}/boletas/?cita={cita_id}", timeout=5).json()
+        if b:
+            requests.patch(f"{API}/boletas/{b[0]['id']}/", json={'estado_pago': nuevo}, timeout=5)
+        return HttpResponse(status=204)
+    return HttpResponse(status=400)
+
+def admin_pagos(request):
+    try:
+        pagos = requests.get(f"{API}/pagos/").json()
+    except requests.RequestException:
+        pagos = []
+    return render(request, 'admin/pagos_admin.html', {
+        'pagos': pagos
+    })
 
 def cpu_admin(request):
     return render(request, 'admin/cpu_admin.html')
@@ -16,13 +51,25 @@ def vista_dashboard_admin(request):
 def vista_admin_boletas(request):
     desde = request.GET.get('desde')
     hasta = request.GET.get('hasta')
-    boletas = requests.get('http://127.0.0.1:8000/api/boletas/').json()
+    boletas = requests.get(f"{API}/boletas/").json()
     if desde:
-        desde_date = datetime.strptime(desde, "%Y-%m-%d")
-        boletas = [b for b in boletas if b.get("fecha_creacion") and datetime.strptime(b["fecha_creacion"], "%Y-%m-%dT%H:%M:%S.%fZ") >= desde_date]
+        desde_date = datetime.datetime.strptime(desde, "%Y-%m-%d")
+        boletas = [
+            b for b in boletas
+            if b.get("fecha_creacion") and
+               datetime.datetime.strptime(
+                   b["fecha_creacion"], "%Y-%m-%dT%H:%M:%S.%fZ"
+               ) >= desde_date
+        ]
     if hasta:
-        hasta_date = datetime.strptime(hasta, "%Y-%m-%d")
-        boletas = [b for b in boletas if b.get("fecha_creacion") and datetime.strptime(b["fecha_creacion"], "%Y-%m-%dT%H:%M:%S.%fZ") <= hasta_date]
+        hasta_date = datetime.datetime.strptime(hasta, "%Y-%m-%d")
+        boletas = [
+            b for b in boletas
+            if b.get("fecha_creacion") and
+               datetime.datetime.strptime(
+                   b["fecha_creacion"], "%Y-%m-%dT%H:%M:%S.%fZ"
+               ) <= hasta_date
+        ]
     return render(request, 'admin/boletas_admin.html', {
         'boletas': boletas,
         'desde': desde,
@@ -30,24 +77,31 @@ def vista_admin_boletas(request):
     })
 
 def vista_admin_usuarios(request):
-    data = requests.get('http://127.0.0.1:8000/api/usuarios/').json()
-    return render(request, 'admin/usuarios_admin.html', {'usuarios': data})
+    usuarios = requests.get(f"{API}/usuarios/").json()
+    return render(request, 'admin/usuarios_admin.html', {
+        'usuarios': usuarios
+    })
 
 def vista_admin_servicios(request):
-    tipo_id = request.GET.get('tipo')
+    tipo_id   = request.GET.get('tipo')
     comuna_id = request.GET.get('comuna')
-    tipos = requests.get('http://127.0.0.1:8000/api/tiposervicios/').json()
-    comunas = requests.get('http://127.0.0.1:8000/api/comunas/').json()
-    servicios = requests.get('http://127.0.0.1:8000/api/servicios/').json()
-    usuarios = requests.get('http://127.0.0.1:8000/api/usuarios/').json()
+    tipos     = requests.get(f"{API}/tiposervicios/").json()
+    comunas   = requests.get(f"{API}/comunas/").json()
+    servicios = requests.get(f"{API}/servicios/").json()
+    usuarios  = requests.get(f"{API}/usuarios/").json()
     usuarios_dict = {u['id']: u for u in usuarios}
+
     if tipo_id:
         servicios = [s for s in servicios if str(s.get("tipo_id")) == tipo_id]
     if comuna_id:
-        servicios = [s for s in servicios if any(
-            usuarios_dict.get(t_id, {}).get("comuna") == int(comuna_id)
-            for t_id in s.get("trabajadores", [])
-        )]
+        servicios = [
+            s for s in servicios
+            if any(
+                usuarios_dict.get(t_id, {}).get("comuna") == int(comuna_id)
+                for t_id in s.get("trabajadores", [])
+            )
+        ]
+
     return render(request, 'admin/servicios_admin.html', {
         'servicios': servicios,
         'tipos': tipos,
@@ -58,14 +112,22 @@ def vista_admin_servicios(request):
 
 def vista_admin_trabajadores(request):
     especialidad_id = request.GET.get('especialidad')
-    comuna_id = request.GET.get('comuna')
-    especialidades = requests.get('http://127.0.0.1:8000/api/especialidades/').json()
-    comunas = requests.get('http://127.0.0.1:8000/api/comunas/').json()
-    trabajadores = requests.get('http://127.0.0.1:8000/api/trabajadores/').json()
+    comuna_id       = request.GET.get('comuna')
+    especialidades  = requests.get(f"{API}/especialidades/").json()
+    comunas         = requests.get(f"{API}/comunas/").json()
+    trabajadores    = requests.get(f"{API}/trabajadores/").json()
+
     if especialidad_id:
-        trabajadores = [t for t in trabajadores if str(t['especialidad']['id']) == especialidad_id]
+        trabajadores = [
+            t for t in trabajadores
+            if str(t['especialidad']['id']) == especialidad_id
+        ]
     if comuna_id:
-        trabajadores = [t for t in trabajadores if str(t['usuario']['comuna']) == comuna_id]
+        trabajadores = [
+            t for t in trabajadores
+            if str(t['usuario']['comuna']) == comuna_id
+        ]
+
     return render(request, 'admin/trabajadores_admin.html', {
         'trabajadores': trabajadores,
         'especialidades': especialidades,
@@ -76,7 +138,9 @@ def vista_admin_trabajadores(request):
 
 def vista_admin_pendientes(request):
     try:
-        res = requests.get('http://127.0.0.1:8000/api/trabajadores/?estado_verificado=false', timeout=5)
+        res = requests.get(
+            f"{API}/trabajadores/?estado_verificado=false", timeout=5
+        )
         res.raise_for_status()
         datos = res.json()
     except requests.RequestException:
@@ -87,7 +151,7 @@ def vista_admin_pendientes(request):
             ruta = t.get(campo) or ''
             if ruta and not ruta.startswith('http'):
                 ruta = ruta if ruta.startswith('/') else '/' + ruta
-                t[campo] = 'http://127.0.0.1:8000' + ruta
+                t[campo] = f"{API[:-4]}{ruta}"
     return render(request, 'admin/pendientes_verificacion.html', {
         'trabajadores': pendientes
     })

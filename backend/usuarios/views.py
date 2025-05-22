@@ -87,6 +87,24 @@ def api_users_active_new(request):
     })
 
 
+@api_view(['PATCH'])
+def admin_cita_toggle(request, pk):
+    try:
+        cita = Cita.objects.get(pk=pk)
+    except Cita.DoesNotExist:
+        return Response({'error': 'Cita no encontrada'}, status=404)
+
+    nuevo_estado = request.data.get('estado')
+    cita.estado = nuevo_estado
+    cita.save(update_fields=['estado'])
+
+    if nuevo_estado == 'completada':
+        boletas = Boleta.objects.filter(servicio__in=cita.plan.servicio_set.all(), usuario=cita.usuario)
+        boletas.update(estado_pago='pagado')
+
+    return Response(status=204)
+
+
 
 @api_view(['GET'])
 def api_monitor_uptime(request):
@@ -316,6 +334,19 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 ACCESS_TOKEN = 'TU_ACCESS_TOKEN_DE_MERCADOPAGO'
+
+@api_view(['GET', 'PATCH'])
+def admin_pagos(request):
+    if request.method == 'GET':
+        boletas = Boleta.objects.select_related('usuario','tipo_pago').all()
+        return render(request, 'admin/pagos_admin.html', {'boletas': boletas})
+
+    # PATCH
+    data = request.data
+    b = Boleta.objects.get(id=data.get('id'))
+    b.estado_pago = data.get('estado')
+    b.save(update_fields=['estado_pago'])
+    return JsonResponse({'ok': True})
 
 @csrf_exempt
 def crear_preferencia_mp(request):
