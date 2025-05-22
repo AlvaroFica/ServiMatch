@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-5">
+<!-- <div class="container mt-5">
   <div class="row">
     {% for servicio in servicios %}
     <div class="col-md-6 mb-4">
@@ -10,25 +10,15 @@
         <h5 class="card-title">{{ servicio.nombre }}</h5>
         <p class="card-text">{{ servicio.descripcion }}</p>
 
-        <!-- Depuración temporal -->
+        Depuración temporal
         <p><strong>Servicio ID:</strong> {{ servicio.id }}</p>
 
         {% if servicio.id %}
         <!-- Botón para calificar -->
-        <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
+<!-- <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
           data-bs-target="#ratingModal{{ servicio.id }}">
           Calificar Servicio
         </button>
-
-        <!-- Botón para seleccionar etiquetas -->
-        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
-          data-bs-target="#tagModal{{ servicio.id }}">
-          Etiquetas
-        </button>
-
-        <!-- Modales individuales por servicio -->
-        {% include "layouts/rating_modal.html" with servicio=servicio %}
-        {% include "layouts/tag_selector_modal.html" with servicio=servicio etiquetas=etiquetas %}
 
         {% else %}
         <div class="alert alert-warning">
@@ -38,6 +28,6 @@
       </div>
     </div>
     {% endfor %}
-  </div>
-</div>
+  </div> -->
+<!-- </div> -->
 {% endblock %}

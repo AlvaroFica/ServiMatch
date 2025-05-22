@@ -1,0 +1,71 @@
+/* ========== CARD CENTRADA ========== */
+.calificar-card {
+    max-width: 500px;
+    margin: 4rem auto;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+/* ========== IMAGEN DEL SERVICIO (si la hay) ========== */
+.imagen-servicio {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto 1rem;
+    border-radius: .25rem;
+}
+
+/* ========== AVATAR TRABAJADOR ========== */
+.avatar {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+}
+
+/* ========== ESTRELLAS ========== */
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.star-rating input[type="radio"] {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 2rem;
+    color: #ccc;
+    cursor: pointer;
+    margin: 0 .25rem;
+}
+
+.star-rating input[type="radio"]:checked~label,
+.star-rating label:hover,
+.star-rating label:hover~label {
+    color: #ffc107;
+}
+
+/* ========== BOTÓN SIGUIENTE ========== */
+.btn-next {
+    width: 100%;
+    font-size: 1.2rem;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .calificar-card {
+        padding: 1rem;
+    }
+
+    .imagen-servicio,
+    .avatar {
+        width: 100px;
+        height: 100px;
+    }
+}

@@ -27,10 +27,13 @@
             <h5 class="mb-0 text-uppercase">Resumen del Servicio</h5>
         </div>
         <div class="card-body d-flex align-items-center">
-            {% if servicio.imagenes and servicio.imagenes.0.url %}
-            <img src="{{ servicio.imagenes.0.url }}" alt="Imagen de {{ servicio.nombre_serv }}" class="rounded me-3"
-                style="width:120px;height:120px;object-fit:cover;">
+            {% if servicio.imagenes and servicio.imagenes.0.imagen %}
+            <img src="{{ servicio.imagenes.0.imagen }}" class="card-img-top rounded me-3"
+                alt="Imagen de {{ servicio.nombre_serv }}">
+
             {% endif %}
+
+
             <div>
                 <h4 class="card-title mb-1">{{ servicio.nombre_serv }}</h4>
                 <p class="precio mb-1">Precio: ${{ servicio.precio_total }}</p>
@@ -103,6 +106,10 @@
         </a>
     </div>
 </div>
+<br>
+<br>
+<br>
+<br>
 
 {# (Opcional) futuro: modales de rating o etiquetas #}
 {% endblock content %}

@@ -2,66 +2,51 @@
 {% load static %}
 
 {% block head %}
-<style>
-    .star-rating label {
-        font-size: 2rem;
-        color: #ccc;
-        cursor: pointer;
-    }
-
-    .star-rating input[type="radio"]:checked~label,
-    .star-rating label:hover,
-    .star-rating label:hover~label {
-        color: #ffc107;
-    }
-
-    .btn-next {
-        width: 100%;
-        font-size: 1.2rem;
-    }
-
-    @media (max-width: 768px) {
-        .card {
-            border: none;
-        }
-    }
-</style>
+{# Bootstrap ya cargado en base.html #}
+<link href="{% static 'css/calificar-servicio.css' %}" rel="stylesheet">
 {% endblock head %}
 
 {% block content %}
 <div class="container py-4">
-    <div class="card shadow-sm p-3">
-        <h4 class="text-center mb-3">Califica a tu trabajador 1/2</h4>
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            <div class="card calificar-card shadow-sm text-center">
 
-        {% if trabajador %}
-        <div class="text-center mb-3">
-            <img src="{% static 'img/default-avatar.png' %}" alt="Avatar" class="rounded-circle mb-2" width="80">
-            <h5>{{ trabajador.nombre }} {{ trabajador.apellido }}</h5>
+                {# ─── IMAGEN DEL SERVICIO ─── #}
+                {% if servicio.imagenes and servicio.imagenes.0.imagen %}
+                <img src="{{ servicio.imagenes.0.imagen }}" alt="Imagen de {{ servicio.nombre_serv }}"
+                    class="imagen-servicio">
+                {% elif trabajador and trabajador.foto %}
+                <img src="{{ trabajador.foto.url }}" alt="Foto de {{ trabajador.nombre }} {{ trabajador.apellido }}"
+                    class="avatar">
+                {% else %}
+                <img src="{% static 'img/default-avatar.png' %}" alt="Avatar por defecto" class="avatar">
+                {% endif %}
+
+                <h4 class="mb-4">Califica a tu trabajador 1/2</h4>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="star-rating mb-4">
+                        {% for i in "54321" %}
+                        <input type="radio" id="star{{ i }}" name="valor" value="{{ i }}" class="d-none">
+                        <label for="star{{ i }}">★</label>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-4 text-start">
+                        <label for="comentario" class="form-label">Comentario:</label>
+                        <textarea id="comentario" name="comentario" class="form-control" rows="3"
+                            placeholder="Describe tu experiencia...">{{ request.POST.comentario }}</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-next w-100">
+                        Siguiente
+                    </button>
+                </form>
+
+            </div>
         </div>
-        {% endif %}
-
-        <form method="post">
-            {% csrf_token %}
-            <div class="mb-4 text-center">
-                <div class="star-rating d-flex justify-content-center flex-row-reverse">
-                    {% for i in "54321" %}
-                    <input type="radio" id="star{{ i }}" name="valor" value="{{ i }}" class="d-none">
-                    <label for="star{{ i }}">★</label>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label for="comentario" class="form-label">Comentario:</label>
-                <textarea name="comentario" id="comentario" class="form-control" rows="3"
-                    placeholder="El servicio fue cumplido pero sin destacarse. Cumplió con lo básico, pero hay espacio importante para mejorar"></textarea>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-next">Siguiente</button>
-        </form>
     </div>
 </div>
 {% endblock content %}
-
-{# Bloque eliminado para evitar contenido adicional no deseado #}
-{# {% block menu_inferior %} {% include "layouts/menu_inferior.html" %} {% endblock menu_inferior %} #}
